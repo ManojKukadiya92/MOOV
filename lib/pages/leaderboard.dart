@@ -122,7 +122,6 @@ class _LeaderBoardState extends State<LeaderBoardPage>
                 ),
               );
             } else {
-              var prize;
 
               return StreamBuilder(
                   stream: FirebaseFirestore.instance

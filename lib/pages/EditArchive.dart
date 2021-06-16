@@ -66,7 +66,7 @@ class _EditArchiveState extends State<EditArchive> {
   final titleController = TextEditingController();
   final addressController = TextEditingController();
   final descriptionController = TextEditingController();
-  final venmoController = TextEditingController();
+  final paymentAmountController = TextEditingController();
   final maxOccupancyController = TextEditingController();
 
   final startDateController = DatePicker();
@@ -251,7 +251,7 @@ class _EditArchiveState extends State<EditArchive> {
           String description = snapshot.data['description'];
 
           String maxOccupancy = snapshot.data['maxOccupancy'].toString();
-          String venmo = snapshot.data['venmo'].toString();
+          String paymentAmount = snapshot.data['paymentAmount'].toString();
           final Map statuses = snapshot.data['statuses'];
 
           statuses.removeWhere((key, value) => value != -1 && value != 5);
@@ -266,7 +266,7 @@ class _EditArchiveState extends State<EditArchive> {
           }
 
           int maxOccupancyInt;
-          int venmoInt;
+          int paymentAmountInt;
           bool negativeOccupancy = false;
 
           dynamic startDate = snapshot.data['startDate'];
@@ -729,7 +729,7 @@ class _EditArchiveState extends State<EditArchive> {
                                           child: TextFormField(
                                             onChanged: (text) {
                                               setState(() {
-                                                venmo = text;
+                                                paymentAmount = text;
                                               });
                                             },
                                             keyboardType: TextInputType.number,
@@ -739,16 +739,16 @@ class _EditArchiveState extends State<EditArchive> {
                                                 symbol: '\$',
                                               )
                                             ],
-                                            controller: venmoController,
+                                            controller: paymentAmountController,
                                             decoration: InputDecoration(
                                               floatingLabelBehavior:
                                                   FloatingLabelBehavior.never,
-                                              icon: Text("Venmo"),
+                                              icon: Text("Cost"),
                                               labelStyle: TextThemes.mediumbody,
                                               labelText:
-                                                  venmo.toString() == "null"
+                                                  paymentAmount.toString() == "null"
                                                       ? "0"
-                                                      : "\$$venmo",
+                                                      : "\$$paymentAmount",
                                               enabledBorder: OutlineInputBorder(
                                                 borderRadius:
                                                     BorderRadius.circular(10.0),
@@ -1210,12 +1210,12 @@ class _EditArchiveState extends State<EditArchive> {
                                               "maxOccupancy": maxOccupancyInt,
                                             });
                                           }
-                                          if (venmoController.text != "") {
-                                            String x = venmoController.text
+                                          if (paymentAmountController.text != "") {
+                                            String x = paymentAmountController.text
                                                 .substring(1);
-                                            venmoInt = int.parse(x);
+                                            paymentAmountInt = int.parse(x);
                                             archiveRef.doc(postId).update({
-                                              "venmo": venmoInt,
+                                              "paymentAmount": paymentAmountInt,
                                             });
                                           }
 

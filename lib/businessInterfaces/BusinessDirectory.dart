@@ -27,7 +27,7 @@ class _BusinessDirectoryState extends State<BusinessDirectory>
   AnimationController _dealController;
   AnimationController _crowdController;
   AnimationController _mobileOrderingController;
-  Color _color = Colors.blue[800];
+  Color _color = Colors.blue[600];
   Color _color2 = Colors.purple[400];
   Color _color3 = Colors.grey[700];
 
@@ -283,7 +283,8 @@ class _BusinessDirectoryState extends State<BusinessDirectory>
                   style: TextStyle(
                       fontWeight: FontWeight.w300,
                       fontSize: 20,
-                      color: Colors.white),
+                      color: Colors.white
+                ),
                 ),
                 TextSpan(
                   text: ' DEAL',

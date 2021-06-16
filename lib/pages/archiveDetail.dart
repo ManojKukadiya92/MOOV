@@ -207,49 +207,49 @@ class _BannerImage extends StatelessWidget {
           ),
         ),
       ),
-      userId == currentUser.id ||
-              currentUser.id == "108155010592087635288" ||
-              currentUser.id == "118426518878481598299" ||
-              currentUser.id == "107290090512658207959" ||
-              currentUser.id == "115805501102171844515"
-          ? Positioned(
-              top: 5,
-              right: 5,
-              child: GestureDetector(
-                onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => EditPost(postId))),
-                child: Container(
-                  height: 45,
-                  width: 70,
-                  padding: EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Colors.red,
-                          Colors.red[300],
-                        ],
-                        begin: Alignment.centerLeft,
-                        end: Alignment.centerRight,
-                      ),
-                      borderRadius: BorderRadius.circular(10.0)),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.edit,
-                        color: Colors.white,
-                      ),
-                      Text(
-                        "Edit",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.white, fontSize: 18),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            )
-          : Text(''),
+      // userId == currentUser.id ||
+      //         currentUser.id == "108155010592087635288" ||
+      //         currentUser.id == "118426518878481598299" ||
+      //         currentUser.id == "107290090512658207959" ||
+      //         currentUser.id == "115805501102171844515"
+      //     ? Positioned(
+      //         top: 5,
+      //         right: 5,
+      //         child: GestureDetector(
+      //           onTap: () => Navigator.of(context).push(
+      //               MaterialPageRoute(builder: (context) => EditPost(postId))),
+      //           child: Container(
+      //             height: 45,
+      //             width: 70,
+      //             padding: EdgeInsets.all(4),
+      //             decoration: BoxDecoration(
+      //                 gradient: LinearGradient(
+      //                   colors: [
+      //                     Colors.red,
+      //                     Colors.red[300],
+      //                   ],
+      //                   begin: Alignment.centerLeft,
+      //                   end: Alignment.centerRight,
+      //                 ),
+      //                 borderRadius: BorderRadius.circular(10.0)),
+      //             child: Row(
+      //               mainAxisAlignment: MainAxisAlignment.center,
+      //               children: [
+      //                 Icon(
+      //                   Icons.edit,
+      //                   color: Colors.white,
+      //                 ),
+      //                 Text(
+      //                   "Edit",
+      //                   textAlign: TextAlign.center,
+      //                   style: TextStyle(color: Colors.white, fontSize: 18),
+      //                 ),
+      //               ],
+      //             ),
+      //           ),
+      //         ),
+      //       )
+      //     : Text(''),
       maxOccupancy != null && maxOccupancy != 8000000 && maxOccupancy != 0
           ? Positioned(
               bottom: 0,
@@ -312,7 +312,7 @@ class _NonImageContents extends StatelessWidget {
           _Title(title),
           _Description(description),
           PostTimeAndPlace(
-              startDate, address, course['venmo'], course['userId']),
+              startDate, address, course['userId']),
           _AuthorContent(userId, course),
           GestureDetector(
             onTap: () {
@@ -486,10 +486,9 @@ class _Description extends StatelessWidget {
 
 class PostTimeAndPlace extends StatelessWidget {
   dynamic startDate, address;
-  int venmo;
   String userId;
 
-  PostTimeAndPlace(this.startDate, this.address, this.venmo, this.userId);
+  PostTimeAndPlace(this.startDate, this.address, this.userId);
 
   @override
   Widget build(BuildContext context) {
@@ -541,60 +540,7 @@ class PostTimeAndPlace extends StatelessWidget {
             )
           ],
         ),
-        venmo != null && venmo != 0
-            ? Positioned(
-                top: 0,
-                right: 20,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      height: 35,
-                      padding: EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Color.fromRGBO(061, 149, 206, 1.0),
-                              Color.fromRGBO(061, 149, 215, 1.0),
-                            ],
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
-                          ),
-                          borderRadius: BorderRadius.circular(10.0)),
-                      child: Row(
-                        children: [
-                          Image.asset(
-                            'lib/assets/venmo-icon.png',
-                            height: 25,
-                          ),
-                          Text(
-                            "\$$venmo ",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(color: Colors.white, fontSize: 19),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: StreamBuilder(
-                          stream: usersRef.doc(userId).snapshots(),
-                          builder: (context, snapshot) {
-                            if (!snapshot.hasData) return circularProgress();
-
-                            String name = snapshot.data['venmoUsername'];
-                            return (name != "" && name != null)
-                                ? Text(
-                                    "@$name",
-                                    textAlign: TextAlign.center,
-                                  )
-                                : Text("");
-                          }),
-                    )
-                  ],
-                ),
-              )
-            : Text(""),
+       
       ]),
     );
   }

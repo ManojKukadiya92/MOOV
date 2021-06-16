@@ -241,7 +241,7 @@ class _FriendGroupsState extends State<FriendGroupsPage> {
                       ),
                     ),
                     Positioned(
-                        bottom: isLargePhone ? 30 : 10,
+                        bottom: isLargePhone ? 15 : 10,
                         right: 20,
                         child: GestureDetector(
                           onTap: selectedIndex == 0

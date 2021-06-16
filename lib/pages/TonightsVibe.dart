@@ -32,22 +32,32 @@ class __ContentsState extends State<_Contents> {
 
     return Column(
       children: [
-        Padding(
-          padding: isLargePhone
-              ? const EdgeInsets.only(top: 100)
-              : const EdgeInsets.only(top: 40),
-          child: Center(
-            child: AnimatedOpacity(
-                opacity: _visible ? 1.0 : 0.0,
-                duration: Duration(milliseconds: 500),
-                child: Text("TONIGHT'S\nVIBE?",
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.montserrat(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: isLargePhone ? 35 : 24))),
+        Stack(children: [
+          Padding(
+            padding: isLargePhone
+                ? const EdgeInsets.only(top: 100)
+                : const EdgeInsets.only(top: 40),
+            child: Center(
+              child: AnimatedOpacity(
+                  opacity: _visible ? 1.0 : 0.0,
+                  duration: Duration(milliseconds: 500),
+                  child: Text("TONIGHT'S\nVIBE?",
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.montserrat(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: isLargePhone ? 35 : 24))),
+            ),
           ),
-        ),
+          Positioned(
+              bottom: 5,
+              right: 15,
+              child: GestureDetector(
+                  onTap: () => goPressed("All"),
+                  child: Text("Not sure\nyet...",
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.montserrat(color: Colors.white))))
+        ]),
         Padding(
           padding: isLargePhone
               ? const EdgeInsets.only(top: 50.0)

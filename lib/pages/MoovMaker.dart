@@ -4,10 +4,13 @@ import 'dart:math';
 import 'package:MOOV/businessInterfaces/CrowdManagement.dart';
 import 'package:MOOV/businessInterfaces/featureDeal.dart';
 import 'package:MOOV/main.dart';
+import 'package:MOOV/pages/BusinessTab.dart';
 import 'package:MOOV/widgets/google_map.dart';
 import 'package:MOOV/widgets/sundayWrapup.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:MOOV/pages/OtherGroup.dart';
 import 'package:MOOV/pages/group_detail.dart';
@@ -55,7 +58,9 @@ class _MoovMakerState extends State<MoovMaker> {
             children: <Widget>[
               Stack(alignment: Alignment.center, children: <Widget>[
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 15.0),
+                  padding: currentUser.isBusiness
+                      ? const EdgeInsets.only(bottom: 0)
+                      : const EdgeInsets.only(bottom: 15.0),
                   child: SizedBox(
                     height: MediaQuery.of(context).size.height * 0.17,
                     width: MediaQuery.of(context).size.width,
@@ -347,6 +352,8 @@ class _MoovMakerFormState extends State<MoovMakerForm>
       List<String>.from(currentUser.userType['clubExecutive'] ?? []);
   Map<String, String> clubNameMap = {};
   Map<String, String> clubIdMap = {};
+  List previousPosts = [];
+  bool ran = false;
 
   clubNamer() {
     //gets club names for execs posting meetings
@@ -366,6 +373,38 @@ class _MoovMakerFormState extends State<MoovMakerForm>
         n.forEach((clubName) => clubNameMap[clubName] = value['clubId']);
         clubNameMap['No'] = null;
       });
+    }
+  }
+
+  List recurringSearcher() {
+    //sees if a business has posted before
+    if (currentUser.isBusiness && ran == false) {
+      archiveRef
+          .where("userId", isEqualTo: currentUser.id)
+          .orderBy("startDate")
+          .get()
+          .then((value) {
+        List postTitles = [];
+        for (int i = 0; i < value.docs.length; i++) {
+          if (value.docs.isNotEmpty && !previousPosts.contains(value.docs)) {
+            previousPosts.add(value.docs);
+            postTitles.add(value.docs[i]['title']);
+          }
+
+
+          // print(previousPosts[i][i])
+          // print(previousPosts[i][i]['title']);
+          // print(value.docs[i]['title']);
+          setState(() {
+            ran = true;
+          });
+          print("HER");
+        }
+        setState(() {});
+      });
+      return previousPosts;
+    } else {
+      return previousPosts;
     }
   }
 
@@ -403,6 +442,11 @@ class _MoovMakerFormState extends State<MoovMakerForm>
   bool push = true;
   int detailLength = 0;
   bool _moovOver = false;
+  bool _dailyRecurring = false;
+  bool _weeklyRecurring = false;
+  bool _biweeklyRecurring = false;
+  bool _monthlyRecurring = false;
+
   bool _item1 = true;
   bool _item2 = true;
   bool _item3 = true;
@@ -417,6 +461,7 @@ class _MoovMakerFormState extends State<MoovMakerForm>
   }
 
   List coords = [];
+  bool postANewMOOVPressed = false;
 
   @override
   Widget build(BuildContext context) {
@@ -424,6 +469,43 @@ class _MoovMakerFormState extends State<MoovMakerForm>
       //this gets the club names for posting club execs posting meetings
       clubNamer();
     });
+    if (recurringSearcher().isNotEmpty && !postANewMOOVPressed) {
+      List previousPosts = recurringSearcher();
+      return Column(
+        children: [
+          SizedBox(height: 30),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15))),
+                child: Ink(
+                  decoration: BoxDecoration(
+                      color: TextThemes.ndGold,
+                      borderRadius: BorderRadius.circular(15)),
+                  child: Container(
+                    width: 200,
+                    height: 40,
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Post a new MOOV',
+                      style: TextStyle(fontSize: 18, color: Colors.white),
+                    ),
+                  ),
+                ),
+                onPressed: () {
+                  setState(() {
+                    postANewMOOVPressed = true;
+                  });
+                }),
+          ),
+          SizedBox(height: 30),
+          Container(height: 500, child: Biz(previousPosts)),
+        ],
+      );
+    }
 
     bool isLargePhone = Screen.diagonal(context) > 766;
     List pushList = currentUser.pushSettings.values.toList();
@@ -433,7 +515,17 @@ class _MoovMakerFormState extends State<MoovMakerForm>
     return Form(
       key: _formKey,
       child: isUploading
-          ? linearProgress()
+          ? Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(height: 300),
+                Text("Asking the MOOV Gods..",
+                    style: GoogleFonts.montserrat(fontWeight: FontWeight.w600)),
+                SizedBox(height: 10),
+                const SpinKitWave(
+                    color: Colors.blue, type: SpinKitWaveType.center),
+              ],
+            )
           : SingleChildScrollView(
               child: Column(children: <Widget>[
                 //posting on behalf of student club
@@ -478,6 +570,139 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                               },
                             ),
                           ),
+                        ),
+                      )
+                    : Container(),
+
+                //option for biz to make MOOVs recurring
+                currentUser.isBusiness
+                    ? Padding(
+                        padding: const EdgeInsets.only(
+                            top: 0.0, left: 65, right: 40, bottom: 15),
+                        child: Column(
+                          children: <Widget>[
+                            Container(
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: TextThemes.ndBlue,
+                                  ),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10))),
+                              child: ExpansionTile(
+                                initiallyExpanded:
+                                    widget.fromMaxOc || widget.fromMoovOver
+                                        ? true
+                                        : false,
+                                title: Text(
+                                  "Make this MOOV recurring?",
+                                  style: TextStyle(
+                                      fontSize: 14.0,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                children: <Widget>[
+                                  Row(
+                                    children: [
+                                      SizedBox(width: 10),
+                                      GradientIcon(
+                                          Icons.calendar_today,
+                                          25.0,
+                                          LinearGradient(
+                                            colors: <Color>[
+                                              Colors.blue,
+                                              Colors.blue[500],
+                                              Colors.blue,
+                                            ],
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
+                                          )),
+                                      Expanded(
+                                        child: CheckboxListTile(
+                                            title: Text("Daily"),
+                                            value: _dailyRecurring,
+                                            onChanged: (bool value) => setState(
+                                                () => _dailyRecurring = value)),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      SizedBox(width: 10),
+                                      GradientIcon(
+                                          Icons.calendar_today,
+                                          25.0,
+                                          LinearGradient(
+                                            colors: <Color>[
+                                              Colors.purple[700],
+                                              Colors.purple[200],
+                                              Colors.blue,
+                                            ],
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
+                                          )),
+                                      Expanded(
+                                        child: CheckboxListTile(
+                                            title: Text("Weekly"),
+                                            value: _weeklyRecurring,
+                                            onChanged: (bool value) => setState(
+                                                () =>
+                                                    _weeklyRecurring = value)),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      SizedBox(width: 10),
+                                      GradientIcon(
+                                          Icons.calendar_today,
+                                          25.0,
+                                          LinearGradient(
+                                            colors: <Color>[
+                                              Colors.purple,
+                                              Colors.purple[500],
+                                              Colors.blue[900],
+                                            ],
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
+                                          )),
+                                      Expanded(
+                                        child: CheckboxListTile(
+                                            title: Text("Bi-Weekly"),
+                                            value: _biweeklyRecurring,
+                                            onChanged: (bool value) => setState(
+                                                () => _biweeklyRecurring =
+                                                    value)),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      SizedBox(width: 10),
+                                      GradientIcon(
+                                          Icons.calendar_today,
+                                          25.0,
+                                          LinearGradient(
+                                            colors: <Color>[
+                                              Colors.purple[800],
+                                              Colors.purple[500],
+                                              Colors.purple,
+                                            ],
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
+                                          )),
+                                      Expanded(
+                                        child: CheckboxListTile(
+                                            title: Text("Monthly"),
+                                            value: _monthlyRecurring,
+                                            onChanged: (bool value) => setState(
+                                                () =>
+                                                    _monthlyRecurring = value)),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       )
                     : Container(),
@@ -1817,18 +2042,38 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                               paymentAmountInt = int.parse(x);
                             }
 
+                            String recurringType = "";
+
+                            if (currentUser.isBusiness) {
+                              if (_monthlyRecurring != false) {
+                                recurringType = "monthly";
+                              }
+                              if (_biweeklyRecurring != false) {
+                                recurringType = "biweekly";
+                              }
+                              if (_weeklyRecurring != false) {
+                                recurringType = "weekly";
+                              }
+                              if (_dailyRecurring != false) {
+                                recurringType = "daily";
+                              }
+                            }
+
                             //mobile ordering menu
                             if (currentUser.mobileOrderMenu != null) {
                               if (currentUser
-                                  .mobileOrderMenu['item1'].isEmpty || !_item1) {
+                                      .mobileOrderMenu['item1'].isEmpty ||
+                                  !_item1) {
                                 _item1 = false;
                               }
                               if (currentUser
-                                  .mobileOrderMenu['item2'].isEmpty|| !_item2) {
+                                      .mobileOrderMenu['item2'].isEmpty ||
+                                  !_item2) {
                                 _item2 = false;
                               }
                               if (currentUser
-                                  .mobileOrderMenu['item3'].isEmpty|| !_item3) {
+                                      .mobileOrderMenu['item3'].isEmpty ||
+                                  !_item3) {
                                 _item3 = false;
                               }
                             }
@@ -1868,6 +2113,7 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                                       imageUrl: downloadUrl,
                                       userId: strUserId,
                                       postId: postId,
+                                      recurringType: recurringType,
                                       posterName: currentUser.displayName,
                                       push: push,
                                       moovOver: _moovOver,

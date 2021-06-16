@@ -225,43 +225,49 @@ class Database {
       userId,
       postId,
       posterName,
+      String recurringType,
       bool push,
       int goingCount,
       bool moovOver,
-      Map mobileOrderMenu}) {
+      Map mobileOrderMenu,
+      bool noArchive = false}) {
     bool isPartyOrBar = false;
     if (type == "Parties" || type == "Bars & Restaurants") {
       isPartyOrBar = true;
     }
 
-    archiveRef.doc(postId).set({
-      'title': title,
-      'type': type,
-      "businessPost": true,
-      "location": currentUser.businessLocation,
-      "checkInMap": {},
-      'privacy': privacy,
-      'description': description,
-      'address': address,
-      'startDate': startDate,
-      'startDateSimpleString': startDateSimpleString,
-      'unix': unix,
-      'statuses': {for (var v in statuses) v: -1},
-      'maxOccupancy': maxOccupancy,
-      'paymentAmount': paymentAmount,
-      'image': imageUrl,
-      'userId': userId,
-      "featured": false,
-      "postId": postId,
-      "posterName": posterName,
-      "push": push,
-      "goingCount": 0,
-      "going": [],
-      "isPartyOrBar": isPartyOrBar,
-      "stats": {},
-      "moovOver": moovOver,
-      "tags": []
-    });
+    if (!noArchive) {
+      archiveRef.doc(postId).set({
+        'title': title,
+        'type': type,
+        "businessPost": true,
+        "location": currentUser.businessLocation,
+        "checkInMap": {},
+        'privacy': privacy,
+        'description': description,
+        'address': address,
+        'startDate': startDate,
+        'startDateSimpleString': startDateSimpleString,
+        'unix': unix,
+        'statuses': {for (var v in statuses) v: -1},
+        'maxOccupancy': maxOccupancy,
+        'paymentAmount': paymentAmount,
+        'image': imageUrl,
+        'userId': userId,
+        "featured": false,
+        "postId": postId,
+        "posterName": posterName,
+        "push": push,
+        "goingCount": 0,
+        "going": [],
+        "isPartyOrBar": isPartyOrBar,
+        "stats": {},
+        "moovOver": moovOver,
+        "tags": [],
+        "recurringType": recurringType,
+        "mobileOrderMenu": mobileOrderMenu
+      });
+    }
 
     postsRef.doc(postId).set({
       'title': title,
@@ -289,6 +295,7 @@ class Database {
       "isPartyOrBar": isPartyOrBar,
       "stats": {},
       "moovOver": moovOver,
+      "recurringType": recurringType,
       "mobileOrderMenu": mobileOrderMenu,
       "tags": []
     }).then(inviteesNotification(postId, imageUrl, title, statuses));

@@ -5,6 +5,7 @@ import 'package:MOOV/pages/other_profile.dart';
 import 'package:MOOV/widgets/progress.dart';
 import 'package:MOOV/widgets/send_moov.dart';
 import 'package:animations/animations.dart';
+import 'package:avatar_glow/avatar_glow.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -55,6 +56,12 @@ class _PostOnFeedNewState extends State<PostOnFeedNew> {
             widget.course['posterName']);
       });
     }
+    bool moovMountain = false;
+
+    if (widget.course['tags'].contains("moovMountain")) {
+      moovMountain = true;
+    }
+
     final now = DateTime.now();
     bool isToday = false;
     bool isTomorrow = false;
@@ -121,6 +128,7 @@ class _PostOnFeedNewState extends State<PostOnFeedNew> {
                       ),
                     ),
                   ),
+                  widget.course['title'].isNotEmpty ? 
                   Align(
                     alignment: Alignment.center,
                     child: Container(
@@ -152,7 +160,7 @@ class _PostOnFeedNewState extends State<PostOnFeedNew> {
                         ),
                       ),
                     ),
-                  ),
+                  ) : Container(),
                   Positioned(
                       bottom: 10,
                       right: 22.5,
@@ -344,6 +352,31 @@ class _PostOnFeedNewState extends State<PostOnFeedNew> {
                           ),
                         )
                       : Text(""),
+                 moovMountain ? Positioned(
+                    top: -15,
+                    right: 5,
+                    child: AvatarGlow(
+                      glowColor: Colors.green,
+                      endRadius: 50.0,
+                      duration: Duration(milliseconds: 2000),
+                      repeat: true,
+                      showTwoGlows: true,
+                      repeatPauseDuration: Duration(milliseconds: 100),
+                      child: Material(
+                        // Replace this child with your own
+                        elevation: 8.0,
+                        shape: CircleBorder(),
+                        child: CircleAvatar(
+                          backgroundColor: Colors.blueGrey[50],
+                          child: Image.asset(
+                            'lib/assets/greenmountain.png',
+                            height: 40,
+                          ),
+                          radius: 30.0,
+                        ),
+                      ),
+                    ),
+                  ): Container(),
                 ]),
                 AnimatedBuilder(
                     animation: widget.notifier,
