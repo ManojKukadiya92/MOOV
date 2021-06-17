@@ -96,7 +96,7 @@ class _NotificationFeedState extends State<NotificationFeed>
     });
     return docIds;
   }
-  
+
   getGroupFeed(int groupCount) async {
     QuerySnapshot snapshot = await notificationFeedRef
         .doc(currentUser.friendGroups[groupCount - 1])
@@ -147,10 +147,7 @@ class _NotificationFeedState extends State<NotificationFeed>
                     color: Colors.white,
                   ),
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Home()),
-                    );
+                    Navigator.pop(context);
                   },
                 ),
                 backgroundColor: TextThemes.ndBlue,
@@ -258,7 +255,7 @@ class _NotificationFeedState extends State<NotificationFeed>
                       child: _currentIndex == 1
                           ? GradientText(
                               "Friend Groups",
-                                16.5,
+                              16.5,
                               gradient: LinearGradient(colors: [
                                 Colors.blue.shade400,
                                 Colors.blue.shade900,

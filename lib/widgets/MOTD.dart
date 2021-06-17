@@ -151,7 +151,7 @@ class MOTDUI extends StatelessWidget {
                                   child: Container(
                                     decoration: BoxDecoration(
                                       borderRadius:
-                                          BorderRadius.all(Radius.circular(0)),
+                                          BorderRadius.all(Radius.circular(20)),
                                       gradient: LinearGradient(
                                         begin: Alignment.topCenter,
                                         end: Alignment.bottomCenter,
@@ -369,11 +369,10 @@ class BiteSizePostUI extends StatelessWidget {
                     bottom: 5,
                     right: 5,
                     child: Container(
-                      decoration:
-                       BoxDecoration(
-                            color: Colors.blueGrey[50],
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(30.0))),
+                      decoration: BoxDecoration(
+                          color: Colors.blueGrey[50],
+                          borderRadius:
+                              BorderRadius.all(Radius.circular(30.0))),
                       child: Padding(
                         padding: const EdgeInsets.all(8),
                         child: Row(

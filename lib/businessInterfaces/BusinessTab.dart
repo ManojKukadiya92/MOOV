@@ -58,7 +58,6 @@ class _BizState extends State<Biz> {
       itemBuilder: (BuildContext context, int pos) {
         List course = previousPosts[pos];
         return Container(
-          margin: EdgeInsets.all(5),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
@@ -204,27 +203,18 @@ class _BizState extends State<Biz> {
           ? Stack(
               children: [
                 Container(
-                  margin: EdgeInsets.fromLTRB(20, 20, 20, 10),
+                  margin: EdgeInsets.fromLTRB(0, 20, 0, 10),
                   padding: EdgeInsets.only(bottom: 10),
                   decoration: BoxDecoration(
-                    border: Border.all(width: 1),
-                    borderRadius: BorderRadius.circular(5),
-                    shape: BoxShape.rectangle,
-                  ),
+                      border: Border(top: BorderSide(width: 1.0))),
                   height: isLargePhone
                       ? MediaQuery.of(context).size.height / 2.5
                       : MediaQuery.of(context).size.height / 2.75,
                   child: Column(children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: Container(
-                        height: isLargePhone ? 150 : 140,
-                        child: Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: buildPageView(widget.previousPosts,
-                              widget.previousPosts.length, _controller),
-                        ),
-                      ),
+                    Container(
+                      height: isLargePhone ? 150 : 140,
+                      child: buildPageView(widget.previousPosts,
+                          widget.previousPosts.length, _controller),
                     ),
                     SizedBox(height: 7),
                     Align(
@@ -363,23 +353,18 @@ class _BizState extends State<Biz> {
                                 }
                               },
                               child: Container(
-                                height: 30,
                                 padding: EdgeInsets.all(4),
                                 decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        Colors.blue[400],
-                                        Colors.blue[300]
-                                      ],
-                                      begin: Alignment.centerLeft,
-                                      end: Alignment.centerRight,
-                                    ),
+                                    color: TextThemes.ndGold,
                                     borderRadius: BorderRadius.circular(10.0)),
-                                child: Text(
-                                  "Post!",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 18),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    "Post!",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 18),
+                                  ),
                                 ),
                               ),
                             ),
@@ -398,7 +383,8 @@ class _BizState extends State<Biz> {
                       color: Colors.white,
                       child: Text(
                         'Or post again!',
-                        style: TextStyle(color: Colors.black, fontSize: 12),
+                        style:
+                            GoogleFonts.montserrat(fontWeight: FontWeight.w500),
                       ),
                     )),
               ],
