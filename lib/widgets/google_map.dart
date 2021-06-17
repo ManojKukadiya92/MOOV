@@ -140,8 +140,7 @@ class _GoogleMapState extends State<GoogleMap> {
                                   height: 30,
                                   borderRadius: BorderRadius.circular(12.0),
                                   child: state == SearchingState.Searching
-                                      ? Center(
-                                          child: linearProgress())
+                                      ? Center(child: linearProgress())
                                       : TextButton(
                                           child: Text("Set Address",
                                               style: TextStyle(
@@ -181,7 +180,6 @@ class _GoogleMapState extends State<GoogleMap> {
                                 ConnectionState.done) {
                               return linearProgress();
                             }
-                            print(selectedPlace.geometry.location);
                             if (!snapshot.hasData) {
                               return Container(
                                   height: 50,
@@ -314,9 +312,10 @@ class _GoogleMapState extends State<GoogleMap> {
 
                             //usePlaceDetailSearch: true,
                             onPlacePicked: (result) {
-                              selectedPlace = result;
                               // Navigator.of(context).pop();
-                              setState(() {});
+                              setState(() {
+                                selectedPlace = result;
+                              });
                             },
                             //forceSearchOnZoomChanged: true,
                             //automaticallyImplyAppBarLeading: false,

@@ -368,12 +368,22 @@ class BiteSizePostUI extends StatelessWidget {
                 ? Positioned(
                     bottom: 5,
                     right: 5,
-                    child: Row(
-                      children: [
-                        Text(goingCount.toString(),
-                            style: TextStyle(color: Colors.green)),
-                        Icon(Icons.directions_run, color: Colors.green),
-                      ],
+                    child: Container(
+                      decoration:
+                       BoxDecoration(
+                            color: Colors.blueGrey[50],
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(30.0))),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Row(
+                          children: [
+                            Text(goingCount.toString(),
+                                style: TextStyle(color: Colors.green)),
+                            Icon(Icons.directions_run, color: Colors.green),
+                          ],
+                        ),
+                      ),
                     ))
                 : Container()
           ],

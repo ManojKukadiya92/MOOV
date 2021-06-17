@@ -45,7 +45,7 @@ class _CreateAccountState extends State<CreateAccount> {
   final _formKey5 = GlobalKey<FormState>();
   final _formKey6 = GlobalKey<FormState>();
   final _formKey7 = GlobalKey<FormState>();
-  final _formKey8 = GlobalKey<FormState>();
+  // final _formKey8 = GlobalKey<FormState>();
   final yearList = ["Freshman", "Sophomore", "Junior", "Senior", "Grad"];
   final genderList = ["Female", "Male", "Other"];
   final raceList = ["Black", "Latino", "Asian", "White", "Other"];
@@ -115,16 +115,13 @@ class _CreateAccountState extends State<CreateAccount> {
   }
 
   submitBusiness() {
-    setState(() {});
-
     final form5 = _formKey5.currentState;
     final form6 = _formKey6.currentState;
-    final form8 = _formKey8.currentState;
+    // final form8 = _formKey8.currentState;
 
-    if (form5.validate() && form6.validate() && form8.validate()) {
+    if (form5.validate() && form6.validate()) {
       form5.save();
       form6.save();
-      form8.save();
 
       SnackBar snackbar = SnackBar(
           backgroundColor: Colors.green, content: Text("Welcome to MOOV!"));
@@ -928,61 +925,62 @@ class _CreateAccountState extends State<CreateAccount> {
                               ),
                             ),
                           ),
-                          Padding(
-                            padding: EdgeInsets.all(16.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Image.asset(
-                                  'lib/assets/venmo-icon.png',
-                                  height: 40,
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text("@",
-                                      style: TextStyle(
-                                          fontSize: 30,
-                                          fontWeight: FontWeight.bold)),
-                                ),
-                                Container(
-                                  child: Form(
-                                    key: _formKey8,
-                                    autovalidate: true,
-                                    child: Container(
-                                      width: MediaQuery.of(context).size.width *
-                                          .4,
-                                      child: ButtonTheme(
-                                        child: TextFormField(
-                                          autocorrect: false,
-                                          onSaved: (val) => venmoUsername = val,
-                                          decoration: InputDecoration(
-                                            border: OutlineInputBorder(),
-                                            labelText: "Venmo Username",
-                                            labelStyle:
-                                                TextStyle(fontSize: 13.0),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(height: isLargePhone ? 10 : 0),
+                          // Padding(
+                          //   padding: EdgeInsets.all(16.0),
+                          //   child: Row(
+                          //     mainAxisAlignment: MainAxisAlignment.center,
+                          //     children: [
+                          //       Image.asset(
+                          //         'lib/assets/venmo-icon.png',
+                          //         height: 40,
+                          //       ),
+                          //       Padding(
+                          //         padding: const EdgeInsets.all(8.0),
+                          //         child: Text("@",
+                          //             style: TextStyle(
+                          //                 fontSize: 30,
+                          //                 fontWeight: FontWeight.bold)),
+                          //       ),
+                          //       Container(
+                          //         child: Form(
+                          //           key: _formKey8,
+                          //           autovalidate: true,
+                          //           child: Container(
+                          //             width: MediaQuery.of(context).size.width *
+                          //                 .4,
+                          //             child: ButtonTheme(
+                          //               child: TextFormField(
+                          //                 autocorrect: false,
+                          //                 onSaved: (val) => venmoUsername = val,
+                          //                 decoration: InputDecoration(
+                          //                   border: OutlineInputBorder(),
+                          //                   labelText: "Venmo Username",
+                          //                   labelStyle:
+                          //                       TextStyle(fontSize: 13.0),
+                          //                 ),
+                          //               ),
+                          //             ),
+                          //           ),
+                          //         ),
+                          //       ),
+                          //     ],
+                          //   ),
+                          // ),
+                          SizedBox(height: isLargePhone ? 10 : 10),
                           noAddress
                               ? Text("Set your address!",
                                   style: TextStyle(color: Colors.red))
                               : Container(),
                           GestureDetector(
-                            onTap: businessAddress == ""
-                                ? () {
-                                    print(businessAddress);
-                                    setState(() {
+                            onTap: () {
+                              setState(() {});
+                              businessLocationLatitude == null ||
+                                      (businessLocationLatitude) == ""
+                                  ? setState(() {
                                       noAddress = true;
-                                    });
-                                  }
-                                : submitBusiness,
+                                    })
+                                  : submitBusiness();
+                            },
                             child: Padding(
                               padding:
                                   const EdgeInsets.only(top: 18.0, bottom: 18),

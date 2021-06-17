@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:MOOV/businessInterfaces/CrowdManagement.dart';
 import 'package:MOOV/businessInterfaces/featureDeal.dart';
 import 'package:MOOV/main.dart';
-import 'package:MOOV/pages/BusinessTab.dart';
+import 'package:MOOV/businessInterfaces/BusinessTab.dart';
 import 'package:MOOV/widgets/google_map.dart';
 import 'package:MOOV/widgets/sundayWrapup.dart';
 import 'package:flutter/cupertino.dart';

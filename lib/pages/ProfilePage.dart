@@ -1,21 +1,12 @@
-import 'dart:async';
-import 'dart:io';
-
 import 'package:MOOV/helpers/themes.dart';
 import 'package:MOOV/main.dart';
 import 'package:MOOV/models/user.dart';
 import 'package:MOOV/pages/Friends_List.dart';
-import 'package:MOOV/pages/MOOVSPage.dart';
-import 'package:MOOV/pages/MessagesHub.dart';
 import 'package:MOOV/pages/SettingsPage.dart';
-import 'package:MOOV/pages/contactsPage.dart';
 import 'package:MOOV/pages/friend_groups.dart';
 import 'package:MOOV/pages/home.dart';
 import 'package:MOOV/pages/leaderboard.dart';
 import 'package:MOOV/pages/edit_profile.dart';
-import 'package:MOOV/pages/notification_feed.dart';
-import 'package:MOOV/services/database.dart';
-import 'package:MOOV/widgets/contacts_button.dart';
 import 'package:MOOV/widgets/photo_pick.dart';
 import 'package:MOOV/widgets/progress.dart';
 import 'package:MOOV/widgets/trending_segment.dart';
@@ -23,6 +14,7 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ProfilePage extends StatefulWidget {
   User user;
@@ -34,8 +26,6 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage>
     with AutomaticKeepAliveClientMixin {
-  GlobalKey _settingsKey = GlobalKey();
-
   @override
   bool get wantKeepAlive => true;
 
@@ -382,25 +372,20 @@ class _ProfilePageState extends State<ProfilePage>
                                     padding: const EdgeInsets.only(
                                         top: 5.0, bottom: 35),
                                     child: Center(
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 20.0),
-                                        child: RichText(
-                                          textAlign: TextAlign.center,
-                                          textScaleFactor: 1.3,
-                                          text: TextSpan(
-                                              style: TextThemes.mediumbody,
-                                              children: [
-                                                TextSpan(
-                                                    text: "\"" + userBio + "\"",
-                                                    style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontStyle:
-                                                            FontStyle.italic)),
-                                              ]),
-                                        ),
-                                      ),
-                                    ),
+                                        child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 20.0),
+                                            child: userBio.isEmpty
+                                                ? Text("Create a bio",
+                                                    style:
+                                                        GoogleFonts.montserrat(
+                                                            color: Colors.white,
+                                                            fontSize: 17))
+                                                : Text("\"" + userBio + "\"",
+                                                   style:
+                                                        GoogleFonts.montserrat(
+                                                            color: Colors.white,
+                                                            fontSize: 17))))
                                   ),
                                 ],
                               ),
@@ -895,25 +880,20 @@ class _ProfilePageState extends State<ProfilePage>
                                     padding: const EdgeInsets.only(
                                         top: 5.0, bottom: 35),
                                     child: Center(
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 20.0),
-                                        child: RichText(
-                                          textAlign: TextAlign.center,
-                                          textScaleFactor: 1.3,
-                                          text: TextSpan(
-                                              style: TextThemes.mediumbody,
-                                              children: [
-                                                TextSpan(
-                                                    text: "\"" + userBio + "\"",
-                                                    style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontStyle:
-                                                            FontStyle.italic)),
-                                              ]),
-                                        ),
-                                      ),
-                                    ),
+                                        child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 20.0),
+                                            child: userBio.isEmpty
+                                                ? Text("Create a bio",
+                                                    style:
+                                                        GoogleFonts.montserrat(
+                                                            color: Colors.white,
+                                                            fontSize: 17))
+                                                : Text("\"" + userBio + "\"",
+                                                   style:
+                                                        GoogleFonts.montserrat(
+                                                            color: Colors.white,
+                                                            fontSize: 17)))),
                                   ),
                                 ],
                               ),
@@ -975,8 +955,7 @@ class _ProfilePageState extends State<ProfilePage>
                                                   DocumentSnapshot course =
                                                       snapshot.data.docs[index];
 
-                                                  return PostOnTrending(
-                                                       course);
+                                                  return PostOnTrending(course);
                                                 },
                                                         childCount: snapshot
                                                             .data.docs.length),
@@ -1055,8 +1034,7 @@ class _ProfilePageState extends State<ProfilePage>
                                                   DocumentSnapshot course =
                                                       snapshot.data.docs[index];
 
-                                                  return PostOnTrending(
-                                                   course);
+                                                  return PostOnTrending(course);
                                                 },
                                                         childCount: snapshot
                                                             .data.docs.length),

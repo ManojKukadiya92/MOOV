@@ -612,57 +612,54 @@ class _AddUsersFromCreateGroupState extends State<AddUsersFromCreateGroup>
           ),
           backgroundColor: Colors.white,
           body: _searchTerm == null
-              ? SingleChildScrollView(
+              ? Container(
+                  height: MediaQuery.of(context).size.height,
                   child: Container(
-                      height: MediaQuery.of(context).size.height,
-                      child: Container(
-                        height: MediaQuery.of(context).size.height,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [Colors.pink[300], Colors.pink[200]],
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
-                          ),
-                        ),
-                        child: Center(
-                          child: ListView(
-                            physics: ClampingScrollPhysics(),
-                            children: [
-                              SizedBox(height: 50),
-                              Padding(
-                                  padding: const EdgeInsets.only(bottom: 50),
-                                  child: RichText(
-                                      textAlign: TextAlign.center,
-                                      text: TextSpan(
-                                          style: TextThemes.mediumbody,
-                                          children: [
-                                            TextSpan(
-                                                text: "Invite the squad,",
-                                                style: TextStyle(
-                                                    fontSize: 30,
-                                                    fontWeight:
-                                                        FontWeight.w300)),
-                                            TextSpan(
-                                                text: " now",
-                                                style: TextStyle(
-                                                    fontSize: 30,
-                                                    fontWeight:
-                                                        FontWeight.w600)),
-                                            TextSpan(
-                                                text: ".",
-                                                style: TextStyle(
-                                                    fontSize: 30,
-                                                    fontWeight:
-                                                        FontWeight.w300))
-                                          ]))),
-                              Padding(
-                                  padding: EdgeInsets.only(bottom: 250),
-                                  child: Image.asset('lib/assets/ff.png'))
-                            ],
-                          ),
-                        ),
-                      )),
-                )
+                    height: MediaQuery.of(context).size.height,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Colors.pink[300], Colors.pink[200]],
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                      ),
+                    ),
+                    child: Center(
+                      child: ListView(
+                        children: [
+                          SizedBox(height: 50),
+                          Padding(
+                              padding: const EdgeInsets.only(bottom: 50),
+                              child: RichText(
+                                  textAlign: TextAlign.center,
+                                  text: TextSpan(
+                                      style: TextThemes.mediumbody,
+                                      children: [
+                                        TextSpan(
+                                            text: "Invite the squad,",
+                                            style: TextStyle(
+                                                fontSize: 30,
+                                                fontWeight:
+                                                    FontWeight.w300)),
+                                        TextSpan(
+                                            text: " now",
+                                            style: TextStyle(
+                                                fontSize: 30,
+                                                fontWeight:
+                                                    FontWeight.w600)),
+                                        TextSpan(
+                                            text: ".",
+                                            style: TextStyle(
+                                                fontSize: 30,
+                                                fontWeight:
+                                                    FontWeight.w300))
+                                      ]))),
+                          Padding(
+                              padding: EdgeInsets.only(bottom: 250),
+                              child: Image.asset('lib/assets/ff.png'))
+                        ],
+                      ),
+                    ),
+                  ))
               : StreamBuilder<List<AlgoliaObjectSnapshot>>(
                   stream: Stream.fromFuture(_operation(_searchTerm)),
                   builder: (context, snapshot0) {
@@ -972,133 +969,131 @@ class _SearchUsersGroupState extends State<SearchUsersGroup> {
         ),
       ),
       backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Column(children: <Widget>[
-          TextField(
-              style: TextStyle(fontSize: 20),
-              controller: searchController,
-              onChanged: (val) {
-                setState(() {
-                  _searchTerm = val;
-                });
-              },
-              // Set Focus Node
-              decoration: InputDecoration(
-                labelStyle: TextStyle(fontSize: 20),
-                border: InputBorder.none,
-                hintText: 'Search',
-                hintStyle: TextStyle(color: Colors.grey, fontSize: 20),
-                prefixIcon: const Icon(Icons.search, color: Colors.black),
-                suffixIcon: GestureDetector(
-                    onTap: () {
-                      clearSearch();
-                      // Unfocus all focus nodes
+      body: Column(children: <Widget>[
+        TextField(
+            style: TextStyle(fontSize: 20),
+            controller: searchController,
+            onChanged: (val) {
+              setState(() {
+                _searchTerm = val;
+              });
+            },
+            // Set Focus Node
+            decoration: InputDecoration(
+              labelStyle: TextStyle(fontSize: 20),
+              border: InputBorder.none,
+              hintText: 'Search',
+              hintStyle: TextStyle(color: Colors.grey, fontSize: 20),
+              prefixIcon: const Icon(Icons.search, color: Colors.black),
+              suffixIcon: GestureDetector(
+                  onTap: () {
+                    clearSearch();
+                    // Unfocus all focus nodes
 
-                      // Disable text field's focus node request
+                    // Disable text field's focus node request
 
-                      //Enable the text field's focus node request after some delay
-                    },
-                    child: IconButton(
-                        onPressed: null,
-                        icon: Icon(
-                          Icons.clear,
-                          color: Colors.black,
-                        ))),
-              )),
-          StreamBuilder<List<AlgoliaObjectSnapshot>>(
-              stream: Stream.fromFuture(_operation(_searchTerm)),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData ||
-                    snapshot.data.length == 0 ||
-                    _searchTerm == null)
-                  return Container(
+                    //Enable the text field's focus node request after some delay
+                  },
+                  child: IconButton(
+                      onPressed: null,
+                      icon: Icon(
+                        Icons.clear,
+                        color: Colors.black,
+                      ))),
+            )),
+        StreamBuilder<List<AlgoliaObjectSnapshot>>(
+            stream: Stream.fromFuture(_operation(_searchTerm)),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData ||
+                  snapshot.data.length == 0 ||
+                  _searchTerm == null)
+                return Container(
+                    height: MediaQuery.of(context).size.height,
+                    child: Container(
                       height: MediaQuery.of(context).size.height,
-                      child: Container(
-                        height: MediaQuery.of(context).size.height,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [Colors.pink[300], Colors.pink[200]],
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
-                          ),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Colors.pink[300], Colors.pink[200]],
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
                         ),
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Padding(
-                                  padding: const EdgeInsets.all(50.0),
-                                  child: RichText(
-                                      textAlign: TextAlign.center,
-                                      text: TextSpan(
-                                          style: TextThemes.mediumbody,
-                                          children: [
-                                            TextSpan(
-                                                text: "Squad",
-                                                style: TextStyle(
-                                                    fontSize: 30,
-                                                    fontWeight:
-                                                        FontWeight.w300)),
-                                            TextSpan(
-                                                text: " up",
-                                                style: TextStyle(
-                                                    fontSize: 30,
-                                                    fontWeight:
-                                                        FontWeight.w600)),
-                                            TextSpan(
-                                                text: ".",
-                                                style: TextStyle(
-                                                    fontSize: 30,
-                                                    fontWeight:
-                                                        FontWeight.w300))
-                                          ]))),
-                              Image.asset('lib/assets/ff.png')
-                            ],
-                          ),
+                      ),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Padding(
+                                padding: const EdgeInsets.all(50.0),
+                                child: RichText(
+                                    textAlign: TextAlign.center,
+                                    text: TextSpan(
+                                        style: TextThemes.mediumbody,
+                                        children: [
+                                          TextSpan(
+                                              text: "Squad",
+                                              style: TextStyle(
+                                                  fontSize: 30,
+                                                  fontWeight:
+                                                      FontWeight.w300)),
+                                          TextSpan(
+                                              text: " up",
+                                              style: TextStyle(
+                                                  fontSize: 30,
+                                                  fontWeight:
+                                                      FontWeight.w600)),
+                                          TextSpan(
+                                              text: ".",
+                                              style: TextStyle(
+                                                  fontSize: 30,
+                                                  fontWeight:
+                                                      FontWeight.w300))
+                                        ]))),
+                            Image.asset('lib/assets/ff.png')
+                          ],
                         ),
-                      ));
-                List<AlgoliaObjectSnapshot> currSearchStuff = snapshot.data;
+                      ),
+                    ));
+              List<AlgoliaObjectSnapshot> currSearchStuff = snapshot.data;
 
-                switch (snapshot.connectionState) {
-                  case ConnectionState.waiting:
-                    return Container();
-                  default:
-                    if (snapshot.hasError)
-                      return new Text('Error: ${snapshot.error}');
-                    else
-                      return CustomScrollView(
-                        shrinkWrap: true,
-                        slivers: <Widget>[
-                          SliverList(
-                            delegate: SliverChildBuilderDelegate(
-                              (context, index) {
-                                return _searchTerm.length > 0
-                                    ? UserGroupResultAdd(
-                                        currSearchStuff[index]
-                                            .data["displayName"],
-                                        currSearchStuff[index].data["email"],
-                                        currSearchStuff[index].data["photoUrl"],
-                                        currSearchStuff[index].data["id"],
-                                        currSearchStuff[index]
-                                            .data["verifiedStatus"],
-                                        currSearchStuff[index]
-                                            .data["friendGroups"],
-                                        gname,
-                                        gid,
-                                        pic,
-                                        moov,
-                                        members)
-                                    : Container();
-                              },
-                              childCount: currSearchStuff.length ?? 0,
-                            ),
+              switch (snapshot.connectionState) {
+                case ConnectionState.waiting:
+                  return Container();
+                default:
+                  if (snapshot.hasError)
+                    return new Text('Error: ${snapshot.error}');
+                  else
+                    return CustomScrollView(
+                      shrinkWrap: true,
+                      slivers: <Widget>[
+                        SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) {
+                              return _searchTerm.length > 0
+                                  ? UserGroupResultAdd(
+                                      currSearchStuff[index]
+                                          .data["displayName"],
+                                      currSearchStuff[index].data["email"],
+                                      currSearchStuff[index].data["photoUrl"],
+                                      currSearchStuff[index].data["id"],
+                                      currSearchStuff[index]
+                                          .data["verifiedStatus"],
+                                      currSearchStuff[index]
+                                          .data["friendGroups"],
+                                      gname,
+                                      gid,
+                                      pic,
+                                      moov,
+                                      members)
+                                  : Container();
+                            },
+                            childCount: currSearchStuff.length ?? 0,
                           ),
-                        ],
-                      );
-                }
-              }),
-        ]),
-      ),
+                        ),
+                      ],
+                    );
+              }
+            }),
+      ]),
     );
   }
 }
@@ -1602,7 +1597,8 @@ class _SearchUsersMessageState extends State<SearchUsersMessage> {
             )
           : null,
       backgroundColor: Colors.white,
-      body: ListView(physics: ClampingScrollPhysics(), children: <Widget>[
+      body: ListView(
+        children: <Widget>[
         TextField(
             style: TextStyle(fontSize: 20),
             controller: searchController,
@@ -1637,55 +1633,39 @@ class _SearchUsersMessageState extends State<SearchUsersMessage> {
         StreamBuilder<List<AlgoliaObjectSnapshot>>(
             stream: Stream.fromFuture(_operation(_searchTerm)),
             builder: (context, snapshot) {
-              if (!snapshot.hasData ||
-                  snapshot.data.length == 0 ||
-                  _searchTerm == null)
-                return Container(
-                    height: MediaQuery.of(context).size.height,
-                    child: Container(
-                      height: MediaQuery.of(context).size.height,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Colors.pink[300], Colors.pink[200]],
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                        ),
-                      ),
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Padding(
-                                padding: const EdgeInsets.all(50.0),
-                                child: RichText(
-                                    textAlign: TextAlign.center,
-                                    text: TextSpan(
-                                        style: TextThemes.mediumbody,
-                                        children: [
-                                          TextSpan(
-                                              text: "Slide",
-                                              style: TextStyle(
-                                                  fontSize: 30,
-                                                  fontWeight: FontWeight.w300)),
-                                          TextSpan(
-                                              text: " in",
-                                              style: TextStyle(
-                                                  fontSize: 30,
-                                                  fontWeight: FontWeight.w600)),
-                                          TextSpan(
-                                              text: ".",
-                                              style: TextStyle(
-                                                  fontSize: 30,
-                                                  fontWeight: FontWeight.w300))
-                                        ]))),
-                            Image.asset('lib/assets/ff.png')
-                          ],
-                        ),
-                      ),
-                    ));
-              List<AlgoliaObjectSnapshot> currSearchStuff = snapshot.data;
+
+              if (!snapshot.hasData || _searchTerm == null)
+                return FutureBuilder(
+                    future: usersRef.get(),
+                    builder: (context, snapshot2) {
+                      if (!snapshot2.hasData) {
+                        return Container();
+                      }
+                      return CustomScrollView(
+                        shrinkWrap: true,
+                        slivers: <Widget>[
+                          SliverList(
+                            delegate: SliverChildBuilderDelegate(
+                              (context, index) {
+                                return MessageResultAdd(
+                                  snapshot2.data.docs[index]["displayName"],
+                                  snapshot2.data.docs[index]["email"],
+                                  snapshot2.data.docs[index]["photoUrl"],
+                                  snapshot2.data.docs[index]["id"],
+                                  snapshot2.data.docs[index]["verifiedStatus"],
+                                );
+                              },
+                              childCount: 30,
+                            ),
+                          ),
+                        ],
+                      );
+                    });
+                  List<AlgoliaObjectSnapshot> currSearchStuff = snapshot.data;
+
 
               switch (snapshot.connectionState) {
+                
                 case ConnectionState.waiting:
                   return Container();
                 default:

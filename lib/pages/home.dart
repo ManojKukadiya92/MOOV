@@ -19,6 +19,7 @@ import 'package:MOOV/pages/group_detail.dart';
 import 'package:MOOV/pages/leaderboard.dart';
 import 'package:MOOV/pages/notification_feed.dart';
 import 'package:MOOV/pages/other_profile.dart';
+import 'package:MOOV/pages/passwordPage.dart';
 import 'package:MOOV/pages/post_detail.dart';
 import 'package:MOOV/services/database.dart';
 import 'package:MOOV/studentClubs/studentClubDashboard.dart';
@@ -77,7 +78,7 @@ final adminRef = FirebaseFirestore.instance
     .collection('notreDame')
     .doc('data')
     .collection('admin');
-  final communityGroupsRef = FirebaseFirestore.instance
+final communityGroupsRef = FirebaseFirestore.instance
     .collection('notreDame')
     .doc('data')
     .collection('communityGroups');
@@ -567,23 +568,35 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
     DocumentSnapshot adminDoc = await adminRef.doc('login').get();
     bool blocked = false;
+    bool locked = true;
 
     if (!doc.exists) {
-      //checking if a business or nd.edu address or staff
-      // List whiteList =
-      //     adminDoc.data()['whiteList']; //businesses can get through screening
-      // List blackList = adminDoc.data()['blackList']; // staff/faculty blocked
+      // checking if a business or nd.edu address or staff
+      List whiteList =
+          adminDoc.data()['whiteList']; //businesses can get through screening
+      List blackList = adminDoc.data()['blackList']; // staff/faculty blocked
 
-      // if (blackList.contains(user.email)) {
-      //   blocked = true;
-      //   print("staff/faculty. get fucked");
-      // }
-      // if (!user.email.contains('@nd.edu') && !whiteList.contains(user.email)) {
-      //   blocked = true;
-      //   print("not a student or a business. get fucked");
-      // }
+      if (blackList.contains(user.email)) {
+        blocked = true;
+        print("staff/faculty. get fucked");
+      }
+      if (!user.email.contains('@nd.edu') && !whiteList.contains(user.email)) {
+        blocked = true;
+        print("not a student or a business. get fucked");
+      }
 
-      // 2) if the user doesn't exist, and ISNT BLOCKED, then we want to take them to the create account page
+      if (whiteList.contains(user.email)) {
+        locked = false;
+      }
+
+      if (locked) {
+        print("H");
+        final result = await Navigator.pushAndRemoveUntil(
+          context,
+          PageRouteBuilder(pageBuilder: (_, __, ___) => PasswordPage()),
+          (Route<dynamic> route) => false,
+        );
+      }
       if (blocked) {
         final result = await Navigator.pushAndRemoveUntil(
           context,
@@ -663,7 +676,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   //   }
   // }
   ////       /////
-
 
   Scaffold buildAuthScreen() {
     // Future<String> randomPostMaker() async {
