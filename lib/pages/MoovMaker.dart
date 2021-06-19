@@ -1103,7 +1103,7 @@ class _MoovMakerFormState extends State<MoovMakerForm>
 
                     Padding(
                       padding: const EdgeInsets.only(
-                          top: 5, left: 15, bottom: 10, right: 15),
+                          top: 5, left: 55, bottom: 10),
                       child: Row(
                         children: [
                           Expanded(
@@ -1189,7 +1189,7 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                                 : null,
                             child: Padding(
                               padding:
-                                  const EdgeInsets.symmetric(horizontal: 20.0),
+                                  const EdgeInsets.symmetric(horizontal: 12.0),
                               child: Column(
                                 children: [
                                   coords.isEmpty

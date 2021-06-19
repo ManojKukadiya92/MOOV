@@ -1,3 +1,4 @@
+import 'package:MOOV/helpers/common.dart';
 import 'package:MOOV/pages/home.dart';
 import 'package:MOOV/pages/post_detail.dart';
 import 'package:MOOV/utils/themes_styles.dart';
@@ -22,12 +23,12 @@ class CalendarPage extends StatelessWidget {
       _moovs.add(_MOOVsOnCalendar(
           title, startDate, endDate, postId, image, Colors.blue[100], false));
       _moovs.add(_MOOVsOnCalendar(
-          "THIS MOOV",
+          "YOUR MOOV",
           proposedStartDate,
           proposedStartDate.add(const Duration(hours: 2)),
           null,
           image,
-         TextThemes.ndGold,
+          TextThemes.ndGold,
           false));
     }
     return _moovs;
@@ -36,14 +37,18 @@ class CalendarPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: CustomAppBar(),
         body: FutureBuilder(
-            future: postsRef.get(),
+            future: postsRef
+                // .where("privacy", isEqualTo: "Public")
+                .get(),
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
                 return Container();
               }
 
               return SfCalendar(
+                initialDisplayDate: proposedStartDate,
                 onTap: (calendarTapDetails) {
                   if (calendarTapDetails.appointments != null) {
                     String postId =
@@ -59,97 +64,108 @@ class CalendarPage extends StatelessWidget {
                     }
                   }
                 },
-                
+
                 appointmentBuilder:
                     (BuildContext context, CalendarAppointmentDetails details) {
                   final _MOOVsOnCalendar meeting = details.appointments.first;
+                  String postId = details.appointments.first.postId;
                   // final String image = _getImage();
-                  Future.delayed(const Duration(milliseconds: 1000), () {});
 
                   return Container(
-                    
                       decoration: BoxDecoration(
-                        
                         borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(5),
                             topRight: Radius.circular(5)),
-                        color: meeting.background,
                       ),
-                      child: meeting.image == null
-                          ? Text("YOUR MOOV")
-                          : Stack(
-                              alignment: Alignment.center,
-                              children: <Widget>[
-                                  Container(
-                                    width: 43,
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: CachedNetworkImage(
-                                        imageUrl: meeting.image,
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: AnimatedContainer(
+                              decoration: BoxDecoration(
+                                  color: postId != null ? Colors.blue : Colors.red),
+                              duration: Duration(seconds: 1),
+                              curve: Curves.fastOutSlowIn,
+                              width: 1,
+                            ),
+                          ),
+                          Stack(alignment: Alignment.center, children: <Widget>[
+                            Container(
+                              width: 43,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: CachedNetworkImage(
+                                  imageUrl: meeting.image,
+                                ),
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(10),
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    spreadRadius: 2,
+                                    blurRadius: 7,
+                                    offset: Offset(
+                                        0, 3), // changes position of shadow
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            Align(
+                                alignment: Alignment.center,
+                                child: Container(
+                                  alignment: Alignment(0.0, 0.0),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(20)),
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                        colors: <Color>[
+                                          Colors.black.withAlpha(0),
+                                          Colors.black,
+                                          Colors.black12,
+                                        ],
                                       ),
                                     ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(10),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(4.0),
+                                      child: Text(
+                                        meeting.eventName,
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 2,
+                                        softWrap: false,
+                                        style: TextStyle(
+                                            fontFamily: 'Solway',
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                            fontSize: 6.0),
                                       ),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.grey.withOpacity(0.5),
-                                          spreadRadius: 2,
-                                          blurRadius: 7,
-                                          offset: Offset(0,
-                                              3), // changes position of shadow
-                                        ),
-                                      ],
                                     ),
                                   ),
-
-                                  Align(
-                                      alignment: Alignment.center,
-                                      child: Container(
-                                        alignment: Alignment(0.0, 0.0),
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(20)),
-                                            gradient: LinearGradient(
-                                              begin: Alignment.topCenter,
-                                              end: Alignment.bottomCenter,
-                                              colors: <Color>[
-                                                Colors.black.withAlpha(0),
-                                                Colors.black,
-                                                Colors.black12,
-                                              ],
-                                            ),
-                                          ),
-                                          child: Padding(
-                                            padding:
-                                                const EdgeInsets.all(4.0),
-                                            child: Text(
-                                              meeting.eventName,
-                                              overflow: TextOverflow.ellipsis,
-                                              maxLines: 2,
-                                              softWrap: false,
-                                              style: TextStyle(
-                                                  fontFamily: 'Solway',
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white,
-                                                  fontSize: 6.0),
-                                            ),
-                                          ),
-                                        ),
-                                      )),
-                                  // Text(
-                                  //   // 'Time: ${DateFormat('hh:mm a').format(meeting.startTime)} - ' +
-                                  //   //     '${DateFormat('hh:mm a').format(meeting.endTime)}',
-                                  //   'hu',
-                                  //   style: TextStyle(
-                                  //     color: Colors.white,
-                                  //     fontSize: 10,
-                                  //   ),
-                                  // ),
-                                ]));
+                                )),
+                            // Text(
+                            //   // 'Time: ${DateFormat('hh:mm a').format(meeting.startTime)} - ' +
+                            //   //     '${DateFormat('hh:mm a').format(meeting.endTime)}',
+                            //   'hu',
+                            //   style: TextStyle(
+                            //     color: Colors.white,
+                            //     fontSize: 10,
+                            //   ),
+                            // ),
+                          ]),
+                          Expanded(
+                            child: Container(
+                              width: 1,
+                              color: postId == null ? Colors.red : Colors.blue,
+                            ),
+                          ),
+                        ],
+                      ));
                 },
 
                 //     Container(
