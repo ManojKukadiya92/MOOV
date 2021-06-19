@@ -229,11 +229,13 @@ class _BizState extends State<Biz> {
                               format: format,
                               keyboardType: TextInputType.datetime,
                               decoration: InputDecoration(
-                                  suffixIcon: Icon(
+                                  suffixIcon: IconButton(
+                                    icon:Icon(
                                     Icons.calendar_today,
                                     color: needDate
                                         ? Colors.red
-                                        : TextThemes.ndGold,
+                                        : TextThemes.ndGold,),
+                                        onPressed: () => null,
                                   ),
                                   labelText: 'Enter Start Time',
                                   enabledBorder: OutlineInputBorder(
