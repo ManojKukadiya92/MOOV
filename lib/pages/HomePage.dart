@@ -346,6 +346,7 @@ class _HomePageState extends State<HomePage>
                             }
 
                             return ListView.builder(
+                              physics: ClampingScrollPhysics(),
                               controller: _scrollController,
                               itemCount: snapshot.data.docs.length + 1,
                               itemBuilder: (context, index) {

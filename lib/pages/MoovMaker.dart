@@ -93,18 +93,13 @@ class _MoovMakerState extends State<MoovMaker> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 15.0),
-                  child: Container(
-                    child: Text(
-                      "MOOV Maker",
-                      style: TextStyle(
-                          fontFamily: 'Solway',
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: 25.0),
-                    ),
-                  ),
-                ),
+                    padding: const EdgeInsets.only(bottom: 15.0),
+                    child: Container(
+                        child: Text("MOOV Maker",
+                            style: GoogleFonts.montserrat(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                fontSize: 25.0)))),
                 Align(
                   alignment: Alignment.topLeft,
                   child: IconButton(
@@ -402,7 +397,6 @@ class _MoovMakerFormState extends State<MoovMakerForm>
           setState(() {
             ran = true;
           });
-          print("HER");
         }
         setState(() {});
       });
@@ -534,7 +528,7 @@ class _MoovMakerFormState extends State<MoovMakerForm>
             )
           : _isSuccessful
               ? Stack(
-                alignment: Alignment.center,
+                  alignment: Alignment.center,
                   children: [
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -1102,8 +1096,8 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                     // ),
 
                     Padding(
-                      padding: const EdgeInsets.only(
-                          top: 5, left: 55, bottom: 10),
+                      padding:
+                          const EdgeInsets.only(top: 5, left: 55, bottom: 10),
                       child: Row(
                         children: [
                           Expanded(
@@ -2318,6 +2312,7 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                                     }, SetOptions(merge: true));
                                   });
                                   _controllerCenterLeft.play();
+                                  HapticFeedback.lightImpact();
 
                                   setState(() {
                                     isUploading = false;
