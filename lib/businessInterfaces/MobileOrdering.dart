@@ -76,7 +76,8 @@ class MobileOrdering extends StatelessWidget {
             Map item2 = mobileOrderMenu['item2'];
             Map item3 = mobileOrderMenu['item3'];
 
-            return (postId != null) ?
+            return (postId != null)
+                ?
 
                 ///this menu is being viewed from a specific post
                 StreamBuilder(
@@ -240,16 +241,15 @@ class MobileOrdering extends StatelessWidget {
                           ),
                           Expanded(
                             child: MobileOrderPageView(
-                                controller: controller,
-                                mobileOrderMenu: mobileOrderMenu,
-                                userId: userId,
-                                postId: postId,
-                                offeringItem1: offeringItem1,
-                                offeringItem2: offeringItem2,
-                                offeringItem3: offeringItem3,
-                                itemsOffered: itemsOffered,
-                                
-                                ),
+                              controller: controller,
+                              mobileOrderMenu: mobileOrderMenu,
+                              userId: userId,
+                              postId: postId,
+                              offeringItem1: offeringItem1,
+                              offeringItem2: offeringItem2,
+                              offeringItem3: offeringItem3,
+                              itemsOffered: itemsOffered,
+                            ),
                           )
                         ],
                       );
@@ -425,18 +425,22 @@ class _MobileOrderPageViewState extends State<MobileOrderPageView> {
               shape: DotShape.Rectangle),
         ),
         Expanded(
-            child: PageView(
+            child: 
+            PageView(
           controller: widget.controller,
           children: [
-            widget.offeringItem1 == false ? Container(): 
-            MobileItemOne(
-                widget.mobileOrderMenu['item1'], widget.userId, widget.postId),
-           widget.offeringItem2 == false ? Container():
-            MobileItemTwo(
-                widget.mobileOrderMenu['item2'], widget.userId, widget.postId),
-           widget.offeringItem3 == false ? Container():
-            MobileItemThree(
-                widget.mobileOrderMenu['item3'], widget.userId, widget.postId),
+            widget.offeringItem1 == false
+                ? Container()
+                : MobileItemOne(widget.mobileOrderMenu['item1'], widget.userId,
+                    widget.postId),
+            widget.offeringItem2 == false
+                ? Container()
+                : MobileItemTwo(widget.mobileOrderMenu['item2'], widget.userId,
+                    widget.postId),
+            widget.offeringItem3 == false
+                ? Container()
+                : MobileItemThree(widget.mobileOrderMenu['item3'],
+                    widget.userId, widget.postId),
           ],
         )),
       ],

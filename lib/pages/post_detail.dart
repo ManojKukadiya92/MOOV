@@ -917,7 +917,7 @@ class PaySkipSendRow extends StatelessWidget {
           paymentAmount != null && paymentAmount != 0
               ? Icon(Icons.attach_money, color: Colors.orange)
               : Container(),
-          menu != null && menu.isNotEmpty
+          menu != null && (menu['item1'] || menu['item2'] || menu['item3'])
               ? Padding(
                   padding: const EdgeInsets.only(left: 10, right: 7.5),
                   child: GestureDetector(

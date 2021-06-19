@@ -88,7 +88,7 @@ class MOTDUI extends StatelessWidget {
                 course['paymentAmount'] != 0) {
               type = "pay";
             }
-            if (course.data()['mobileOrderMenu'] != null) {
+            if (course.data()['mobileOrderMenu'] != null && (course.data()['mobileOrderMenu']['item1'] || course.data()['mobileOrderMenu']['item2'] || course.data()['mobileOrderMenu']['item3'])) {
               type = "order";
             }
 
