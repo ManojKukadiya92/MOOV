@@ -183,6 +183,14 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
 //      FlutterAppBadger.updateBadgeCount(1);
       if (recipientId == currentUser.id) {
+        String otherPerson;
+
+        if (pushId.substring(21) == currentUser.id) {
+          otherPerson = pushId.substring(0, 21);
+        } else {
+          otherPerson = pushId.substring(21);
+        }
+
         print(pushId);
         Flushbar snackbar = Flushbar(
             onTap: (data) {
@@ -199,7 +207,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                     MaterialPageRoute(
                         builder: (context) => MessageDetail(
                             directMessageId: pushId,
-                            otherPerson: recipientId,
+                            otherPerson: otherPerson,
                             members: [],
                             sendingPost: {})));
               }
@@ -283,6 +291,13 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         page = message["data"]['page'];
         recipientId = message["data"]['recipient'];
       }
+      String otherPerson;
+
+      if (pushId.substring(21) == currentUser.id) {
+        otherPerson = pushId.substring(0, 21);
+      } else {
+        otherPerson = pushId.substring(21);
+      }
 
       if (page == "post") {
         Navigator.push(context,
@@ -294,7 +309,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             MaterialPageRoute(
                 builder: (context) => MessageDetail(
                     directMessageId: pushId,
-                    otherPerson: recipientId,
+                    otherPerson: otherPerson,
                     members: [],
                     sendingPost: {})));
       }
@@ -372,6 +387,15 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       //     MaterialPageRoute(
       //         builder: (context) => PostDetail("MEB1KyztxCHY50VT29wL")));
       // print("DATA ${data}");
+
+      String otherPerson;
+
+      if (pushId.substring(21) == currentUser.id) {
+        otherPerson = pushId.substring(0, 21);
+      } else {
+        otherPerson = pushId.substring(21);
+      }
+
       if (page == "post") {
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => PostDetail(pushId)));
@@ -382,7 +406,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             MaterialPageRoute(
                 builder: (context) => MessageDetail(
                     directMessageId: pushId,
-                    otherPerson: recipientId,
+                    otherPerson: otherPerson,
                     members: [],
                     sendingPost: {})));
       }
@@ -482,6 +506,14 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
       usersRef.doc(user.id).update({'test': message.toString()});
 
+      String otherPerson;
+
+      if (pushId.substring(21) == currentUser.id) {
+        otherPerson = pushId.substring(0, 21);
+      } else {
+        otherPerson = pushId.substring(21);
+      }
+
       Flushbar snackbar = Flushbar(
           onTap: (data) {
             // print("DATA ${data}");
@@ -495,7 +527,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                   MaterialPageRoute(
                       builder: (context) => MessageDetail(
                           directMessageId: pushId,
-                          otherPerson: recipientId,
+                          otherPerson: otherPerson,
                           members: [],
                           sendingPost: {})));
             }

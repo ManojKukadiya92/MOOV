@@ -474,11 +474,14 @@ class _GroupFormState extends State<GroupForm> {
                                             }),
                                       ),
                                     ])),
-                            CheckboxListTile(
-                                title: new Text("We'll be lit."),
-                                value: _termsChecked,
-                                onChanged: (bool value) =>
-                                    setState(() => _termsChecked = value)),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 80.0),
+                              child: CheckboxListTile(
+                                  title: new Text("We'll be lit."),
+                                  value: _termsChecked,
+                                  onChanged: (bool value) =>
+                                      setState(() => _termsChecked = value)),
+                            ),
                             SizedBox(
                               height: 10.0,
                             ),

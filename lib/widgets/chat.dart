@@ -7,6 +7,7 @@ import 'package:MOOV/pages/ProfilePageWithHeader.dart';
 import 'package:MOOV/pages/other_profile.dart';
 import 'package:MOOV/pages/post_detail.dart';
 import 'package:MOOV/utils/themes_styles.dart';
+import 'package:MOOV/widgets/poll2.dart';
 import 'package:MOOV/widgets/progress.dart';
 import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -298,6 +299,56 @@ class ChatState extends State<Chat> {
               "isGroupChat": false,
             }, SetOptions(merge: true));
 
+      postsRef.doc(widget.sendingPost['postId']).get().then((value) {
+        print(value['postId']);
+
+        isGroupChat
+            ? messagesRef
+                .doc(gid)
+                .collection("pullUpTimeForPosts")
+                .doc(value['postId'])
+                .set({
+               "voters": {"0": 6},
+                "choice1": DateFormat.jm()
+                        .format(value['startDate']
+                            .toDate()
+                            .subtract(Duration(minutes: 30)))
+                        .toString() +
+                    " or earlier",
+                "choice2": DateFormat.jm().format(value['startDate'].toDate()),
+                "choice3": DateFormat.jm().format(
+                    value['startDate'].toDate().add(Duration(minutes: 30))),
+                "choice4": DateFormat.jm()
+                        .format(value['startDate']
+                            .toDate()
+                            .add(Duration(minutes: 60)))
+                        .toString() +
+                    " or later"
+              })
+            : messagesRef
+                .doc(directMessageId)
+                .collection("pullUpTimeForPosts")
+                .doc(value['postId'])
+                .set({
+                "voters": {"0": 6},
+                "choice1": DateFormat.jm()
+                        .format(value['startDate']
+                            .toDate()
+                            .subtract(Duration(minutes: 30)))
+                        .toString() +
+                    " or earlier",
+                "choice2": DateFormat.jm().format(value['startDate'].toDate()),
+                "choice3": DateFormat.jm().format(
+                    value['startDate'].toDate().add(Duration(minutes: 30))),
+                "choice4": DateFormat.jm()
+                        .format(value['startDate']
+                            .toDate()
+                            .add(Duration(minutes: 60)))
+                        .toString() +
+                    " or later"
+              });
+      });
+
       setState(() {
         widget.sendingPost = null;
       });
@@ -421,7 +472,9 @@ class ChatState extends State<Chat> {
               ? ChatMOOV(
                   postId: widget.sendingPost['postId'],
                   pic: widget.sendingPost['pic'],
-                  title: widget.sendingPost['title'])
+                  title: widget.sendingPost['title'],
+                  messageId: isGroupChat ? gid : directMessageId,
+                )
               : Container(),
           ListTile(
             title: TextFormField(
@@ -665,6 +718,7 @@ class _CommentState extends State<Comment> {
                           padding: const EdgeInsets.only(bottom: 5.0),
                           child: !hasExpired
                               ? ExpandablePanel(
+                                  collapsed: null,
                                   // controller: _expandableController,
                                   theme: const ExpandableThemeData(
                                     useInkWell: false,
@@ -726,13 +780,16 @@ class _CommentState extends State<Comment> {
                                             mainAxisSize: MainAxisSize.max,
                                             children: [
                                               ChatMOOV(
-                                                postId: postId,
-                                                pic: snapshot3.data['image'] ??
-                                                    "",
-                                                title:
-                                                    snapshot3.data['title'] ??
-                                                        "",
-                                              ),
+                                                  postId: postId,
+                                                  pic:
+                                                      snapshot3.data['image'] ??
+                                                          "",
+                                                  title:
+                                                      snapshot3.data['title'] ??
+                                                          "",
+                                                  messageId: isGroupChat
+                                                      ? gid
+                                                      : directMessageId),
                                               timeAgo == ""
                                                   ? Container()
                                                   : Text(
@@ -774,7 +831,10 @@ class _CommentState extends State<Comment> {
                                                           "",
                                                       title: snapshot
                                                           .data['title'],
-                                                      hasButtons: false),
+                                                      hasButtons: false,
+                                                      messageId: isGroupChat
+                                                          ? gid
+                                                          : directMessageId),
                                                   timeAgo == ""
                                                       ? Container()
                                                       : Text(
@@ -968,11 +1028,13 @@ class _CommentState extends State<Comment> {
                                             mainAxisSize: MainAxisSize.max,
                                             children: [
                                               ChatMOOV(
-                                                postId: postId,
-                                                pic: snapshot.data['image'] ??
-                                                    "",
-                                                title: snapshot.data['title'],
-                                              ),
+                                                  postId: postId,
+                                                  pic: snapshot.data['image'] ??
+                                                      "",
+                                                  title: snapshot.data['title'],
+                                                  messageId: isGroupChat
+                                                      ? gid
+                                                      : directMessageId),
                                               timeAgo == ""
                                                   ? Container()
                                                   : Text(
@@ -1025,7 +1087,10 @@ class _CommentState extends State<Comment> {
                                                           "",
                                                       title: snapshot
                                                           .data['title'],
-                                                      hasButtons: false),
+                                                      hasButtons: false,
+                                                      messageId: isGroupChat
+                                                          ? gid
+                                                          : directMessageId),
                                                   timeAgo == ""
                                                       ? Container()
                                                       : Text(
@@ -1166,9 +1231,16 @@ class _CommentState extends State<Comment> {
 }
 
 class ChatMOOV extends StatelessWidget {
-  final String postId, pic, title;
+  final String postId, pic, title, messageId;
   final bool hasButtons;
-  ChatMOOV({this.postId, this.pic, this.title, this.hasButtons = true});
+  ChatMOOV(
+      {this.postId,
+      this.pic,
+      this.title,
+      this.hasButtons = true,
+      this.messageId});
+
+  double _height = 40;
 
   @override
   Widget build(BuildContext context) {
@@ -1336,7 +1408,38 @@ class ChatMOOV extends StatelessWidget {
                       ]),
                     ),
             ),
-            hasButtons ? Buttons(postId) : Container()
+            hasButtons ? Buttons(postId) : Container(),
+            Container(
+              width: MediaQuery.of(context).size.width * .75,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: ExpandablePanel(
+                        collapsed: null,
+                        // controller: _expandableController,
+                        theme: const ExpandableThemeData(
+                          useInkWell: false,
+                          hasIcon: false,
+                          tapHeaderToExpand: true,
+                          headerAlignment:
+                              ExpandablePanelHeaderAlignment.center,
+                          tapBodyToCollapse: true,
+                        ),
+                        header: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 0.0, bottom: 3),
+                            child: Text(
+                              "Vote on pull-up time",
+                              style:
+                                  TextStyle(color: Colors.blue, fontSize: 12),
+                            ),
+                          ),
+                        ),
+                        expanded: PullUpPoll(messageId, postId)),
+                  )
+                ],
+              ),
+            )
           ],
         ),
       ),

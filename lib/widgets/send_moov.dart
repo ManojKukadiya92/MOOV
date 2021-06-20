@@ -366,7 +366,10 @@ class _SendMOOVSearchState extends State<SendMOOVSearch>
                                                     (context, index) {
                                                       return _searchTerm
                                                                   .length >
-                                                              0
+                                                              0 && currSearchStuff1[
+                                                                          index]
+                                                                      .data[
+                                                                  "members"].contains(currentUser.id)
                                                           ? DisplayGroupResult(
                                                               groupName: currSearchStuff1[
                                                                           index]

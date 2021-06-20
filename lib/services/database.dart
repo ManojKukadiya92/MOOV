@@ -334,7 +334,8 @@ class Database {
           .get()
           .then((snapshot) {
         for (DocumentSnapshot ds in snapshot.docs) {
-          if (ds.data()['livePosts'].contains(postId)) {
+          print(ds.id);
+          if (ds.data()['livePosts'] != null && ds.data()['livePosts'].contains(postId)) {
             messagesRef
                 .doc(ds.id)
                 .collection("chat")
@@ -418,7 +419,8 @@ class Database {
           .get()
           .then((snapshot) {
         for (DocumentSnapshot ds in snapshot.docs) {
-          if (ds.data()['livePosts'].contains(postId)) {
+          print(ds);
+          if (ds.data()['livePosts'] != null && ds.data()['livePosts'].contains(postId)) {
             messagesRef
                 .doc(ds.id)
                 .collection("chat")
@@ -516,7 +518,7 @@ class Database {
           .get()
           .then((snapshot) {
         for (DocumentSnapshot ds in snapshot.docs) {
-          if (ds.data()['livePosts'].contains(postId)) {
+          if (ds.data()['livePosts'] != null && ds.data()['livePosts'].contains(postId)) {
             messagesRef
                 .doc(ds.id)
                 .collection("chat")
