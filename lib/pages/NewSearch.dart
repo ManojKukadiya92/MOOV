@@ -1,11 +1,11 @@
 import 'dart:async';
 
+import 'package:MOOV/friendGroups/OtherGroup.dart';
+import 'package:MOOV/friendGroups/group_detail.dart';
 import 'package:MOOV/helpers/common.dart';
 import 'package:MOOV/main.dart';
 import 'package:MOOV/pages/MessagesHub.dart';
-import 'package:MOOV/pages/OtherGroup.dart';
 import 'package:MOOV/pages/ProfilePageWithHeader.dart';
-import 'package:MOOV/pages/group_detail.dart';
 import 'package:MOOV/pages/home.dart';
 import 'package:MOOV/pages/other_profile.dart';
 import 'package:MOOV/pages/post_detail.dart';

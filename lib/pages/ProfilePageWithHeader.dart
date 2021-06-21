@@ -1,11 +1,10 @@
+import 'package:MOOV/friendGroups/friend_groups.dart';
 import 'package:MOOV/helpers/themes.dart';
 import 'package:MOOV/main.dart';
-import 'package:MOOV/models/user.dart';
 import 'package:MOOV/pages/Friends_List.dart';
 import 'package:MOOV/pages/HomePage.dart';
 import 'package:MOOV/pages/ProfilePage.dart';
 import 'package:MOOV/pages/SettingsPage.dart';
-import 'package:MOOV/pages/friend_groups.dart';
 import 'package:MOOV/pages/home.dart';
 import 'package:MOOV/pages/leaderboard.dart';
 import 'package:MOOV/pages/edit_profile.dart';
@@ -25,8 +24,6 @@ class _ProfilePageWithHeaderState extends State<ProfilePageWithHeader> {
   @override
   Widget build(BuildContext context) {
     var strUserPic = currentUser.photoUrl;
-    var userYear = currentUser.year;
-    var userDorm = currentUser.dorm;
     var userBio;
     var userHeader = currentUser.header;
     var userFriends = currentUser.friendArray;
@@ -46,7 +43,7 @@ class _ProfilePageWithHeaderState extends State<ProfilePageWithHeader> {
               if (!snapshot.hasData) return CircularProgressIndicator();
               userBio = snapshot.data['bio'];
               int score = snapshot.data['score'];
-              userDorm = snapshot.data['dorm'];
+              var userDorm = snapshot.data['dorm'];
               userHeader = snapshot.data['header'];
               strUserPic = snapshot.data['photoUrl'];
               verifiedStatus = snapshot.data['verifiedStatus'];

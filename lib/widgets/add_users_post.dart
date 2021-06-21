@@ -1,10 +1,10 @@
 import 'dart:async';
+import 'package:MOOV/friendGroups/OtherGroup.dart';
+import 'package:MOOV/friendGroups/group_detail.dart';
 import 'package:MOOV/main.dart';
 import 'package:MOOV/pages/HomePage.dart';
 import 'package:MOOV/pages/MessagesHub.dart';
 import 'package:MOOV/pages/NewSearch.dart';
-import 'package:MOOV/pages/OtherGroup.dart';
-import 'package:MOOV/pages/group_detail.dart';
 import 'package:MOOV/pages/home.dart';
 import 'package:MOOV/services/database.dart';
 import 'package:MOOV/utils/themes_styles.dart';

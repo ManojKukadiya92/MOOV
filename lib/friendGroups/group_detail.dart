@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:ui';
+import 'package:MOOV/friendGroups/groupCalendar.dart';
 import 'package:MOOV/helpers/size_config.dart';
 import 'package:MOOV/helpers/themes.dart';
 import 'package:MOOV/main.dart';
@@ -7,15 +8,11 @@ import 'package:MOOV/pages/HomePage.dart';
 import 'package:MOOV/pages/ProfilePageWithHeader.dart';
 import 'package:MOOV/pages/notification_feed_group.dart';
 import 'package:MOOV/pages/other_profile.dart';
-import 'package:MOOV/pages/post_detail.dart';
 import 'package:MOOV/widgets/NextMOOV.dart';
 import 'package:MOOV/widgets/add_users_post.dart';
-import 'package:MOOV/widgets/chat.dart';
 import 'package:MOOV/widgets/pointAnimation.dart';
-import 'package:MOOV/widgets/progress.dart';
 import 'package:MOOV/widgets/set_moov.dart';
 import 'package:animated_widgets/animated_widgets.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:focused_menu/focused_menu.dart';
@@ -27,12 +24,11 @@ import 'package:page_transition/page_transition.dart';
 import 'package:share/share.dart';
 import 'package:worm_indicator/indicator.dart';
 import 'package:worm_indicator/shape.dart';
-import '../widgets/add_users_group.dart';
-import 'edit_group.dart';
-import 'home.dart';
+import '../friendGroups/edit_group.dart';
+import 'package:MOOV/pages/home.dart';
 
 class GroupDetail extends StatefulWidget {
-  String gid;
+  final String gid;
 
   GroupDetail(this.gid);
 
@@ -447,6 +443,11 @@ class _GroupDetailState extends State<GroupDetail> {
                                   ])),
                                 ]),
                                 Column(children: [
+                                  SizedBox(
+                                    height: 500,
+                                    width: MediaQuery.of(context).size.width,
+                                    child: TableEventsExample()),
+                                  Text("CALENDAR HERE"),
                                   Padding(
                                     padding: const EdgeInsets.only(top: 20.0),
                                     child: Text(
@@ -502,40 +503,46 @@ class _GroupDetailState extends State<GroupDetail> {
                                     padding: const EdgeInsets.only(top: 0.0),
                                     child: Column(
                                       children: [
-                                        Text("Talk about it",
-                                            style: TextStyle(
-                                                color: TextThemes.ndBlue,
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.bold)),
-                                        SizedBox(height: 10),
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              border: Border.all(
-                                                  color: TextThemes.ndBlue),
-                                              borderRadius:
-                                                  BorderRadius.circular(10.0),
-                                            ),
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(2.0),
-                                              child: Chat(
-                                                directMessageId: " ",
-                                                gid: gid,
-                                                isGroupChat: true,
-                                                members: members,
-                                                sendingPost: {},
-                                              ),
-                                            ),
-                                          ),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Text("Talk about it ",
+                                                style: TextStyle(
+                                                    color: TextThemes.ndBlue,
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.bold)),
+                                                    Icon(Icons.arrow_drop_down, color: TextThemes.ndBlue),
+                                          ],
                                         ),
+                                        // SizedBox(height: 10),
+                                        // Padding(
+                                        //   padding: const EdgeInsets.all(8.0),
+                                        //   child: Container(
+                                        //     decoration: BoxDecoration(
+                                        //       border: Border.all(
+                                        //           color: TextThemes.ndBlue),
+                                        //       borderRadius:
+                                        //           BorderRadius.circular(10.0),
+                                        //     ),
+                                        //     child: Padding(
+                                        //       padding:
+                                        //           const EdgeInsets.all(2.0),
+                                        //       child: Chat(
+                                        //         directMessageId: " ",
+                                        //         gid: gid,
+                                        //         isGroupChat: true,
+                                        //         members: members,
+                                        //         sendingPost: {},
+                                        //       ),
+                                        //     ),
+                                        //   ),
+                                        // ),
                                       ],
                                     ),
                                   ),
-                                  SizedBox(
-                                    height: 50,
-                                  )
+                                  // SizedBox(
+                                  //   height: 50,
+                                  // )
                                 ])
                               ],
                             ),

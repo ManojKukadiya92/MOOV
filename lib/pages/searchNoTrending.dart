@@ -1,19 +1,15 @@
+import 'package:MOOV/friendGroups/group_detail.dart';
 import 'package:MOOV/models/user.dart';
-import 'package:MOOV/pages/HomePage.dart';
-import 'package:MOOV/pages/group_detail.dart';
 import 'package:MOOV/pages/home.dart';
 import 'package:MOOV/pages/leaderboard.dart';
 import 'package:MOOV/pages/notification_feed.dart';
 import 'package:MOOV/pages/post_detail.dart';
-import 'package:MOOV/widgets/trending_segment.dart';
 import 'package:MOOV/utils/themes_styles.dart';
 import 'package:MOOV/widgets/progress.dart';
-import 'package:MOOV/widgets/trending_segment.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import 'ProfilePageWithHeader.dart';

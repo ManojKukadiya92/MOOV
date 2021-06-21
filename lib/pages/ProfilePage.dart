@@ -1,9 +1,9 @@
+import 'package:MOOV/friendGroups/friend_groups.dart';
 import 'package:MOOV/helpers/themes.dart';
 import 'package:MOOV/main.dart';
 import 'package:MOOV/models/user.dart';
 import 'package:MOOV/pages/Friends_List.dart';
 import 'package:MOOV/pages/SettingsPage.dart';
-import 'package:MOOV/pages/friend_groups.dart';
 import 'package:MOOV/pages/home.dart';
 import 'package:MOOV/pages/leaderboard.dart';
 import 'package:MOOV/pages/edit_profile.dart';

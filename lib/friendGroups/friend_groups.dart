@@ -1,6 +1,7 @@
+import 'package:MOOV/friendGroups/group_detail.dart';
 import 'package:MOOV/main.dart';
 import 'package:MOOV/pages/MOOVSPage.dart';
-import 'package:MOOV/pages/group_detail.dart';
+import 'package:MOOV/pages/create_group.dart';
 import 'package:MOOV/pages/home.dart';
 import 'package:MOOV/searchWidgets/interestCommunityDetail.dart';
 import 'package:MOOV/searchWidgets/interestCommunityMaker.dart';
@@ -12,7 +13,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shimmer/shimmer.dart';
-import 'create_group.dart';
 
 class FriendGroupsPage extends StatefulWidget {
   @override
@@ -80,8 +80,8 @@ class _FriendGroupsState extends State<FriendGroupsPage> {
                     .where('members', arrayContains: currentUser.id)
                     .snapshots(),
             builder: (context, snapshot) {
-              if (!snapshot.hasData) return CircularProgressIndicator();
-              if (snapshot.data.docs.length == 0) {
+              if (!snapshot.hasData) return Container();
+              if (snapshot.data.docs.length == 0 && selectedIndex == 0) {
                 return Container(
                   child: Center(
                       child: Column(

@@ -1,11 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
-
+import 'package:MOOV/friendGroups/friend_groups.dart';
 import 'package:MOOV/main.dart';
-import 'package:MOOV/pages/friend_groups.dart';
 import 'package:MOOV/pages/home.dart';
-import 'package:MOOV/pages/other_profile.dart';
 import 'package:MOOV/services/database.dart';
 import 'package:MOOV/utils/themes_styles.dart';
 import 'package:MOOV/widgets/add_users_post.dart';
@@ -13,7 +11,6 @@ import 'package:MOOV/widgets/camera.dart';
 import 'package:MOOV/widgets/progress.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';

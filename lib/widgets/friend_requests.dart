@@ -1,26 +1,17 @@
-import 'package:MOOV/main.dart';
-import 'package:MOOV/pages/OtherGroup.dart';
-import 'package:MOOV/pages/group_detail.dart';
 import 'package:MOOV/pages/home.dart';
 import 'package:MOOV/pages/other_profile.dart';
-import 'package:MOOV/services/database.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:MOOV/helpers/themes.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:MOOV/pages/ProfilePageWithHeader.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FriendRequests extends StatefulWidget {
-  TextEditingController searchController = TextEditingController();
   final id;
 
   FriendRequests({this.id});
 
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return FriendsListState(this.id);
   }
 }
@@ -32,10 +23,9 @@ class FriendsListState extends State<FriendRequests> {
 
   FriendsListState(this.id);
 
+
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-
     return StreamBuilder(
         stream: usersRef
             .where("id", whereIn: currentUser.friendRequests)

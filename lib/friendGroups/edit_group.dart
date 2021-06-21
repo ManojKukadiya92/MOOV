@@ -13,7 +13,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:MOOV/services/database.dart';
-import 'home.dart';
+import '../pages/home.dart';
 
 class EditGroup extends StatefulWidget {
   final String photoUrl, displayName, gid;

@@ -1,23 +1,17 @@
-import 'dart:ffi';
-
+import 'package:MOOV/friendGroups/group_detail.dart';
 import 'package:MOOV/main.dart';
 import 'package:MOOV/pages/HomePage.dart';
 import 'package:MOOV/pages/NewSearch.dart';
-import 'package:MOOV/pages/ProfilePage.dart';
 import 'package:MOOV/pages/ProfilePageWithHeader.dart';
 import 'package:MOOV/pages/other_profile.dart';
 import 'package:MOOV/pages/post_detail.dart';
-import 'package:MOOV/services/database.dart';
 import 'package:MOOV/utils/themes_styles.dart';
-import 'package:MOOV/widgets/friend_requests.dart';
 import 'package:MOOV/widgets/progress.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
-import 'package:http/http.dart';
-import 'group_detail.dart';
 import 'home.dart';
 import 'package:timeago/timeago.dart' as timeago;
 

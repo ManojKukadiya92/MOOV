@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:collection';
 import 'dart:ui';
+import 'package:MOOV/friendGroups/OtherGroup.dart';
+import 'package:MOOV/friendGroups/group_detail.dart';
 import 'package:MOOV/helpers/themes.dart';
-import 'package:MOOV/pages/OtherGroup.dart';
 import 'package:MOOV/pages/ProfilePageWithHeader.dart';
-import 'package:MOOV/pages/group_detail.dart';
 import 'package:MOOV/pages/home.dart';
 import 'package:MOOV/pages/other_profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

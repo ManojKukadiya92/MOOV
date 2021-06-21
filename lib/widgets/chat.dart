@@ -1133,7 +1133,7 @@ class _CommentState extends State<Comment> {
                                                         type: BubbleType
                                                             .sendBubble),
                                                     backGroundColor:
-                                                        Colors.blue[200],
+                                                        Colors.blue[400],
                                                     margin:
                                                         EdgeInsets.only(top: 5),
                                                     child: Container(
@@ -1145,7 +1145,7 @@ class _CommentState extends State<Comment> {
                                                                   .width *
                                                               0.7,
                                                         ),
-                                                        child: Text(comment))),
+                                                        child: Text(comment, style: TextStyle(color: Colors.white)))),
                                                 Positioned(
                                                     right: comment.length < 25
                                                         ? comment.length
