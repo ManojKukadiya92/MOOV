@@ -267,13 +267,11 @@ class _GroupFormState extends State<GroupForm> {
                             _image != null
                                 ? Container(
                                     height: 200,
-                                    width: 200,
+                                    width: MediaQuery.of(context).size.width,
                                     child:
                                         Image.file(_image, fit: BoxFit.cover),
                                     margin: EdgeInsets.only(
-                                        left: 20,
                                         top: 0,
-                                        right: 20,
                                         bottom: 7.5),
                                     decoration: BoxDecoration(
                                       color: Colors.white,

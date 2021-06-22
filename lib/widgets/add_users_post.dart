@@ -612,54 +612,32 @@ class _AddUsersFromCreateGroupState extends State<AddUsersFromCreateGroup>
           ),
           backgroundColor: Colors.white,
           body: _searchTerm == null
-              ? Container(
-                  height: MediaQuery.of(context).size.height,
-                  child: Container(
-                    height: MediaQuery.of(context).size.height,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Colors.pink[300], Colors.pink[200]],
-                        begin: Alignment.centerLeft,
-                        end: Alignment.centerRight,
-                      ),
-                    ),
-                    child: Center(
-                      child: ListView(
-                        children: [
-                          SizedBox(height: 50),
-                          Padding(
-                              padding: const EdgeInsets.only(bottom: 50),
-                              child: RichText(
-                                  textAlign: TextAlign.center,
-                                  text: TextSpan(
-                                      style: TextThemes.mediumbody,
-                                      children: [
-                                        TextSpan(
-                                            text: "Invite the squad,",
-                                            style: TextStyle(
-                                                fontSize: 30,
-                                                fontWeight:
-                                                    FontWeight.w300)),
-                                        TextSpan(
-                                            text: " now",
-                                            style: TextStyle(
-                                                fontSize: 30,
-                                                fontWeight:
-                                                    FontWeight.w600)),
-                                        TextSpan(
-                                            text: ".",
-                                            style: TextStyle(
-                                                fontSize: 30,
-                                                fontWeight:
-                                                    FontWeight.w300))
-                                      ]))),
-                          Padding(
-                              padding: EdgeInsets.only(bottom: 250),
-                              child: Image.asset('lib/assets/ff.png'))
-                        ],
-                      ),
-                    ),
-                  ))
+              ? FutureBuilder(
+                  future: usersRef.get(),
+                  builder: (context, snapshot0) {
+                    if (!snapshot0.hasData) {
+                      return Container();
+                    }
+                    return CustomScrollView(
+                      shrinkWrap: true,
+                      slivers: <Widget>[
+                        SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) {
+                              return UserPostResult(
+                                  snapshot0.data.docs[index]["displayName"],
+                                  snapshot0.data.docs[index]["email"],
+                                  snapshot0.data.docs[index]["photoUrl"],
+                                  snapshot0.data.docs[index]["id"],
+                                  snapshot0.data.docs[index]["verifiedStatus"],
+                                  invitees);
+                            },
+                            childCount: snapshot0.data.docs.length ?? 0,
+                          ),
+                        ),
+                      ],
+                    );
+                  })
               : StreamBuilder<List<AlgoliaObjectSnapshot>>(
                   stream: Stream.fromFuture(_operation(_searchTerm)),
                   builder: (context, snapshot0) {
@@ -1033,20 +1011,17 @@ class _SearchUsersGroupState extends State<SearchUsersGroup> {
                                               text: "Squad",
                                               style: TextStyle(
                                                   fontSize: 30,
-                                                  fontWeight:
-                                                      FontWeight.w300)),
+                                                  fontWeight: FontWeight.w300)),
                                           TextSpan(
                                               text: " up",
                                               style: TextStyle(
                                                   fontSize: 30,
-                                                  fontWeight:
-                                                      FontWeight.w600)),
+                                                  fontWeight: FontWeight.w600)),
                                           TextSpan(
                                               text: ".",
                                               style: TextStyle(
                                                   fontSize: 30,
-                                                  fontWeight:
-                                                      FontWeight.w300))
+                                                  fontWeight: FontWeight.w300))
                                         ]))),
                             Image.asset('lib/assets/ff.png')
                           ],
@@ -1597,8 +1572,7 @@ class _SearchUsersMessageState extends State<SearchUsersMessage> {
             )
           : null,
       backgroundColor: Colors.white,
-      body: ListView(
-        children: <Widget>[
+      body: ListView(children: <Widget>[
         TextField(
             style: TextStyle(fontSize: 20),
             controller: searchController,
@@ -1633,7 +1607,6 @@ class _SearchUsersMessageState extends State<SearchUsersMessage> {
         StreamBuilder<List<AlgoliaObjectSnapshot>>(
             stream: Stream.fromFuture(_operation(_searchTerm)),
             builder: (context, snapshot) {
-
               if (!snapshot.hasData || _searchTerm == null)
                 return FutureBuilder(
                     future: usersRef.get(),
@@ -1661,11 +1634,9 @@ class _SearchUsersMessageState extends State<SearchUsersMessage> {
                         ],
                       );
                     });
-                  List<AlgoliaObjectSnapshot> currSearchStuff = snapshot.data;
-
+              List<AlgoliaObjectSnapshot> currSearchStuff = snapshot.data;
 
               switch (snapshot.connectionState) {
-                
                 case ConnectionState.waiting:
                   return Container();
                 default:
