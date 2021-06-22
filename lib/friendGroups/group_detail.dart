@@ -98,11 +98,17 @@ class _GroupDetailState extends State<GroupDetail> {
     setState(() {});
   }
 
-  ///these are for adding the suggested MOOV details
-  ///to the calendar
-  List suggestedMOOVDates = [];
-  Map suggestedMOOVDetails = {};
-  List moovsInEachDay = [];
+  String firstNamer(String fullName) {
+    List<String> tempList = fullName.split(" ");
+    int start = 0;
+    int end = tempList.length;
+    if (end > 1) {
+      end = 1;
+    }
+    final selectedWords = tempList.sublist(start, end);
+    String firstName = selectedWords.join(" ");
+    return firstName;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -314,7 +320,7 @@ class _GroupDetailState extends State<GroupDetail> {
                               children: [
                                 Stack(children: [
                                   Container(
-                                      height: 200,
+                                      height: 120,
                                       width: MediaQuery.of(context).size.width,
                                       child: Image.network(
                                         groupPic,
@@ -325,7 +331,7 @@ class _GroupDetailState extends State<GroupDetail> {
                                   Container(
                                       child: Column(children: [
                                     Container(
-                                      height: 200,
+                                      height: 120,
                                       child: ListView.builder(
                                           scrollDirection: Axis.horizontal,
                                           physics:
@@ -335,11 +341,15 @@ class _GroupDetailState extends State<GroupDetail> {
                                             DocumentSnapshot course =
                                                 snapshot2.data;
 
+                                            String name = firstNamer(snapshot
+                                                .data
+                                                .docs[index]['displayName']);
+
                                             return Padding(
                                               padding: const EdgeInsets.only(
-                                                  left: 8.0, right: 8),
+                                                  left: 3.0, right: 3),
                                               child: Container(
-                                                height: 200,
+                                                width: 80,
                                                 child: Column(
                                                   mainAxisAlignment:
                                                       MainAxisAlignment.start,
@@ -349,7 +359,7 @@ class _GroupDetailState extends State<GroupDetail> {
                                                     Padding(
                                                       padding:
                                                           const EdgeInsets.only(
-                                                              top: 30.0,
+                                                              top: 15.0,
                                                               bottom: 10),
                                                       child: GestureDetector(
                                                         onTap: () {
@@ -375,7 +385,7 @@ class _GroupDetailState extends State<GroupDetail> {
                                                           }
                                                         },
                                                         child: CircleAvatar(
-                                                          radius: 54,
+                                                          radius: 30,
                                                           backgroundColor:
                                                               TextThemes.ndGold,
                                                           child: CircleAvatar(
@@ -387,7 +397,7 @@ class _GroupDetailState extends State<GroupDetail> {
                                                                             .docs[
                                                                         index][
                                                                     'photoUrl']),
-                                                            radius: 50,
+                                                            radius: 27,
                                                           ),
                                                         ),
                                                       ),
@@ -422,9 +432,13 @@ class _GroupDetailState extends State<GroupDetail> {
                                                               const EdgeInsets
                                                                   .all(4.0),
                                                           child: Text(
-                                                            snapshot.data
-                                                                    .docs[index]
-                                                                ['displayName'],
+                                                            name,
+                                                            maxLines: 1,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                            textAlign: TextAlign
+                                                                .center,
                                                             style: TextStyle(
                                                                 fontFamily:
                                                                     'Solway',
@@ -433,7 +447,7 @@ class _GroupDetailState extends State<GroupDetail> {
                                                                         .bold,
                                                                 color: Colors
                                                                     .white,
-                                                                fontSize: 16.0),
+                                                                fontSize: 14.0),
                                                           ),
                                                         ),
                                                       ),
@@ -484,29 +498,36 @@ class _GroupDetailState extends State<GroupDetail> {
 
                                           data.add(moov);
                                           eventsDataMap = groupBy(
-                                              data, (obj) => obj.startDate.toDate());
+                                              data,
+                                              (obj) =>
+                                                  obj.startDate.toDate().day);
+                                          eventsDataMap = groupBy(
+                                              data,
+                                              (obj) => DateTime(
+                                                  obj.startDate.toDate().year,
+                                                  obj.startDate.toDate().month,
+                                                  obj.startDate.toDate().day));
                                         }
                                         print(eventsDataMap);
 
                                         return SizedBox(
-                                            height: 500,
+                                            height: 400,
                                             width: MediaQuery.of(context)
                                                 .size
                                                 .width,
                                             child: TableEventsExample(
                                                 eventsDataMap));
                                       }),
-                                  Text("CALENDAR HERE"),
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 20.0),
-                                    child: Text(
-                                      "NEXT MOOV",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
+                                  // Padding(
+                                  //   padding: const EdgeInsets.only(top: 20.0),
+                                  //   child: Text(
+                                  //     "NEXT MOOV",
+                                  //     textAlign: TextAlign.center,
+                                  //     style: TextStyle(
+                                  //         fontSize: 20,
+                                  //         fontWeight: FontWeight.bold),
+                                  //   ),
+                                  // ),
                                   // Suggestions(gid),
                                   Padding(
                                     padding: const EdgeInsets.all(20),
@@ -774,7 +795,7 @@ class _GroupDetailState extends State<GroupDetail> {
                                                   }
                                                 },
                                                 child: CircleAvatar(
-                                                  radius: 54,
+                                                  radius: 30,
                                                   backgroundColor:
                                                       TextThemes.ndGold,
                                                   child: CircleAvatar(
@@ -785,7 +806,7 @@ class _GroupDetailState extends State<GroupDetail> {
                                                                 .data
                                                                 .docs[index]
                                                             ['photoUrl']),
-                                                    radius: 50,
+                                                    radius: 26,
                                                   ),
                                                 ),
                                               ),

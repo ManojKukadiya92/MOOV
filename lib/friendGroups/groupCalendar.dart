@@ -1,8 +1,12 @@
 import 'dart:collection';
 
+import 'package:MOOV/pages/post_detail.dart';
+import 'package:animations/animations.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:intl/intl.dart';
 
 class Event {
   final String title, postId, pic;
@@ -19,7 +23,6 @@ class Event {
 /// Example events.
 ///
 /// Using a [LinkedHashMap] is highly recommended if you decide to use a map.
-
 
 final _kEventSource = {
   DateTime.now(): [
@@ -85,14 +88,14 @@ class _TableEventsExampleState extends State<TableEventsExample> {
   }
 
   List<Event> _getEventsForDay(DateTime day) {
-
-    Map<DateTime, List<Event>> myMap = Map<DateTime, List<Event>>.from(widget.eventsDataMap);
+    Map<DateTime, List<Event>> myMap =
+        Map<DateTime, List<Event>>.from(widget.eventsDataMap);
 
     // Implementation example
     final kEvents = LinkedHashMap<DateTime, List<Event>>(
-  equals: isSameDay,
-  hashCode: getHashCode,
-)..addAll(myMap);
+      equals: isSameDay,
+      hashCode: getHashCode,
+    )..addAll(myMap);
     return kEvents[day] ?? [];
   }
 
@@ -178,23 +181,161 @@ class _TableEventsExampleState extends State<TableEventsExample> {
               return ListView.builder(
                 itemCount: value.length,
                 itemBuilder: (context, index) {
-                  return Container(
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 12.0,
-                      vertical: 4.0,
-                    ),
-                    decoration: BoxDecoration(
-                      border: Border.all(),
-                      borderRadius: BorderRadius.circular(12.0),
-                    ),
-                    child: ListTile(
-                      onTap: () => print('${value[index]}'),
-                      title: Text('${value[index]}'),
-                    ),
-                  );
+                  return CalendarMOOV(value[index]);
+                  // return Container(
+                  //   margin: const EdgeInsets.symmetric(
+                  //     horizontal: 12.0,
+                  //     vertical: 4.0,
+                  //   ),
+                  //   decoration: BoxDecoration(
+                  //     border: Border.all(),
+                  //     borderRadius: BorderRadius.circular(12.0),
+                  //   ),
+                  //   child: ListTile(
+                  //     onTap: () => print('${value[index]}'),
+                  //     title: Text('${value[index]}'),
+                  //   ),
+                  // );
                 },
               );
             },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class CalendarMOOV extends StatelessWidget {
+  final Event event;
+  const CalendarMOOV(this.event);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: Column(
+            children: [
+              Text(
+                DateFormat('h:mm').format(event.startDate.toDate()) +
+                    "\n" +
+                    DateFormat('a').format(event.startDate.toDate()),
+                style: TextStyle(fontWeight: FontWeight.w600),
+                textAlign: TextAlign.center,
+              )
+            ],
+          ),
+        ),
+        Expanded(
+          child: Container(
+            margin: const EdgeInsets.symmetric(
+              horizontal: 12.0,
+              vertical: 4.0,
+            ),
+            decoration: BoxDecoration(
+              border: Border.all(),
+              borderRadius: BorderRadius.circular(12.0),
+            ),
+            child: ListTile(
+                trailing: Transform.translate(
+                  offset: Offset(16, 10),
+                  child: SizedBox(
+                    height: 50,
+                    width: 72,
+                    child: Row(
+                      children: [
+                        Icon(Icons.directions_run, color: Colors.green),
+                        Icon(Icons.accessibility, color: Colors.yellow[600]),
+                        Icon(Icons.directions_walk, color: Colors.red)
+                      ],
+                    ),
+                  ),
+                ),
+                onTap: () => print(event.postId),
+                // title: Text(event.toString()),
+                leading: Transform.translate(
+                  offset: Offset(-16, 0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    height: 56,
+                    width: 120,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      child: OpenContainer(
+                        openElevation: 10,
+                        transitionType: ContainerTransitionType.fade,
+                        transitionDuration: Duration(milliseconds: 500),
+                        openBuilder: (context, _) => PostDetail(""),
+                        closedElevation: 0,
+                        closedBuilder: (context, _) => Stack(children: <Widget>[
+                          FractionallySizedBox(
+                            widthFactor: 1,
+                            child: Container(
+                              child: Container(
+                                child: CachedNetworkImage(
+                                  imageUrl: event.pic,
+                                  fit: BoxFit.cover,
+                                ),
+                                decoration: BoxDecoration(
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.5),
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(10),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(0),
+                            child: Align(
+                              alignment: Alignment.center,
+                              child: Container(
+                                alignment: Alignment(0.0, 0.0),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(0)),
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
+                                      colors: <Color>[
+                                        Colors.black.withAlpha(0),
+                                        Colors.black,
+                                        Colors.black12,
+                                      ],
+                                    ),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: Text(
+                                      event.title,
+                                      style: TextStyle(
+                                          fontFamily: 'Solway',
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                          fontSize: 12),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ]),
+                      ),
+                    ),
+                  ),
+                )),
           ),
         ),
       ],
