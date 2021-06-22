@@ -1,12 +1,16 @@
 import 'dart:collection';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class Event {
-  final String title;
+  final String title, postId, pic;
+  final Map groupStatuses;
+  final Timestamp startDate;
 
-  const Event(this.title);
+  const Event(
+      this.title, this.postId, this.pic, this.groupStatuses, this.startDate);
 
   @override
   String toString() => title;
@@ -15,21 +19,22 @@ class Event {
 /// Example events.
 ///
 /// Using a [LinkedHashMap] is highly recommended if you decide to use a map.
-final kEvents = LinkedHashMap<DateTime, List<Event>>(
-  equals: isSameDay,
-  hashCode: getHashCode,
-)..addAll(_kEventSource);
 
-final _kEventSource = Map.fromIterable(List.generate(50, (index) => index),
-    key: (item) => DateTime.utc(2020, 10, item * 5),
-    value: (item) => List.generate(
-        item % 4 + 1, (index) => Event('Event $item | ${index + 1}')))
-  ..addAll({
-    DateTime.now(): [
-      Event('Today\'s Event 1'),
-      Event('Today\'s Event 2'),
-    ],
-  });
+
+final _kEventSource = {
+  DateTime.now(): [
+    Event('Today\'s Event 1e', "", "", {}, Timestamp.now()),
+    // Event('Today\'s Event 2'),
+    Event('Today\'s Event 2e', "", "", {}, Timestamp.now()),
+  ],
+  // DateTime.now(): [
+  //   // Event('Today\'s Event 2'),
+  // ],
+  // DateTime.now().add(Duration(days: 1)): [
+  //   Event('Today\'s Event 1ef'),
+  //   Event('Today\'s Event 2'),
+  // ]
+};
 
 int getHashCode(DateTime key) {
   return key.day * 1000000 + key.month * 10000 + key.year;
@@ -48,125 +53,9 @@ final kNow = DateTime.now();
 final kFirstDay = DateTime.now();
 final kLastDay = DateTime(kNow.year, kNow.month + 3, kNow.day);
 
-class StartPage extends StatefulWidget {
-  @override
-  _StartPageState createState() => _StartPageState();
-}
-
-class _StartPageState extends State<StartPage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('TableCalendar Example'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const SizedBox(height: 20.0),
-            ElevatedButton(
-              child: Text('Basics'),
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => TableBasicsExample()),
-              ),
-            ),
-            const SizedBox(height: 12.0),
-            // ElevatedButton(
-            //   child: Text('Range Selection'),
-            //   onPressed: () => Navigator.push(
-            //     context,
-            //     MaterialPageRoute(builder: (_) => TableRangeExample()),
-            //   ),
-            // ),
-            // const SizedBox(height: 12.0),
-            ElevatedButton(
-              child: Text('Events'),
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => TableEventsExample()),
-              ),
-            ),
-            // const SizedBox(height: 12.0),
-            // ElevatedButton(
-            //   child: Text('Multiple Selection'),
-            //   onPressed: () => Navigator.push(
-            //     context,
-            //     MaterialPageRoute(builder: (_) => TableMultiExample()),
-            //   ),
-            // ),
-            // const SizedBox(height: 12.0),
-            // ElevatedButton(
-            //   child: Text('Complex'),
-            //   onPressed: () => Navigator.push(
-            //     context,
-            //     MaterialPageRoute(builder: (_) => TableComplexExample()),
-            //   ),
-            // ),
-            // const SizedBox(height: 20.0),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class TableBasicsExample extends StatefulWidget {
-  @override
-  _TableBasicsExampleState createState() => _TableBasicsExampleState();
-}
-
-class _TableBasicsExampleState extends State<TableBasicsExample> {
-  CalendarFormat _calendarFormat = CalendarFormat.week;
-  DateTime _focusedDay = DateTime.now();
-  DateTime _selectedDay;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('TableCalendar - Basics'),
-      ),
-      body: TableCalendar(
-        firstDay: kFirstDay,
-        lastDay: kLastDay,
-        focusedDay: _focusedDay,
-        calendarFormat: _calendarFormat,
-        selectedDayPredicate: (day) {
-          // Use `selectedDayPredicate` to determine which day is currently selected.
-          // If this returns true, then `day` will be marked as selected.
-
-          // Using `isSameDay` is recommended to disregard
-          // the time-part of compared DateTime objects.
-          return isSameDay(_selectedDay, day);
-        },
-        onDaySelected: (selectedDay, focusedDay) {
-          if (!isSameDay(_selectedDay, selectedDay)) {
-            // Call `setState()` when updating the selected day
-            setState(() {
-              _selectedDay = selectedDay;
-              _focusedDay = focusedDay;
-            });
-          }
-        },
-        onFormatChanged: (format) {
-          if (_calendarFormat != format) {
-            // Call `setState()` when updating calendar format
-            setState(() {
-              _calendarFormat = format;
-            });
-          }
-        },
-        onPageChanged: (focusedDay) {
-          _focusedDay = focusedDay;
-        },
-      ),
-    );
-  }
-}
-
 class TableEventsExample extends StatefulWidget {
+  final Map eventsDataMap;
+  TableEventsExample(this.eventsDataMap);
   @override
   _TableEventsExampleState createState() => _TableEventsExampleState();
 }
@@ -196,7 +85,14 @@ class _TableEventsExampleState extends State<TableEventsExample> {
   }
 
   List<Event> _getEventsForDay(DateTime day) {
+
+    Map<DateTime, List<Event>> myMap = Map<DateTime, List<Event>>.from(widget.eventsDataMap);
+
     // Implementation example
+    final kEvents = LinkedHashMap<DateTime, List<Event>>(
+  equals: isSameDay,
+  hashCode: getHashCode,
+)..addAll(myMap);
     return kEvents[day] ?? [];
   }
 

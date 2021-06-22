@@ -8,11 +8,8 @@ import 'package:MOOV/pages/HomePage.dart';
 import 'package:MOOV/pages/ProfilePageWithHeader.dart';
 import 'package:MOOV/pages/notification_feed_group.dart';
 import 'package:MOOV/pages/other_profile.dart';
-import 'package:MOOV/widgets/NextMOOV.dart';
 import 'package:MOOV/widgets/add_users_post.dart';
-import 'package:MOOV/widgets/pointAnimation.dart';
 import 'package:MOOV/widgets/set_moov.dart';
-import 'package:animated_widgets/animated_widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:focused_menu/focused_menu.dart';
@@ -22,10 +19,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:MOOV/services/database.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:share/share.dart';
-import 'package:worm_indicator/indicator.dart';
-import 'package:worm_indicator/shape.dart';
 import '../friendGroups/edit_group.dart';
 import 'package:MOOV/pages/home.dart';
+import 'package:intl/intl.dart';
+import 'package:collection/collection.dart';
 
 class GroupDetail extends StatefulWidget {
   final String gid;
@@ -100,6 +97,12 @@ class _GroupDetailState extends State<GroupDetail> {
     refreshData();
     setState(() {});
   }
+
+  ///these are for adding the suggested MOOV details
+  ///to the calendar
+  List suggestedMOOVDates = [];
+  Map suggestedMOOVDetails = {};
+  List moovsInEachDay = [];
 
   @override
   Widget build(BuildContext context) {
@@ -313,11 +316,12 @@ class _GroupDetailState extends State<GroupDetail> {
                                   Container(
                                       height: 200,
                                       width: MediaQuery.of(context).size.width,
-                                      child: Image.network(groupPic,
-                                          fit: BoxFit.cover,
-                                          color: Colors.black26,
-                                          colorBlendMode: BlendMode.darken,
-                                          )),
+                                      child: Image.network(
+                                        groupPic,
+                                        fit: BoxFit.cover,
+                                        color: Colors.black26,
+                                        colorBlendMode: BlendMode.darken,
+                                      )),
                                   Container(
                                       child: Column(children: [
                                     Container(
@@ -443,10 +447,55 @@ class _GroupDetailState extends State<GroupDetail> {
                                   ])),
                                 ]),
                                 Column(children: [
-                                  SizedBox(
-                                    height: 500,
-                                    width: MediaQuery.of(context).size.width,
-                                    child: TableEventsExample()),
+                                  FutureBuilder(
+                                      future: groupsRef
+                                          .doc(gid)
+                                          .collection('suggestedMOOVs')
+                                          .get(),
+                                      builder: (context, snapshotSuggest) {
+                                        if (!snapshotSuggest.hasData) {
+                                          return Container();
+                                        }
+
+                                        List<Event> data = [];
+                                        Map eventsDataMap = {};
+
+                                        for (int i = 0;
+                                            i <
+                                                snapshotSuggest
+                                                    .data.docs.length;
+                                            i++) {
+                                          String day = DateFormat('MMMd')
+                                              .format(snapshotSuggest
+                                                  .data.docs[i]['startDate']
+                                                  .toDate());
+
+                                          Event moov = Event(
+                                              snapshotSuggest.data.docs[i]
+                                                  ['title'],
+                                              snapshotSuggest.data.docs[i]
+                                                  ['postId'],
+                                              snapshotSuggest.data.docs[i]
+                                                  ['pic'],
+                                              snapshotSuggest.data.docs[i]
+                                                  ['groupStatuses'],
+                                              snapshotSuggest.data.docs[i]
+                                                  ['startDate']);
+
+                                          data.add(moov);
+                                          eventsDataMap = groupBy(
+                                              data, (obj) => obj.startDate.toDate());
+                                        }
+                                        print(eventsDataMap);
+
+                                        return SizedBox(
+                                            height: 500,
+                                            width: MediaQuery.of(context)
+                                                .size
+                                                .width,
+                                            child: TableEventsExample(
+                                                eventsDataMap));
+                                      }),
                                   Text("CALENDAR HERE"),
                                   Padding(
                                     padding: const EdgeInsets.only(top: 20.0),
@@ -458,7 +507,7 @@ class _GroupDetailState extends State<GroupDetail> {
                                           fontWeight: FontWeight.bold),
                                     ),
                                   ),
-                                  Suggestions(gid),
+                                  // Suggestions(gid),
                                   Padding(
                                     padding: const EdgeInsets.all(20),
                                     child: RaisedButton(
@@ -471,8 +520,9 @@ class _GroupDetailState extends State<GroupDetail> {
                                                     child: SearchSetMOOV(
                                                         members: members,
                                                         groupId: gid,
-                                                        groupName: snapshot2.data[
-                                                            'groupName'])))
+                                                        groupName:
+                                                            snapshot2.data[
+                                                                'groupName'])))
                                             .then(onGoBack);
                                       },
                                       color: TextThemes.ndBlue,
@@ -504,14 +554,17 @@ class _GroupDetailState extends State<GroupDetail> {
                                     child: Column(
                                       children: [
                                         Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
                                           children: [
                                             Text("Talk about it ",
                                                 style: TextStyle(
                                                     color: TextThemes.ndBlue,
                                                     fontSize: 18,
-                                                    fontWeight: FontWeight.bold)),
-                                                    Icon(Icons.arrow_drop_down, color: TextThemes.ndBlue),
+                                                    fontWeight:
+                                                        FontWeight.bold)),
+                                            Icon(Icons.arrow_drop_down,
+                                                color: TextThemes.ndBlue),
                                           ],
                                         ),
                                         // SizedBox(height: 10),
@@ -871,685 +924,684 @@ class _GroupDetailState extends State<GroupDetail> {
   }
 }
 
-class Suggestions extends StatefulWidget {
-  String groupId;
-  Map<String, dynamic> voters = {};
+// class Suggestions extends StatefulWidget {
+//   String groupId;
+//   Map<String, dynamic> voters = {};
 
-  Suggestions(this.groupId);
+//   Suggestions(this.groupId);
 
-  @override
-  State<StatefulWidget> createState() {
-    return _SuggestionsState(this.groupId);
-  }
-}
+//   @override
+//   State<StatefulWidget> createState() {
+//     return _SuggestionsState(this.groupId);
+//   }
+// }
 
-class _SuggestionsState extends State<Suggestions> {
-  changeScore(bool increment) {
-    increment //for status responder
-        ? usersRef
-            .doc(currentUser.id)
-            .update({"score": FieldValue.increment(20)})
-        : usersRef
-            .doc(currentUser.id)
-            .update({"score": FieldValue.increment(-20)});
-  }
+// class _SuggestionsState extends State<Suggestions> {
+//   changeScore(bool increment) {
+//     increment //for status responder
+//         ? usersRef
+//             .doc(currentUser.id)
+//             .update({"score": FieldValue.increment(20)})
+//         : usersRef
+//             .doc(currentUser.id)
+//             .update({"score": FieldValue.increment(-20)});
+//   }
 
-  bool positivePointAnimationYes = false;
-  bool negativePointAnimationYes = false;
+//   bool positivePointAnimationYes = false;
+//   bool negativePointAnimationYes = false;
 
-  bool positivePointAnimationNo = false;
-  bool negativePointAnimationNo = false;
+//   bool positivePointAnimationNo = false;
+//   bool negativePointAnimationNo = false;
 
-  PageController _controller;
-  String groupId;
-  Map<String, dynamic> voters = {};
-  int pageNumber = 0;
+//   PageController _controller;
+//   String groupId;
+//   Map<String, dynamic> voters = {};
+//   int pageNumber = 0;
 
-  _SuggestionsState(this.groupId);
+//   _SuggestionsState(this.groupId);
 
-  @override
-  void initState() {
-    super.initState();
-    _controller = PageController();
-  }
+//   @override
+//   void initState() {
+//     super.initState();
+//     _controller = PageController();
+//   }
 
-  _onPageViewChange(int page) {
-    setState(() {
-      pageNumber = page;
-    });
-  }
+//   _onPageViewChange(int page) {
+//     setState(() {
+//       pageNumber = page;
+//     });
+//   }
 
-  Widget buildPageView(snapshot4, count) {
-    return PageView.builder(
-      physics: AlwaysScrollableScrollPhysics(),
-      controller: _controller,
-      onPageChanged: _onPageViewChange,
-      itemBuilder: (BuildContext context, int pos) {
-        DocumentSnapshot course = snapshot4.data.docs[pos];
-        String nextMOOV = course['nextMOOV'];
-        String suggestorId = course['suggestorId'];
-        int unix = course['unix'];
+//   Widget buildPageView(snapshot4, count) {
+//     return PageView.builder(
+//       physics: AlwaysScrollableScrollPhysics(),
+//       controller: _controller,
+//       onPageChanged: _onPageViewChange,
+//       itemBuilder: (BuildContext context, int pos) {
+//         DocumentSnapshot course = snapshot4.data.docs[pos];
+//         String nextMOOV = course['nextMOOV'];
+//         String suggestorId = course['suggestorId'];
+//         int unix = course['unix'];
 
-        return (nextMOOV != null && nextMOOV.isNotEmpty)
-            ? Container(
-                margin: EdgeInsets.all(5),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    NextMOOV(nextMOOV, suggestorId, groupId, unix)
-                  ],
-                ),
-              )
-            : Container();
-      },
-      itemCount: count,
-    );
-  }
+//         return (nextMOOV != null && nextMOOV.isNotEmpty)
+//             ? Container(
+//                 margin: EdgeInsets.all(5),
+//                 child: Column(
+//                   mainAxisAlignment: MainAxisAlignment.center,
+//                   children: <Widget>[
+//                     NextMOOV(nextMOOV, suggestorId, groupId, unix)
+//                   ],
+//                 ),
+//               )
+//             : Container();
+//       },
+//       itemCount: count,
+//     );
+//   }
 
-  Widget buildSuggestionsIndicatorWithShapeAndBottomPos(
-      Shape shape, double bottomPos, count) {
-    return Positioned(
-      bottom: bottomPos,
-      left: 0,
-      right: 0,
-      child: WormIndicator(
-        length: count,
-        controller: _controller,
-        shape: shape,
-      ),
-    );
-  }
+//   Widget buildSuggestionsIndicatorWithShapeAndBottomPos(
+//       Shape shape, double bottomPos, count) {
+//     return Positioned(
+//       bottom: bottomPos,
+//       left: 0,
+//       right: 0,
+//       child: WormIndicator(
+//         length: count,
+//         controller: _controller,
+//         shape: shape,
+//       ),
+//     );
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    bool isLargePhone = Screen.diagonal(context) > 766;
+//   @override
+//   Widget build(BuildContext context) {
+//     bool isLargePhone = Screen.diagonal(context) > 766;
 
-    int status = 0;
-    final circleShape = Shape(
-      size: 8,
-      shape: DotShape.Circle,
-      spacing: 8,
-    );
+//     int status = 0;
+//     final circleShape = Shape(
+//       size: 8,
+//       shape: DotShape.Circle,
+//       spacing: 8,
+//     );
 
-    return StreamBuilder(
-        stream: groupsRef.doc(groupId).collection("suggestedMOOVs").snapshots(),
-        // ignore: missing_return
-        builder: (context, snapshot4) {
-          if (!snapshot4.hasData || snapshot4.data == null) {
-            return Container();
-          }
+//     return StreamBuilder(
+//         stream: groupsRef.doc(groupId).collection("suggestedMOOVs").snapshots(),
+//         // ignore: missing_return
+//         builder: (context, snapshot4) {
+//           if (!snapshot4.hasData || snapshot4.data == null) {
+//             return Container();
+//           }
 
-          if (snapshot4.data.docs.length == 0) {
-            return Padding(
-              padding: const EdgeInsets.only(top: 18.0),
-              child: Container(
-                height: isLargePhone
-                    ? SizeConfig.blockSizeVertical * 15
-                    : SizeConfig.blockSizeVertical * 18,
-                child: Stack(children: <Widget>[
-                  FractionallySizedBox(
-                    widthFactor: 1,
-                    child: Container(
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.asset('lib/assets/motd.jpg',
-                            fit: BoxFit.cover),
-                      ),
-                      margin: EdgeInsets.only(
-                          left: 20, top: 0, right: 20, bottom: 7.5),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(10),
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 5,
-                            blurRadius: 7,
-                            offset: Offset(0, 3), // changes position of shadow
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.center,
-                    child: Container(
-                      alignment: Alignment(0.0, 0.0),
-                      child: Container(
-                        child: Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: Text(
-                            "YOUR MOOV",
-                            style: TextStyle(
-                                fontFamily: 'Solway',
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                                fontSize: 20.0),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ]),
-              ),
-            );
-          }
-          int count = snapshot4.data.docs.length;
-          for (int i = 0; i < count; i++) {
-            DocumentSnapshot course4 = snapshot4.data.docs[pageNumber];
+//           if (snapshot4.data.docs.length == 0) {
+//             return Padding(
+//               padding: const EdgeInsets.only(top: 18.0),
+//               child: Container(
+//                 height: isLargePhone
+//                     ? SizeConfig.blockSizeVertical * 15
+//                     : SizeConfig.blockSizeVertical * 18,
+//                 child: Stack(children: <Widget>[
+//                   FractionallySizedBox(
+//                     widthFactor: 1,
+//                     child: Container(
+//                       child: ClipRRect(
+//                         borderRadius: BorderRadius.circular(10),
+//                         child: Image.asset('lib/assets/motd.jpg',
+//                             fit: BoxFit.cover),
+//                       ),
+//                       margin: EdgeInsets.only(
+//                           left: 20, top: 0, right: 20, bottom: 7.5),
+//                       decoration: BoxDecoration(
+//                         color: Colors.white,
+//                         borderRadius: BorderRadius.all(
+//                           Radius.circular(10),
+//                         ),
+//                         boxShadow: [
+//                           BoxShadow(
+//                             color: Colors.grey.withOpacity(0.5),
+//                             spreadRadius: 5,
+//                             blurRadius: 7,
+//                             offset: Offset(0, 3), // changes position of shadow
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                   ),
+//                   Align(
+//                     alignment: Alignment.center,
+//                     child: Container(
+//                       alignment: Alignment(0.0, 0.0),
+//                       child: Container(
+//                         child: Padding(
+//                           padding: const EdgeInsets.all(4.0),
+//                           child: Text(
+//                             "YOUR MOOV",
+//                             style: TextStyle(
+//                                 fontFamily: 'Solway',
+//                                 fontWeight: FontWeight.bold,
+//                                 color: Colors.white,
+//                                 fontSize: 20.0),
+//                           ),
+//                         ),
+//                       ),
+//                     ),
+//                   ),
+//                 ]),
+//               ),
+//             );
+//           }
+//           int count = snapshot4.data.docs.length;
+//           for (int i = 0; i < count; i++) {
+//             DocumentSnapshot course4 = snapshot4.data.docs[pageNumber];
 
-            voters = course4['voters'];
-            String suggestorName = course4['suggestorName'];
-            String suggestorId = course4['suggestorId'];
-            int unix = course4['unix'];
+//             voters = course4['voters'];
+//             String suggestorName = course4['suggestorName'];
+//             String suggestorId = course4['suggestorId'];
+//             int unix = course4['unix'];
 
-            List<dynamic> votersIds = voters.keys.toList();
-            List<dynamic> votersValues = voters.values.toList();
-            int noVoteCount =
-                votersValues.where((element) => element == 1).toList().length;
-            int yesVoteCount =
-                votersValues.where((element) => element == 2).toList().length;
-            if (voters != null) {
-              for (int i = 0; i < votersValues.length; i++) {
-                if (votersIds[i] == currentUser.id) {
-                  if (votersValues[i] == 1) {
-                    status = 1;
-                  }
-                }
-                if (votersIds[i] == currentUser.id) {
-                  if (votersValues[i] == 2) {
-                    status = 2;
-                  }
-                }
-              }
-            }
-            //this is for getting the first name of the suggestor
-            String fullName = suggestorName;
-            List<String> tempList = fullName.split(" ");
-            int start = 0;
-            int end = tempList.length;
-            if (end > 1) {
-              end = 1;
-            }
-            final selectedWords = tempList.sublist(start, end);
-            String firstName = selectedWords.join(" ");
+//             List<dynamic> votersIds = voters.keys.toList();
+//             List<dynamic> votersValues = voters.values.toList();
+//             int noVoteCount =
+//                 votersValues.where((element) => element == 1).toList().length;
+//             int yesVoteCount =
+//                 votersValues.where((element) => element == 2).toList().length;
+//             if (voters != null) {
+//               for (int i = 0; i < votersValues.length; i++) {
+//                 if (votersIds[i] == currentUser.id) {
+//                   if (votersValues[i] == 1) {
+//                     status = 1;
+//                   }
+//                 }
+//                 if (votersIds[i] == currentUser.id) {
+//                   if (votersValues[i] == 2) {
+//                     status = 2;
+//                   }
+//                 }
+//               }
+//             }
+//             //this is for getting the first name of the suggestor
+//             String fullName = suggestorName;
+//             List<String> tempList = fullName.split(" ");
+//             int start = 0;
+//             int end = tempList.length;
+//             if (end > 1) {
+//               end = 1;
+//             }
+//             final selectedWords = tempList.sublist(start, end);
+//             String firstName = selectedWords.join(" ");
 
-            return Column(
-              children: [
-                Container(
-                  height: 160,
-                  child: Stack(
-                    children: <Widget>[
-                      buildPageView(snapshot4, count),
-                      buildSuggestionsIndicatorWithShapeAndBottomPos(
-                          circleShape, 20, count),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 20.0, right: 20),
-                  child:
-                      Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-                    Text("Suggested by "),
-                    Text(suggestorName,
-                        style: TextStyle(
-                            color: Colors.blue[600],
-                            fontWeight: FontWeight.w500))
-                  ]),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: RichText(
-                    textScaleFactor: 1.2,
-                    text: TextSpan(style: TextThemes.mediumbody, children: [
-                      TextSpan(
-                          text: "Vote on ",
-                          style: TextStyle(fontWeight: FontWeight.w400)),
-                      TextSpan(
-                          text: firstName + "'s ",
-                          style: TextStyle(
-                              color: Colors.blue[600],
-                              fontWeight: FontWeight.w500)),
-                      TextSpan(
-                          text: "suggestion",
-                          style: TextStyle(fontWeight: FontWeight.w400)),
-                    ]),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 20.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Stack(children: [
-                          RaisedButton(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5),
-                                side: BorderSide(color: Colors.black)),
-                            onPressed: () {
-                              if (voters != null && status != 1) {
-                                positivePointAnimationNo = true;
-                                if (status != 2) {
-                                  changeScore(true);
-                                }
+//             return Column(
+//               children: [
+//                 Container(
+//                   height: 160,
+//                   child: Stack(
+//                     children: <Widget>[
+//                       buildPageView(snapshot4, count),
+//                       buildSuggestionsIndicatorWithShapeAndBottomPos(
+//                           circleShape, 20, count),
+//                     ],
+//                   ),
+//                 ),
+//                 Padding(
+//                   padding: const EdgeInsets.only(bottom: 20.0, right: 20),
+//                   child:
+//                       Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+//                     Text("Suggested by "),
+//                     Text(suggestorName,
+//                         style: TextStyle(
+//                             color: Colors.blue[600],
+//                             fontWeight: FontWeight.w500))
+//                   ]),
+//                 ),
+//                 Padding(
+//                   padding: const EdgeInsets.all(8.0),
+//                   child: RichText(
+//                     textScaleFactor: 1.2,
+//                     text: TextSpan(style: TextThemes.mediumbody, children: [
+//                       TextSpan(
+//                           text: "Vote on ",
+//                           style: TextStyle(fontWeight: FontWeight.w400)),
+//                       TextSpan(
+//                           text: firstName + "'s ",
+//                           style: TextStyle(
+//                               color: Colors.blue[600],
+//                               fontWeight: FontWeight.w500)),
+//                       TextSpan(
+//                           text: "suggestion",
+//                           style: TextStyle(fontWeight: FontWeight.w400)),
+//                     ]),
+//                   ),
+//                 ),
+//                 Padding(
+//                   padding: const EdgeInsets.only(bottom: 20.0),
+//                   child: Row(
+//                     mainAxisAlignment: MainAxisAlignment.center,
+//                     children: [
+//                       Padding(
+//                         padding: const EdgeInsets.all(8.0),
+//                         child: Stack(children: [
+//                           RaisedButton(
+//                             shape: RoundedRectangleBorder(
+//                                 borderRadius: BorderRadius.circular(5),
+//                                 side: BorderSide(color: Colors.black)),
+//                             onPressed: () {
+//                               if (voters != null && status != 1) {
+//                                 positivePointAnimationNo = true;
+//                                 if (status != 2) {
+//                                   changeScore(true);
+//                                 }
 
-                                if (status == 2) {
-                                  //if youre switching statuses we dont double count
-                                  negativePointAnimationYes = true;
-                                  Timer(Duration(seconds: 2), () {
-                                    setState(() {
-                                      negativePointAnimationYes = false;
-                                    });
-                                  });
-                                }
+//                                 if (status == 2) {
+//                                   //if youre switching statuses we dont double count
+//                                   negativePointAnimationYes = true;
+//                                   Timer(Duration(seconds: 2), () {
+//                                     setState(() {
+//                                       negativePointAnimationYes = false;
+//                                     });
+//                                   });
+//                                 }
 
-                                Timer(Duration(seconds: 2), () {
-                                  setState(() {
-                                    positivePointAnimationNo = false;
-                                  });
-                                });
-                             
-                                Database().addNoVote(
-                                    unix, currentUser.id, groupId, suggestorId);
-                                status = 1;
-                              } else if (voters != null && status == 1) {
-                                negativePointAnimationNo = true;
-                                Timer(Duration(seconds: 2), () {
-                                  setState(() {
-                                    negativePointAnimationNo = false;
-                                  });
-                                });
-                                changeScore(false);
-                                Database().removeNoVote(
-                                    unix, currentUser.id, groupId, suggestorId);
-                                status = 0;
-                              }
-                            },
-                            color: (status == 1) ? Colors.red : Colors.white,
-                            padding: EdgeInsets.all(5.0),
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 3.0, right: 3),
-                              child: (status == 1)
-                                  ? Column(
-                                      children: [
-                                        Text('No',
-                                            style:
-                                                TextStyle(color: Colors.white)),
-                                        Icon(Icons.thumb_down,
-                                            color: Colors.white, size: 30),
-                                      ],
-                                    )
-                                  : Column(
-                                      children: [
-                                        Text('No'),
-                                        Icon(Icons.thumb_down,
-                                            color: Colors.red, size: 30),
-                                      ],
-                                    ),
-                            ),
-                          ),
-                          TranslationAnimatedWidget(
-                              enabled: this
-                                  .positivePointAnimationNo, //update this boolean to forward/reverse the animation
-                              values: [
-                                Offset(20, -20), // disabled value value
-                                Offset(20, -20), //intermediate value
-                                Offset(20, -40) //enabled value
-                              ],
-                              child: OpacityAnimatedWidget.tween(
-                                  opacityEnabled: 1, //define start value
-                                  opacityDisabled: 0, //and end value
-                                  enabled: positivePointAnimationNo,
-                                  child: PointAnimation(20, true))),
-                          TranslationAnimatedWidget(
-                              enabled: this
-                                  .negativePointAnimationNo, //update this boolean to forward/reverse the animation
-                              values: [
-                                Offset(20, -20), // disabled value value
-                                Offset(20, -20), //intermediate value
-                                Offset(20, -40) //enabled value
-                              ],
-                              child: OpacityAnimatedWidget.tween(
-                                  opacityEnabled: 1, //define start value
-                                  opacityDisabled: 0, //and end value
-                                  enabled: negativePointAnimationNo,
-                                  child: PointAnimation(20, false))),
-                        ]),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Stack(children: [
-                          RaisedButton(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5),
-                                side: BorderSide(color: Colors.black)),
-                            onPressed: () {
-                              if (voters != null && status != 2) {
-                                positivePointAnimationYes = true;
-                                if (status != 1) {
-                                  changeScore(true);
-                                }
+//                                 Timer(Duration(seconds: 2), () {
+//                                   setState(() {
+//                                     positivePointAnimationNo = false;
+//                                   });
+//                                 });
 
-                                if (status == 1) {
-                                  //if youre switching statuses we dont double count
-                                  negativePointAnimationNo = true;
-                                  Timer(Duration(seconds: 2), () {
-                                    setState(() {
-                                      negativePointAnimationNo = false;
-                                    });
-                                  });
-                                }
+//                                 Database().addNoVote(
+//                                     unix, currentUser.id, groupId, suggestorId);
+//                                 status = 1;
+//                               } else if (voters != null && status == 1) {
+//                                 negativePointAnimationNo = true;
+//                                 Timer(Duration(seconds: 2), () {
+//                                   setState(() {
+//                                     negativePointAnimationNo = false;
+//                                   });
+//                                 });
+//                                 changeScore(false);
+//                                 Database().removeNoVote(
+//                                     unix, currentUser.id, groupId, suggestorId);
+//                                 status = 0;
+//                               }
+//                             },
+//                             color: (status == 1) ? Colors.red : Colors.white,
+//                             padding: EdgeInsets.all(5.0),
+//                             child: Padding(
+//                               padding:
+//                                   const EdgeInsets.only(left: 3.0, right: 3),
+//                               child: (status == 1)
+//                                   ? Column(
+//                                       children: [
+//                                         Text('No',
+//                                             style:
+//                                                 TextStyle(color: Colors.white)),
+//                                         Icon(Icons.thumb_down,
+//                                             color: Colors.white, size: 30),
+//                                       ],
+//                                     )
+//                                   : Column(
+//                                       children: [
+//                                         Text('No'),
+//                                         Icon(Icons.thumb_down,
+//                                             color: Colors.red, size: 30),
+//                                       ],
+//                                     ),
+//                             ),
+//                           ),
+//                           TranslationAnimatedWidget(
+//                               enabled: this
+//                                   .positivePointAnimationNo, //update this boolean to forward/reverse the animation
+//                               values: [
+//                                 Offset(20, -20), // disabled value value
+//                                 Offset(20, -20), //intermediate value
+//                                 Offset(20, -40) //enabled value
+//                               ],
+//                               child: OpacityAnimatedWidget.tween(
+//                                   opacityEnabled: 1, //define start value
+//                                   opacityDisabled: 0, //and end value
+//                                   enabled: positivePointAnimationNo,
+//                                   child: PointAnimation(20, true))),
+//                           TranslationAnimatedWidget(
+//                               enabled: this
+//                                   .negativePointAnimationNo, //update this boolean to forward/reverse the animation
+//                               values: [
+//                                 Offset(20, -20), // disabled value value
+//                                 Offset(20, -20), //intermediate value
+//                                 Offset(20, -40) //enabled value
+//                               ],
+//                               child: OpacityAnimatedWidget.tween(
+//                                   opacityEnabled: 1, //define start value
+//                                   opacityDisabled: 0, //and end value
+//                                   enabled: negativePointAnimationNo,
+//                                   child: PointAnimation(20, false))),
+//                         ]),
+//                       ),
+//                       Padding(
+//                         padding: const EdgeInsets.all(8.0),
+//                         child: Stack(children: [
+//                           RaisedButton(
+//                             shape: RoundedRectangleBorder(
+//                                 borderRadius: BorderRadius.circular(5),
+//                                 side: BorderSide(color: Colors.black)),
+//                             onPressed: () {
+//                               if (voters != null && status != 2) {
+//                                 positivePointAnimationYes = true;
+//                                 if (status != 1) {
+//                                   changeScore(true);
+//                                 }
 
-                                Timer(Duration(seconds: 2), () {
-                                  setState(() {
-                                    positivePointAnimationYes = false;
-                                  });
-                                });
+//                                 if (status == 1) {
+//                                   //if youre switching statuses we dont double count
+//                                   negativePointAnimationNo = true;
+//                                   Timer(Duration(seconds: 2), () {
+//                                     setState(() {
+//                                       negativePointAnimationNo = false;
+//                                     });
+//                                   });
+//                                 }
 
-                             
-                                Database().addYesVote(
-                                    unix, currentUser.id, groupId, suggestorId);
-                                status = 2;
-                              } else if (voters != null && status == 2) {
-                                negativePointAnimationYes = true;
-                                Timer(Duration(seconds: 2), () {
-                                  setState(() {
-                                    negativePointAnimationYes = false;
-                                  });
-                                });
-                                changeScore(false);
-                                Database().removeYesVote(
-                                    unix, currentUser.id, groupId, suggestorId);
-                                status = 0;
-                              }
-                            },
-                            color: (status == 2) ? Colors.green : Colors.white,
-                            padding: EdgeInsets.all(5.0),
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 3.0, right: 3),
-                              child: (status == 2)
-                                  ? Column(
-                                      children: [
-                                        Text('Yes',
-                                            style:
-                                                TextStyle(color: Colors.white)),
-                                        Icon(Icons.thumb_up,
-                                            color: Colors.white, size: 30),
-                                      ],
-                                    )
-                                  : Column(
-                                      children: [
-                                        Text('Yes',
-                                            style:
-                                                TextStyle(color: Colors.black)),
-                                        Icon(Icons.thumb_up,
-                                            color: Colors.green, size: 30),
-                                      ],
-                                    ),
-                            ),
-                          ),
-                          TranslationAnimatedWidget(
-                              enabled: this
-                                  .positivePointAnimationYes, //update this boolean to forward/reverse the animation
-                              values: [
-                                Offset(20, -20), // disabled value value
-                                Offset(20, -20), //intermediate value
-                                Offset(20, -40) //enabled value
-                              ],
-                              child: OpacityAnimatedWidget.tween(
-                                  opacityEnabled: 1, //define start value
-                                  opacityDisabled: 0, //and end value
-                                  enabled: positivePointAnimationYes,
-                                  child: PointAnimation(20, true))),
-                          TranslationAnimatedWidget(
-                              enabled: this
-                                  .negativePointAnimationYes, //update this boolean to forward/reverse the animation
-                              values: [
-                                Offset(20, -20), // disabled value value
-                                Offset(20, -20), //intermediate value
-                                Offset(20, -40) //enabled value
-                              ],
-                              child: OpacityAnimatedWidget.tween(
-                                  opacityEnabled: 1, //define start value
-                                  opacityDisabled: 0, //and end value
-                                  enabled: negativePointAnimationYes,
-                                  child: PointAnimation(20, false))),
-                        ]),
-                      ),
-                    ],
-                  ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Container(
-                      child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          physics: AlwaysScrollableScrollPhysics(),
-                          itemCount: noVoteCount,
-                          itemBuilder: (_, index) {
-                            voters.removeWhere((key, value) => value != 1);
+//                                 Timer(Duration(seconds: 2), () {
+//                                   setState(() {
+//                                     positivePointAnimationYes = false;
+//                                   });
+//                                 });
 
-                            var w = voters.keys.toList();
+//                                 Database().addYesVote(
+//                                     unix, currentUser.id, groupId, suggestorId);
+//                                 status = 2;
+//                               } else if (voters != null && status == 2) {
+//                                 negativePointAnimationYes = true;
+//                                 Timer(Duration(seconds: 2), () {
+//                                   setState(() {
+//                                     negativePointAnimationYes = false;
+//                                   });
+//                                 });
+//                                 changeScore(false);
+//                                 Database().removeYesVote(
+//                                     unix, currentUser.id, groupId, suggestorId);
+//                                 status = 0;
+//                               }
+//                             },
+//                             color: (status == 2) ? Colors.green : Colors.white,
+//                             padding: EdgeInsets.all(5.0),
+//                             child: Padding(
+//                               padding:
+//                                   const EdgeInsets.only(left: 3.0, right: 3),
+//                               child: (status == 2)
+//                                   ? Column(
+//                                       children: [
+//                                         Text('Yes',
+//                                             style:
+//                                                 TextStyle(color: Colors.white)),
+//                                         Icon(Icons.thumb_up,
+//                                             color: Colors.white, size: 30),
+//                                       ],
+//                                     )
+//                                   : Column(
+//                                       children: [
+//                                         Text('Yes',
+//                                             style:
+//                                                 TextStyle(color: Colors.black)),
+//                                         Icon(Icons.thumb_up,
+//                                             color: Colors.green, size: 30),
+//                                       ],
+//                                     ),
+//                             ),
+//                           ),
+//                           TranslationAnimatedWidget(
+//                               enabled: this
+//                                   .positivePointAnimationYes, //update this boolean to forward/reverse the animation
+//                               values: [
+//                                 Offset(20, -20), // disabled value value
+//                                 Offset(20, -20), //intermediate value
+//                                 Offset(20, -40) //enabled value
+//                               ],
+//                               child: OpacityAnimatedWidget.tween(
+//                                   opacityEnabled: 1, //define start value
+//                                   opacityDisabled: 0, //and end value
+//                                   enabled: positivePointAnimationYes,
+//                                   child: PointAnimation(20, true))),
+//                           TranslationAnimatedWidget(
+//                               enabled: this
+//                                   .negativePointAnimationYes, //update this boolean to forward/reverse the animation
+//                               values: [
+//                                 Offset(20, -20), // disabled value value
+//                                 Offset(20, -20), //intermediate value
+//                                 Offset(20, -40) //enabled value
+//                               ],
+//                               child: OpacityAnimatedWidget.tween(
+//                                   opacityEnabled: 1, //define start value
+//                                   opacityDisabled: 0, //and end value
+//                                   enabled: negativePointAnimationYes,
+//                                   child: PointAnimation(20, false))),
+//                         ]),
+//                       ),
+//                     ],
+//                   ),
+//                 ),
+//                 Row(
+//                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+//                   children: [
+//                     Container(
+//                       child: ListView.builder(
+//                           scrollDirection: Axis.horizontal,
+//                           physics: AlwaysScrollableScrollPhysics(),
+//                           itemCount: noVoteCount,
+//                           itemBuilder: (_, index) {
+//                             voters.removeWhere((key, value) => value != 1);
 
-                            return StreamBuilder(
-                                stream: usersRef.doc(w[index]).snapshots(),
-                                builder: (context, snapshot3) {
-                                  if (!snapshot3.hasData ||
-                                      snapshot3.data == null)
-                                    return Container();
+//                             var w = voters.keys.toList();
 
-                                  return Container(
-                                    height: 100,
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(left: 8.0),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: <Widget>[
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                              top: 17.0,
-                                              bottom: 5,
-                                            ),
-                                            child: GestureDetector(
-                                              onTap: () {
-                                                if (snapshot3.data['id'] ==
-                                                    currentUser.id) {
-                                                  Navigator.of(context).push(
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              ProfilePageWithHeader()));
-                                                } else {
-                                                  Navigator.of(context).push(
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              OtherProfile(
-                                                                snapshot3
-                                                                    .data['id'],
-                                                              )));
-                                                }
-                                              },
-                                              child: CircleAvatar(
-                                                radius: 24,
-                                                backgroundColor:
-                                                    TextThemes.ndBlue,
-                                                child: CircleAvatar(
-                                                  backgroundImage: NetworkImage(
-                                                      snapshot3
-                                                          .data['photoUrl']),
-                                                  radius: 22,
-                                                  backgroundColor:
-                                                      TextThemes.ndBlue,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.all(0.0),
-                                            child: Center(
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 5.0),
-                                                child: RichText(
-                                                  textScaleFactor: .75,
-                                                  text: TextSpan(
-                                                      style:
-                                                          TextThemes.mediumbody,
-                                                      children: [
-                                                        TextSpan(
-                                                            text: snapshot3
-                                                                .data[
-                                                                    'displayName']
-                                                                .toString(),
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .black,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w500)),
-                                                      ]),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                });
-                          }),
-                      decoration: BoxDecoration(
-                          color: Colors.red[100],
-                          border: Border.all(
-                            color: Colors.red[200],
-                          ),
-                          borderRadius: BorderRadius.all(Radius.circular(20))),
-                      height: 100,
-                      width: MediaQuery.of(context).size.width * .45,
-                    ),
-                    Container(
-                      child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          physics: AlwaysScrollableScrollPhysics(),
-                          itemCount: yesVoteCount,
-                          itemBuilder: (_, index) {
-                            voters = course4['voters'];
-                            voters.removeWhere((key, value) => value != 2);
+//                             return StreamBuilder(
+//                                 stream: usersRef.doc(w[index]).snapshots(),
+//                                 builder: (context, snapshot3) {
+//                                   if (!snapshot3.hasData ||
+//                                       snapshot3.data == null)
+//                                     return Container();
 
-                            var w = voters.keys.toList();
+//                                   return Container(
+//                                     height: 100,
+//                                     child: Padding(
+//                                       padding: const EdgeInsets.only(left: 8.0),
+//                                       child: Column(
+//                                         mainAxisAlignment:
+//                                             MainAxisAlignment.start,
+//                                         crossAxisAlignment:
+//                                             CrossAxisAlignment.center,
+//                                         children: <Widget>[
+//                                           Padding(
+//                                             padding: const EdgeInsets.only(
+//                                               top: 17.0,
+//                                               bottom: 5,
+//                                             ),
+//                                             child: GestureDetector(
+//                                               onTap: () {
+//                                                 if (snapshot3.data['id'] ==
+//                                                     currentUser.id) {
+//                                                   Navigator.of(context).push(
+//                                                       MaterialPageRoute(
+//                                                           builder: (context) =>
+//                                                               ProfilePageWithHeader()));
+//                                                 } else {
+//                                                   Navigator.of(context).push(
+//                                                       MaterialPageRoute(
+//                                                           builder: (context) =>
+//                                                               OtherProfile(
+//                                                                 snapshot3
+//                                                                     .data['id'],
+//                                                               )));
+//                                                 }
+//                                               },
+//                                               child: CircleAvatar(
+//                                                 radius: 24,
+//                                                 backgroundColor:
+//                                                     TextThemes.ndBlue,
+//                                                 child: CircleAvatar(
+//                                                   backgroundImage: NetworkImage(
+//                                                       snapshot3
+//                                                           .data['photoUrl']),
+//                                                   radius: 22,
+//                                                   backgroundColor:
+//                                                       TextThemes.ndBlue,
+//                                                 ),
+//                                               ),
+//                                             ),
+//                                           ),
+//                                           Padding(
+//                                             padding: const EdgeInsets.all(0.0),
+//                                             child: Center(
+//                                               child: Padding(
+//                                                 padding:
+//                                                     const EdgeInsets.symmetric(
+//                                                         horizontal: 5.0),
+//                                                 child: RichText(
+//                                                   textScaleFactor: .75,
+//                                                   text: TextSpan(
+//                                                       style:
+//                                                           TextThemes.mediumbody,
+//                                                       children: [
+//                                                         TextSpan(
+//                                                             text: snapshot3
+//                                                                 .data[
+//                                                                     'displayName']
+//                                                                 .toString(),
+//                                                             style: TextStyle(
+//                                                                 color: Colors
+//                                                                     .black,
+//                                                                 fontWeight:
+//                                                                     FontWeight
+//                                                                         .w500)),
+//                                                       ]),
+//                                                 ),
+//                                               ),
+//                                             ),
+//                                           ),
+//                                         ],
+//                                       ),
+//                                     ),
+//                                   );
+//                                 });
+//                           }),
+//                       decoration: BoxDecoration(
+//                           color: Colors.red[100],
+//                           border: Border.all(
+//                             color: Colors.red[200],
+//                           ),
+//                           borderRadius: BorderRadius.all(Radius.circular(20))),
+//                       height: 100,
+//                       width: MediaQuery.of(context).size.width * .45,
+//                     ),
+//                     Container(
+//                       child: ListView.builder(
+//                           scrollDirection: Axis.horizontal,
+//                           physics: AlwaysScrollableScrollPhysics(),
+//                           itemCount: yesVoteCount,
+//                           itemBuilder: (_, index) {
+//                             voters = course4['voters'];
+//                             voters.removeWhere((key, value) => value != 2);
 
-                            return StreamBuilder(
-                                stream: usersRef.doc(w[index]).snapshots(),
-                                builder: (context, snapshot3) {
-                                  if (!snapshot3.hasData ||
-                                      snapshot3.data == null)
-                                    return Container();
+//                             var w = voters.keys.toList();
 
-                                  return Container(
-                                    height: 100,
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(left: 8.0),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: <Widget>[
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                top: 17.0, bottom: 5),
-                                            child: GestureDetector(
-                                              onTap: () {
-                                                if (snapshot3.data['id'] ==
-                                                    currentUser.id) {
-                                                  Navigator.of(context).push(
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              ProfilePageWithHeader()));
-                                                } else {
-                                                  Navigator.of(context).push(
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              OtherProfile(
-                                                                snapshot3
-                                                                    .data['id'],
-                                                              )));
-                                                }
-                                              },
-                                              child: CircleAvatar(
-                                                radius: 24,
-                                                backgroundColor:
-                                                    TextThemes.ndBlue,
-                                                child: CircleAvatar(
-                                                  backgroundImage: NetworkImage(
-                                                      snapshot3
-                                                          .data['photoUrl']),
-                                                  radius: 22,
-                                                  backgroundColor:
-                                                      TextThemes.ndBlue,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.all(0.0),
-                                            child: Center(
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 5.0),
-                                                child: RichText(
-                                                  textScaleFactor: .75,
-                                                  text: TextSpan(
-                                                      style:
-                                                          TextThemes.mediumbody,
-                                                      children: [
-                                                        TextSpan(
-                                                            text: snapshot3
-                                                                .data[
-                                                                    'displayName']
-                                                                .toString(),
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .black,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w500)),
-                                                      ]),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                });
-                          }),
-                      decoration: BoxDecoration(
-                          color: Colors.green[100],
-                          border: Border.all(
-                            color: Colors.green[200],
-                          ),
-                          borderRadius: BorderRadius.all(Radius.circular(20))),
-                      height: 100,
-                      width: MediaQuery.of(context).size.width * .45,
-                    )
-                  ],
-                ),
-              ],
-            );
-          }
-        });
-  }
-}
+//                             return StreamBuilder(
+//                                 stream: usersRef.doc(w[index]).snapshots(),
+//                                 builder: (context, snapshot3) {
+//                                   if (!snapshot3.hasData ||
+//                                       snapshot3.data == null)
+//                                     return Container();
+
+//                                   return Container(
+//                                     height: 100,
+//                                     child: Padding(
+//                                       padding: const EdgeInsets.only(left: 8.0),
+//                                       child: Column(
+//                                         mainAxisAlignment:
+//                                             MainAxisAlignment.start,
+//                                         crossAxisAlignment:
+//                                             CrossAxisAlignment.center,
+//                                         children: <Widget>[
+//                                           Padding(
+//                                             padding: const EdgeInsets.only(
+//                                                 top: 17.0, bottom: 5),
+//                                             child: GestureDetector(
+//                                               onTap: () {
+//                                                 if (snapshot3.data['id'] ==
+//                                                     currentUser.id) {
+//                                                   Navigator.of(context).push(
+//                                                       MaterialPageRoute(
+//                                                           builder: (context) =>
+//                                                               ProfilePageWithHeader()));
+//                                                 } else {
+//                                                   Navigator.of(context).push(
+//                                                       MaterialPageRoute(
+//                                                           builder: (context) =>
+//                                                               OtherProfile(
+//                                                                 snapshot3
+//                                                                     .data['id'],
+//                                                               )));
+//                                                 }
+//                                               },
+//                                               child: CircleAvatar(
+//                                                 radius: 24,
+//                                                 backgroundColor:
+//                                                     TextThemes.ndBlue,
+//                                                 child: CircleAvatar(
+//                                                   backgroundImage: NetworkImage(
+//                                                       snapshot3
+//                                                           .data['photoUrl']),
+//                                                   radius: 22,
+//                                                   backgroundColor:
+//                                                       TextThemes.ndBlue,
+//                                                 ),
+//                                               ),
+//                                             ),
+//                                           ),
+//                                           Padding(
+//                                             padding: const EdgeInsets.all(0.0),
+//                                             child: Center(
+//                                               child: Padding(
+//                                                 padding:
+//                                                     const EdgeInsets.symmetric(
+//                                                         horizontal: 5.0),
+//                                                 child: RichText(
+//                                                   textScaleFactor: .75,
+//                                                   text: TextSpan(
+//                                                       style:
+//                                                           TextThemes.mediumbody,
+//                                                       children: [
+//                                                         TextSpan(
+//                                                             text: snapshot3
+//                                                                 .data[
+//                                                                     'displayName']
+//                                                                 .toString(),
+//                                                             style: TextStyle(
+//                                                                 color: Colors
+//                                                                     .black,
+//                                                                 fontWeight:
+//                                                                     FontWeight
+//                                                                         .w500)),
+//                                                       ]),
+//                                                 ),
+//                                               ),
+//                                             ),
+//                                           ),
+//                                         ],
+//                                       ),
+//                                     ),
+//                                   );
+//                                 });
+//                           }),
+//                       decoration: BoxDecoration(
+//                           color: Colors.green[100],
+//                           border: Border.all(
+//                             color: Colors.green[200],
+//                           ),
+//                           borderRadius: BorderRadius.all(Radius.circular(20))),
+//                       height: 100,
+//                       width: MediaQuery.of(context).size.width * .45,
+//                     )
+//                   ],
+//                 ),
+//               ],
+//             );
+//           }
+//         });
+//   }
+// }

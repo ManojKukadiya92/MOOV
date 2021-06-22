@@ -1240,8 +1240,6 @@ class ChatMOOV extends StatelessWidget {
       this.hasButtons = true,
       this.messageId});
 
-  double _height = 40;
-
   @override
   Widget build(BuildContext context) {
     bool isLargePhone = Screen.diagonal(context) > 766;
@@ -1409,7 +1407,7 @@ class ChatMOOV extends StatelessWidget {
                     ),
             ),
             hasButtons ? Buttons(postId) : Container(),
-            Container(
+            hasButtons ?  Container(
               width: MediaQuery.of(context).size.width * .75,
               child: Row(
                 children: [
@@ -1439,7 +1437,7 @@ class ChatMOOV extends StatelessWidget {
                   )
                 ],
               ),
-            )
+            ) : Container()
           ],
         ),
       ),
