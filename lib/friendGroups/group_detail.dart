@@ -5,6 +5,7 @@ import 'package:MOOV/helpers/size_config.dart';
 import 'package:MOOV/helpers/themes.dart';
 import 'package:MOOV/main.dart';
 import 'package:MOOV/pages/HomePage.dart';
+import 'package:MOOV/pages/MessagesHub.dart';
 import 'package:MOOV/pages/ProfilePageWithHeader.dart';
 import 'package:MOOV/pages/notification_feed_group.dart';
 import 'package:MOOV/pages/other_profile.dart';
@@ -12,8 +13,10 @@ import 'package:MOOV/widgets/add_users_post.dart';
 import 'package:MOOV/widgets/set_moov.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:MOOV/services/database.dart';
@@ -21,7 +24,6 @@ import 'package:page_transition/page_transition.dart';
 import 'package:share/share.dart';
 import '../friendGroups/edit_group.dart';
 import 'package:MOOV/pages/home.dart';
-import 'package:intl/intl.dart';
 import 'package:collection/collection.dart';
 
 class GroupDetail extends StatefulWidget {
@@ -129,696 +131,734 @@ class _GroupDetailState extends State<GroupDetail> {
                 if (snapshot2.data == null) return Container();
 
                 DocumentSnapshot course = snapshot2.data;
-               
+
                 groupName = course['groupName'];
                 groupPic = course['groupPic'];
                 members = course['members'];
 
-                return (members.contains(strUserId))
-                    ? Scaffold(
-                        backgroundColor: Colors.white,
-                        appBar: AppBar(
-                            leading: IconButton(
-                              icon: Icon(
-                                Icons.arrow_back,
-                                color: Colors.white,
-                              ),
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                            ),
-                            backgroundColor: TextThemes.ndBlue,
-                            flexibleSpace: FlexibleSpaceBar(
-                              titlePadding: EdgeInsets.all(15),
-                              title: ConstrainedBox(
-                                constraints: BoxConstraints(maxWidth: 210),
-                                child: Text(
-                                  groupName,
-                                  style: TextStyle(
-                                      fontSize: isLargePhone ? 24.0 : 22,
-                                      color: Colors.white),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ),
-                            actions: <Widget>[
-                              // Padding(
-                              //   padding: const EdgeInsets.all(4.0),
-                              //   child: FlatButton(
-                              //       onPressed: () {
-                              //         Database()
-                              //             .leaveGroup(currentUser.id, displayName, gid);
-
-                              //         Navigator.pop(
-                              //           context,
-                              //           MaterialPageRoute(builder: (context) => HomePage()),
-                              //         );
-                              //       },
-                              //       child: Text(
-                              //         "LEAVE",
-                              //         style: TextStyle(color: Colors.red),
-                              //       )),
-                              // ),
-
-                              FocusedMenuHolder(
-                                menuWidth:
-                                    MediaQuery.of(context).size.width * 0.50,
-                                blurSize: 5.0,
-                                menuItemExtent: 45,
-                                menuBoxDecoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.all(
-                                        Radius.circular(15.0))),
-                                duration: Duration(milliseconds: 100),
-                                animateMenuItems: true,
-                                blurBackgroundColor: Colors.black54,
-                                openWithTap:
-                                    true, // Open Focused-Menu on Tap rather than Long Press
-                                menuOffset:
-                                    10.0, // Offset value to show menuItem from the selected item
-                                bottomOffsetHeight:
-                                    80.0, // Offset height to consider, for showing the menu item ( for Suggestions bottom navigation bar), so that the popup menu will be shown on top of selected item.
-                                menuItems: <FocusedMenuItem>[
-                                  // Add Each FocusedMenuItem  for Menu Options
-
-                                  FocusedMenuItem(
-                                      title: Text("Add Friends"),
-                                      trailingIcon: Icon(Icons.person_add),
-                                      onPressed: () {
-                                        Navigator.push(
-                                            context,
-                                            PageTransition(
-                                                type: PageTransitionType
-                                                    .bottomToTop,
-                                                child: SearchUsersGroup(
-                                                    groupName,
-                                                    gid,
-                                                    groupPic,
-                                                    nextMOOV,
-                                                    members)));
-                                      }),
-
-                                  FocusedMenuItem(
-                                      title: Text("Share"),
-                                      trailingIcon: Icon(Icons.send),
-                                      onPressed: () {
-                                        Share.share(
-                                            "You found the Easter Egg! 🥚");
-                                      }),
-                                  FocusedMenuItem(
-                                      title: Text("Edit Group"),
-                                      trailingIcon: Icon(Icons.edit),
-                                      onPressed: () {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) => EditGroup(
-                                                    groupPic,
-                                                    groupName,
-                                                    members,
-                                                    gid)));
-                                      }),
-                                  FocusedMenuItem(
-                                      title: Text(
-                                        "Leave Group",
-                                        style:
-                                            TextStyle(color: Colors.redAccent),
-                                      ),
-                                      trailingIcon: Icon(
-                                        Icons.directions_walk,
-                                        color: Colors.redAccent,
-                                      ),
-                                      onPressed: () {
-                                        showAlertDialog(context);
-                                      }),
-                                ],
-                                onPressed: () {},
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Icon(
-                                    Icons.more_vert,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.only(top: 8.0, right: 5),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                NotificationFeedGroup(gid)));
-                                  },
-                                  child: Column(children: [
-                                    NotifIconGroup(
-                                      iconData:
-                                          Icons.notifications_active_outlined,
-                                      gid: gid,
-                                    ),
-                                    Text(
-                                      "GROUP",
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 10),
-                                    )
-                                  ]),
-                                ),
-                              )
-                            ]),
-                        body: SingleChildScrollView(
-                          physics: ClampingScrollPhysics(),
-                          child: Container(
-                            child: Column(
-                              children: [
-                                Stack(children: [
-                                  Container(
-                                      height: 120,
-                                      width: MediaQuery.of(context).size.width,
-                                      child: Image.network(
-                                        groupPic,
-                                        fit: BoxFit.cover,
-                                        color: Colors.black26,
-                                        colorBlendMode: BlendMode.darken,
-                                      )),
-                                  Container(
-                                      child: Column(children: [
-                                    Container(
-                                      height: 120,
-                                      child: ListView.builder(
-                                          scrollDirection: Axis.horizontal,
-                                          physics:
-                                              AlwaysScrollableScrollPhysics(),
-                                          itemCount: members.length,
-                                          itemBuilder: (_, index) {
-                                            DocumentSnapshot course =
-                                                snapshot2.data;
-
-                                            String name = firstNamer(snapshot
-                                                .data
-                                                .docs[index]['displayName']);
-
-                                            return Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 3.0, right: 3),
-                                              child: Container(
-                                                width: 80,
-                                                child: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.start,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  children: <Widget>[
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              top: 15.0,
-                                                              bottom: 10),
-                                                      child: GestureDetector(
-                                                        onTap: () {
-                                                          if (snapshot.data
-                                                                          .docs[
-                                                                      index]
-                                                                  ['id'] ==
-                                                              strUserId) {
-                                                            Navigator.of(
-                                                                    context)
-                                                                .push(MaterialPageRoute(
-                                                                    builder:
-                                                                        (context) =>
-                                                                            ProfilePageWithHeader()));
-                                                          } else {
-                                                            Navigator.of(context).push(
-                                                                MaterialPageRoute(
-                                                                    builder:
-                                                                        (context) =>
-                                                                            OtherProfile(
-                                                                              snapshot.data.docs[index]['id'],
-                                                                            )));
-                                                          }
-                                                        },
-                                                        child: CircleAvatar(
-                                                          radius: 30,
-                                                          backgroundColor:
-                                                              TextThemes.ndGold,
-                                                          child: CircleAvatar(
-                                                            // backgroundImage: snapshot.data
-                                                            //     .documents[index].data['photoUrl'],
-                                                            backgroundImage:
-                                                                NetworkImage(snapshot
-                                                                            .data
-                                                                            .docs[
-                                                                        index][
-                                                                    'photoUrl']),
-                                                            radius: 27,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    Container(
-                                                      alignment:
-                                                          Alignment(0.0, 0.0),
-                                                      child: Container(
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          borderRadius:
-                                                              BorderRadius.all(
-                                                                  Radius
-                                                                      .circular(
-                                                                          20)),
-                                                          gradient:
-                                                              LinearGradient(
-                                                            begin: Alignment
-                                                                .topCenter,
-                                                            end: Alignment
-                                                                .bottomCenter,
-                                                            colors: <Color>[
-                                                              Colors.black
-                                                                  .withAlpha(0),
-                                                              Colors.black,
-                                                              Colors.black12,
-                                                            ],
-                                                          ),
-                                                        ),
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(4.0),
-                                                          child: Text(
-                                                            name,
-                                                            maxLines: 1,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                            textAlign: TextAlign
-                                                                .center,
-                                                            style: TextStyle(
-                                                                fontFamily:
-                                                                    'Solway',
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                color: Colors
-                                                                    .white,
-                                                                fontSize: 14.0),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            );
-                                          }),
-                                    )
-                                  ])),
-                                ]),
-                                Column(children: [
-                                  FutureBuilder(
-                                      future: groupsRef
-                                          .doc(gid)
-                                          .collection('suggestedMOOVs')
-                                          .get(),
-                                      builder: (context, snapshotSuggest) {
-                                        if (!snapshotSuggest.hasData) {
-                                          return Container();
-                                        }
-
-                                        List<Event> data = [];
-                                        Map eventsDataMap = {};
-
-                                        for (int i = 0;
-                                            i <
-                                                snapshotSuggest
-                                                    .data.docs.length;
-                                            i++) {
-                                       
-                                          Event moov = Event(
-                                              snapshotSuggest.data.docs[i]
-                                                  ['title'],
-                                              snapshotSuggest.data.docs[i]
-                                                  ['postId'],
-                                              snapshotSuggest.data.docs[i]
-                                                  ['pic'],
-                                              
-                                              snapshotSuggest.data.docs[i]
-                                                  ['startDate']);
-
-                                          data.add(moov);
-                                          eventsDataMap = groupBy(
-                                              data,
-                                              (obj) =>
-                                                  obj.startDate.toDate().day);
-                                          eventsDataMap = groupBy(
-                                              data,
-                                              (obj) => DateTime(
-                                                  obj.startDate.toDate().year,
-                                                  obj.startDate.toDate().month,
-                                                  obj.startDate.toDate().day));
-                                        }
-
-                                        return SizedBox(
-                                            height: 400,
-                                            width: MediaQuery.of(context)
-                                                .size
-                                                .width,
-                                            child: GroupCalendar(eventsDataMap,
-                                                widget.gid, groupName, members));
-                                      }),
-                                  // Padding(
-                                  //   padding: const EdgeInsets.only(top: 20.0),
-                                  //   child: Text(
-                                  //     "NEXT MOOV",
-                                  //     textAlign: TextAlign.center,
-                                  //     style: TextStyle(
-                                  //         fontSize: 20,
-                                  //         fontWeight: FontWeight.bold),
-                                  //   ),
-                                  // ),
-                                  // Suggestions(gid),
-                                  Padding(
-                                    padding: const EdgeInsets.all(20),
-                                    child: RaisedButton(
-                                      onPressed: () {
-                                        Navigator.push(
-                                                context,
-                                                PageTransition(
-                                                    type: PageTransitionType
-                                                        .bottomToTop,
-                                                    child: SearchSetMOOV(
-                                                        groupId: gid,
-                                                        groupName:
-                                                            snapshot2.data[
-                                                                'groupName'])))
-                                            .then(onGoBack);
-                                      },
-                                      color: TextThemes.ndBlue,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(2.0),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Icon(Icons.edit,
-                                                color: TextThemes.ndGold),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Text('Suggest a MOOV',
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 20)),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(8.0)),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 0.0),
-                                    child: Column(
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Text("Talk about it ",
-                                                style: TextStyle(
-                                                    color: TextThemes.ndBlue,
-                                                    fontSize: 18,
-                                                    fontWeight:
-                                                        FontWeight.bold)),
-                                            Icon(Icons.arrow_drop_down,
-                                                color: TextThemes.ndBlue),
-                                          ],
-                                        ),
-                                        // SizedBox(height: 10),
-                                        // Padding(
-                                        //   padding: const EdgeInsets.all(8.0),
-                                        //   child: Container(
-                                        //     decoration: BoxDecoration(
-                                        //       border: Border.all(
-                                        //           color: TextThemes.ndBlue),
-                                        //       borderRadius:
-                                        //           BorderRadius.circular(10.0),
-                                        //     ),
-                                        //     child: Padding(
-                                        //       padding:
-                                        //           const EdgeInsets.all(2.0),
-                                        //       child: Chat(
-                                        //         directMessageId: " ",
-                                        //         gid: gid,
-                                        //         isGroupChat: true,
-                                        //         members: members,
-                                        //         sendingPost: {},
-                                        //       ),
-                                        //     ),
-                                        //   ),
-                                        // ),
-                                      ],
-                                    ),
-                                  ),
-                                  // SizedBox(
-                                  //   height: 50,
-                                  // )
-                                ])
-                              ],
+                if ((members.contains(strUserId))) {
+                  return Scaffold(
+                    backgroundColor: Colors.white,
+                    appBar: AppBar(
+                        leading: IconButton(
+                          icon: Icon(
+                            Icons.arrow_back,
+                            color: Colors.white,
+                          ),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                        backgroundColor: TextThemes.ndBlue,
+                        flexibleSpace: FlexibleSpaceBar(
+                          titlePadding: EdgeInsets.all(15),
+                          title: ConstrainedBox(
+                            constraints: BoxConstraints(maxWidth: 210),
+                            child: Text(
+                              groupName,
+                              style: TextStyle(
+                                  fontSize: isLargePhone ? 24.0 : 22,
+                                  color: Colors.white),
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ),
-                      )
-                    : Scaffold(
-                        backgroundColor: Colors.white,
-                        appBar: AppBar(
-                            leading: IconButton(
-                              icon: Icon(
-                                Icons.arrow_back,
+                        actions: <Widget>[
+                          // Padding(
+                          //   padding: const EdgeInsets.all(4.0),
+                          //   child: FlatButton(
+                          //       onPressed: () {
+                          //         Database()
+                          //             .leaveGroup(currentUser.id, displayName, gid);
+
+                          //         Navigator.pop(
+                          //           context,
+                          //           MaterialPageRoute(builder: (context) => HomePage()),
+                          //         );
+                          //       },
+                          //       child: Text(
+                          //         "LEAVE",
+                          //         style: TextStyle(color: Colors.red),
+                          //       )),
+                          // ),
+
+                          FocusedMenuHolder(
+                            menuWidth: MediaQuery.of(context).size.width * 0.50,
+                            blurSize: 5.0,
+                            menuItemExtent: 45,
+                            menuBoxDecoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(15.0))),
+                            duration: Duration(milliseconds: 100),
+                            animateMenuItems: true,
+                            blurBackgroundColor: Colors.black54,
+                            openWithTap:
+                                true, // Open Focused-Menu on Tap rather than Long Press
+                            menuOffset:
+                                10.0, // Offset value to show menuItem from the selected item
+                            bottomOffsetHeight:
+                                80.0, // Offset height to consider, for showing the menu item ( for Suggestions bottom navigation bar), so that the popup menu will be shown on top of selected item.
+                            menuItems: <FocusedMenuItem>[
+                              // Add Each FocusedMenuItem  for Menu Options
+
+                              FocusedMenuItem(
+                                  title: Text("Add Friends"),
+                                  trailingIcon: Icon(Icons.person_add),
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        PageTransition(
+                                            type:
+                                                PageTransitionType.bottomToTop,
+                                            child: SearchUsersGroup(
+                                                groupName,
+                                                gid,
+                                                groupPic,
+                                                nextMOOV,
+                                                members)));
+                                  }),
+
+                              FocusedMenuItem(
+                                  title: Text("Share"),
+                                  trailingIcon: Icon(Icons.send),
+                                  onPressed: () {
+                                    Share.share("You found the Easter Egg! 🥚");
+                                  }),
+                              FocusedMenuItem(
+                                  title: Text("Edit Group"),
+                                  trailingIcon: Icon(Icons.edit),
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => EditGroup(
+                                                groupPic,
+                                                groupName,
+                                                members,
+                                                gid)));
+                                  }),
+                              FocusedMenuItem(
+                                  title: Text(
+                                    "Leave Group",
+                                    style: TextStyle(color: Colors.redAccent),
+                                  ),
+                                  trailingIcon: Icon(
+                                    Icons.directions_walk,
+                                    color: Colors.redAccent,
+                                  ),
+                                  onPressed: () {
+                                    showAlertDialog(context);
+                                  }),
+                            ],
+                            onPressed: () {},
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Icon(
+                                Icons.more_vert,
                                 color: Colors.white,
                               ),
-                              onPressed: () {
-                                Navigator.pop(context);
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8.0, right: 5),
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            NotificationFeedGroup(gid)));
                               },
-                            ),
-                            backgroundColor: TextThemes.ndBlue,
-                            flexibleSpace: FlexibleSpaceBar(
-                              titlePadding: EdgeInsets.all(15),
-                              title: ConstrainedBox(
-                                constraints: BoxConstraints(maxWidth: 210),
-                                child: Text(
-                                  groupName,
-                                  style: TextStyle(
-                                      fontSize: isLargePhone ? 30.0 : 22,
-                                      color: Colors.white),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ),
-                            actions: <Widget>[
-                              // Padding(
-                              //   padding: const EdgeInsets.all(4.0),
-                              //   child: FlatButton(
-                              //       onPressed: () {
-                              //         Database()
-                              //             .leaveGroup(currentUser.id, displayName, gid);
-
-                              //         Navigator.pop(
-                              //           context,
-                              //           MaterialPageRoute(builder: (context) => HomePage()),
-                              //         );
-                              //       },
-                              //       child: Text(
-                              //         "LEAVE",
-                              //         style: TextStyle(color: Colors.red),
-                              //       )),
-                              // ),
-                              // IconButton(
-                              //   padding: EdgeInsets.all(5.0),
-                              //   icon: Icon(Icons.person_add),
-                              //   color: Colors.white,
-                              //   splashColor: Color.fromRGBO(220, 180, 57, 1.0),
-                              //   onPressed: () {
-                              //     Navigator.push(
-                              //         context,
-                              //         PageTransition(
-                              //             type: PageTransitionType.bottomToTop,
-                              //             child: AddUsers(groupName, gid,
-                              //                 groupPic, members, nextMOOV)));
-                              //   },
-                              // ),
-                              FocusedMenuHolder(
-                                menuWidth:
-                                    MediaQuery.of(context).size.width * 0.50,
-                                blurSize: 5.0,
-                                menuItemExtent: 45,
-                                menuBoxDecoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.all(
-                                        Radius.circular(15.0))),
-                                duration: Duration(milliseconds: 20),
-                                animateMenuItems: true,
-                                blurBackgroundColor: Colors.black54,
-                                openWithTap:
-                                    true, // Open Focused-Menu on Tap rather than Long Press
-                                menuOffset:
-                                    10.0, // Offset value to show menuItem from the selected item
-                                bottomOffsetHeight:
-                                    80.0, // Offset height to consider, for showing the menu item ( for example bottom navigation bar), so that the popup menu will be shown on top of selected item.
-                                menuItems: <FocusedMenuItem>[
-                                  // Add Each FocusedMenuItem  for Menu Options
-
-                                  FocusedMenuItem(
-                                      title: Text("Share"),
-                                      trailingIcon: Icon(Icons.send),
-                                      onPressed: () {
-                                        Share.share(
-                                            "You found the easter egg 🥚");
-                                      }),
-                                  FocusedMenuItem(
-                                      title: Text("Edit Group"),
-                                      trailingIcon: Icon(Icons.edit),
-                                      onPressed: () {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) => EditGroup(
-                                                    groupPic,
-                                                    groupName,
-                                                    members,
-                                                    gid)));
-                                      }),
-                                  FocusedMenuItem(
-                                      title: Text(
-                                        "Leave Group",
-                                        style:
-                                            TextStyle(color: Colors.redAccent),
-                                      ),
-                                      trailingIcon: Icon(
-                                        Icons.directions_walk,
-                                        color: Colors.redAccent,
-                                      ),
-                                      onPressed: () {
-                                        showAlertDialog(context);
-                                      }),
-                                ],
-                                onPressed: () {},
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Icon(
-                                    Icons.more_vert,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ]),
-                        body: Stack(children: [
-                          Container(
-                              height: 200,
-                              width: MediaQuery.of(context).size.width,
-                              child:
-                                  Image.network(groupPic, fit: BoxFit.cover)),
-                          Container(
                               child: Column(children: [
-                            Container(
-                              height: 200,
-                              child: ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  physics: AlwaysScrollableScrollPhysics(),
-                                  itemCount: members.length,
-                                  itemBuilder: (_, index) {
-                                    DocumentSnapshot course = snapshot2.data;
+                                NotifIconGroup(
+                                  iconData: Icons.notifications_active_outlined,
+                                  gid: gid,
+                                ),
+                                Text(
+                                  "GROUP",
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 10),
+                                )
+                              ]),
+                            ),
+                          )
+                        ]),
+                    body: SingleChildScrollView(
+                      physics: ClampingScrollPhysics(),
+                      child: Container(
+                        child: Column(
+                          children: [
+                            Stack(children: [
+                              Container(
+                                  height: 120,
+                                  width: MediaQuery.of(context).size.width,
+                                  child: Image.network(
+                                    groupPic,
+                                    fit: BoxFit.cover,
+                                    color: Colors.black26,
+                                    colorBlendMode: BlendMode.darken,
+                                  )),
+                              Container(
+                                  child: Column(children: [
+                                Container(
+                                  height: 120,
+                                  child: ListView.builder(
+                                      scrollDirection: Axis.horizontal,
+                                      physics: AlwaysScrollableScrollPhysics(),
+                                      itemCount: members.length,
+                                      itemBuilder: (_, index) {
+                                        DocumentSnapshot course =
+                                            snapshot2.data;
 
-                                    return Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 8.0, right: 8),
-                                      child: Container(
-                                        height: 200,
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: <Widget>[
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  top: 30.0, bottom: 10),
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  if (course['id'] ==
-                                                      strUserId) {
-                                                    Navigator.of(context).push(
-                                                        MaterialPageRoute(
-                                                            builder: (context) =>
-                                                                ProfilePageWithHeader()));
-                                                  } else {
-                                                    Navigator.of(context).push(
-                                                        MaterialPageRoute(
-                                                            builder: (context) =>
-                                                                OtherProfile(
-                                                                  course['id'],
-                                                                )));
-                                                  }
-                                                },
-                                                child: CircleAvatar(
-                                                  radius: 30,
-                                                  backgroundColor:
-                                                      TextThemes.ndGold,
-                                                  child: CircleAvatar(
-                                                    // backgroundImage: snapshot.data
-                                                    //     .documents[index].data['photoUrl'],
-                                                    backgroundImage:
-                                                        NetworkImage(snapshot
-                                                                .data
-                                                                .docs[index]
-                                                            ['photoUrl']),
-                                                    radius: 26,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                            Container(
-                                              alignment: Alignment(0.0, 0.0),
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.all(
-                                                          Radius.circular(20)),
-                                                  gradient: LinearGradient(
-                                                    begin: Alignment.topCenter,
-                                                    end: Alignment.bottomCenter,
-                                                    colors: <Color>[
-                                                      Colors.black.withAlpha(0),
-                                                      Colors.black,
-                                                      Colors.black12,
-                                                    ],
-                                                  ),
-                                                ),
-                                                child: Padding(
+                                        String name = firstNamer(snapshot
+                                            .data.docs[index]['displayName']);
+
+                                        return Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 3.0, right: 3),
+                                          child: Container(
+                                            width: 80,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: <Widget>[
+                                                Padding(
                                                   padding:
-                                                      const EdgeInsets.all(4.0),
-                                                  child: Text(
-                                                    snapshot.data.docs[index]
-                                                        ['displayName'],
-                                                    style: TextStyle(
-                                                        fontFamily: 'Solway',
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color: Colors.white,
-                                                        fontSize: 16.0),
+                                                      const EdgeInsets.only(
+                                                          top: 15.0,
+                                                          bottom: 10),
+                                                  child: GestureDetector(
+                                                    onTap: () {
+                                                      if (snapshot.data
+                                                                  .docs[index]
+                                                              ['id'] ==
+                                                          strUserId) {
+                                                        Navigator.of(context).push(
+                                                            MaterialPageRoute(
+                                                                builder:
+                                                                    (context) =>
+                                                                        ProfilePageWithHeader()));
+                                                      } else {
+                                                        Navigator.of(context).push(
+                                                            MaterialPageRoute(
+                                                                builder:
+                                                                    (context) =>
+                                                                        OtherProfile(
+                                                                          snapshot
+                                                                              .data
+                                                                              .docs[index]['id'],
+                                                                        )));
+                                                      }
+                                                    },
+                                                    child: CircleAvatar(
+                                                      radius: 30,
+                                                      backgroundColor:
+                                                          TextThemes.ndGold,
+                                                      child: CircleAvatar(
+                                                        // backgroundImage: snapshot.data
+                                                        //     .documents[index].data['photoUrl'],
+                                                        backgroundImage:
+                                                            NetworkImage(snapshot
+                                                                    .data
+                                                                    .docs[index]
+                                                                ['photoUrl']),
+                                                        radius: 27,
+                                                      ),
+                                                    ),
                                                   ),
+                                                ),
+                                                Container(
+                                                  alignment:
+                                                      Alignment(0.0, 0.0),
+                                                  child: Container(
+                                                    decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.all(
+                                                              Radius.circular(
+                                                                  20)),
+                                                      gradient: LinearGradient(
+                                                        begin:
+                                                            Alignment.topCenter,
+                                                        end: Alignment
+                                                            .bottomCenter,
+                                                        colors: <Color>[
+                                                          Colors.black
+                                                              .withAlpha(0),
+                                                          Colors.black,
+                                                          Colors.black12,
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              4.0),
+                                                      child: Text(
+                                                        name,
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        style: TextStyle(
+                                                            fontFamily:
+                                                                'Solway',
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            color: Colors.white,
+                                                            fontSize: 14.0),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      }),
+                                )
+                              ])),
+                            ]),
+                            SizedBox(height: 15),
+                            Container(
+                              width: MediaQuery.of(context).size.width,
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  Column(
+                                    children: [
+                                      Text("Manage your",
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              fontStyle: FontStyle.italic)),
+                                      Text("MOOVs",
+                                          style: GoogleFonts.montserrat(
+                                              fontSize: 20,
+                                              color: TextThemes.ndGold)),
+                                    ],
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 30.0),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        Bounce(
+                                          duration: Duration(milliseconds: 500),
+                                          onPressed: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      SearchSetMOOV(
+                                                          groupId: gid,
+                                                          groupName:
+                                                              groupName)),
+                                            );
+                                          },
+                                          child: Icon(
+                                            Icons.add_circle,
+                                            color: TextThemes.ndGold,
+                                            size: 30,
+                                          ),
+                                        ),
+                                        SizedBox(width: 10),
+                                        Bounce(
+                                          duration: Duration(milliseconds: 500),
+                                          onPressed: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      MessageDetail(
+                                                          isGroupChat: true,
+                                                          gid: gid,
+                                                          members: members,
+                                                          sendingPost: {})),
+                                            );
+                                          },
+                                          child: Icon(
+                                            Icons.chat_bubble,
+                                            color: TextThemes.ndGold,
+                                            size: 30,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                            Column(children: [
+                              FutureBuilder(
+                                  future: groupsRef
+                                      .doc(gid)
+                                      .collection('suggestedMOOVs')
+                                      .get(),
+                                  builder: (context, snapshotSuggest) {
+                                    if (!snapshotSuggest.hasData) {
+                                      return Container();
+                                    }
+
+                                    List<Event> data = [];
+                                    Map eventsDataMap = {};
+
+                                    for (int i = 0;
+                                        i < snapshotSuggest.data.docs.length;
+                                        i++) {
+                                      Event moov = Event(
+                                          snapshotSuggest.data.docs[i]['title'],
+                                          snapshotSuggest.data.docs[i]
+                                              ['postId'],
+                                          snapshotSuggest.data.docs[i]['pic'],
+                                          snapshotSuggest.data.docs[i]
+                                              ['startDate']);
+
+                                      data.add(moov);
+                                      eventsDataMap = groupBy(data,
+                                          (obj) => obj.startDate.toDate().day);
+                                      eventsDataMap = groupBy(
+                                          data,
+                                          (obj) => DateTime(
+                                              obj.startDate.toDate().year,
+                                              obj.startDate.toDate().month,
+                                              obj.startDate.toDate().day));
+                                    }
+
+                                    return SizedBox(
+                                        height: 400,
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        child: GroupCalendar(eventsDataMap,
+                                            widget.gid, groupName, members));
+                                  }),
+                              // Padding(
+                              //   padding: const EdgeInsets.only(top: 20.0),
+                              //   child: Text(
+                              //     "NEXT MOOV",
+                              //     textAlign: TextAlign.center,
+                              //     style: TextStyle(
+                              //         fontSize: 20,
+                              //         fontWeight: FontWeight.bold),
+                              //   ),
+                              // ),
+                              // Suggestions(gid),
+                              // Padding(
+                              //   padding: const EdgeInsets.all(20),
+                              //   child: RaisedButton(
+                              //     onPressed: () {
+                              //       Navigator.push(
+                              //               context,
+                              //               PageTransition(
+                              //                   type: PageTransitionType
+                              //                       .bottomToTop,
+                              //                   child: SearchSetMOOV(
+                              //                       groupId: gid,
+                              //                       groupName: snapshot2
+                              //                           .data['groupName'])))
+                              //           .then(onGoBack);
+                              //     },
+                              //     color: TextThemes.ndBlue,
+                              //     child: Padding(
+                              //       padding: const EdgeInsets.all(2.0),
+                              //       child: Row(
+                              //         mainAxisSize: MainAxisSize.min,
+                              //         children: [
+                              //           Icon(Icons.edit,
+                              //               color: TextThemes.ndGold),
+                              //           Padding(
+                              //             padding: const EdgeInsets.all(8.0),
+                              //             child: Text('Suggest a MOOV',
+                              //                 style: TextStyle(
+                              //                     color: Colors.white,
+                              //                     fontSize: 20)),
+                              //           ),
+                              //         ],
+                              //       ),
+                              //     ),
+                              //     shape: RoundedRectangleBorder(
+                              //         borderRadius: BorderRadius.circular(8.0)),
+                              //   ),
+                              // ),
+                              // Padding(
+                              //   padding: const EdgeInsets.only(top: 0.0),
+                              //   child: Column(
+                              //     children: [
+                              //       Row(
+                              //         mainAxisAlignment:
+                              //             MainAxisAlignment.center,
+                              //         children: [
+                              //           Text("Talk about it ",
+                              //               style: TextStyle(
+                              //                   color: TextThemes.ndBlue,
+                              //                   fontSize: 18,
+                              //                   fontWeight: FontWeight.bold)),
+                              //           Icon(Icons.arrow_drop_down,
+                              //               color: TextThemes.ndBlue),
+                              //         ],
+                              //       ),
+                              //       // SizedBox(height: 10),
+                              //       // Padding(
+                              //       //   padding: const EdgeInsets.all(8.0),
+                              //       //   child: Container(
+                              //       //     decoration: BoxDecoration(
+                              //       //       border: Border.all(
+                              //       //           color: TextThemes.ndBlue),
+                              //       //       borderRadius:
+                              //       //           BorderRadius.circular(10.0),
+                              //       //     ),
+                              //       //     child: Padding(
+                              //       //       padding:
+                              //       //           const EdgeInsets.all(2.0),
+                              //       //       child: Chat(
+                              //       //         directMessageId: " ",
+                              //       //         gid: gid,
+                              //       //         isGroupChat: true,
+                              //       //         members: members,
+                              //       //         sendingPost: {},
+                              //       //       ),
+                              //       //     ),
+                              //       //   ),
+                              //       // ),
+                              //     ],
+                              //   ),
+                              // ),
+                              // SizedBox(
+                              //   height: 50,
+                              // )
+                            ])
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                } else {
+                  return Scaffold(
+                      backgroundColor: Colors.white,
+                      appBar: AppBar(
+                          leading: IconButton(
+                            icon: Icon(
+                              Icons.arrow_back,
+                              color: Colors.white,
+                            ),
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                          ),
+                          backgroundColor: TextThemes.ndBlue,
+                          flexibleSpace: FlexibleSpaceBar(
+                            titlePadding: EdgeInsets.all(15),
+                            title: ConstrainedBox(
+                              constraints: BoxConstraints(maxWidth: 210),
+                              child: Text(
+                                groupName,
+                                style: TextStyle(
+                                    fontSize: isLargePhone ? 30.0 : 22,
+                                    color: Colors.white),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ),
+                          actions: <Widget>[
+                            // Padding(
+                            //   padding: const EdgeInsets.all(4.0),
+                            //   child: FlatButton(
+                            //       onPressed: () {
+                            //         Database()
+                            //             .leaveGroup(currentUser.id, displayName, gid);
+
+                            //         Navigator.pop(
+                            //           context,
+                            //           MaterialPageRoute(builder: (context) => HomePage()),
+                            //         );
+                            //       },
+                            //       child: Text(
+                            //         "LEAVE",
+                            //         style: TextStyle(color: Colors.red),
+                            //       )),
+                            // ),
+                            // IconButton(
+                            //   padding: EdgeInsets.all(5.0),
+                            //   icon: Icon(Icons.person_add),
+                            //   color: Colors.white,
+                            //   splashColor: Color.fromRGBO(220, 180, 57, 1.0),
+                            //   onPressed: () {
+                            //     Navigator.push(
+                            //         context,
+                            //         PageTransition(
+                            //             type: PageTransitionType.bottomToTop,
+                            //             child: AddUsers(groupName, gid,
+                            //                 groupPic, members, nextMOOV)));
+                            //   },
+                            // ),
+                            FocusedMenuHolder(
+                              menuWidth:
+                                  MediaQuery.of(context).size.width * 0.50,
+                              blurSize: 5.0,
+                              menuItemExtent: 45,
+                              menuBoxDecoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(15.0))),
+                              duration: Duration(milliseconds: 20),
+                              animateMenuItems: true,
+                              blurBackgroundColor: Colors.black54,
+                              openWithTap:
+                                  true, // Open Focused-Menu on Tap rather than Long Press
+                              menuOffset:
+                                  10.0, // Offset value to show menuItem from the selected item
+                              bottomOffsetHeight:
+                                  80.0, // Offset height to consider, for showing the menu item ( for example bottom navigation bar), so that the popup menu will be shown on top of selected item.
+                              menuItems: <FocusedMenuItem>[
+                                // Add Each FocusedMenuItem  for Menu Options
+
+                                FocusedMenuItem(
+                                    title: Text("Share"),
+                                    trailingIcon: Icon(Icons.send),
+                                    onPressed: () {
+                                      Share.share(
+                                          "You found the easter egg 🥚");
+                                    }),
+                                FocusedMenuItem(
+                                    title: Text("Edit Group"),
+                                    trailingIcon: Icon(Icons.edit),
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => EditGroup(
+                                                  groupPic,
+                                                  groupName,
+                                                  members,
+                                                  gid)));
+                                    }),
+                                FocusedMenuItem(
+                                    title: Text(
+                                      "Leave Group",
+                                      style: TextStyle(color: Colors.redAccent),
+                                    ),
+                                    trailingIcon: Icon(
+                                      Icons.directions_walk,
+                                      color: Colors.redAccent,
+                                    ),
+                                    onPressed: () {
+                                      showAlertDialog(context);
+                                    }),
+                              ],
+                              onPressed: () {},
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Icon(
+                                  Icons.more_vert,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ]),
+                      body: Stack(children: [
+                        Container(
+                            height: 200,
+                            width: MediaQuery.of(context).size.width,
+                            child: Image.network(groupPic, fit: BoxFit.cover)),
+                        Container(
+                            child: Column(children: [
+                          Container(
+                            height: 200,
+                            child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                physics: AlwaysScrollableScrollPhysics(),
+                                itemCount: members.length,
+                                itemBuilder: (_, index) {
+                                  DocumentSnapshot course = snapshot2.data;
+
+                                  return Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 8.0, right: 8),
+                                    child: Container(
+                                      height: 200,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: <Widget>[
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                top: 30.0, bottom: 10),
+                                            child: GestureDetector(
+                                              onTap: () {
+                                                if (course['id'] == strUserId) {
+                                                  Navigator.of(context).push(
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              ProfilePageWithHeader()));
+                                                } else {
+                                                  Navigator.of(context).push(
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              OtherProfile(
+                                                                course['id'],
+                                                              )));
+                                                }
+                                              },
+                                              child: CircleAvatar(
+                                                radius: 30,
+                                                backgroundColor:
+                                                    TextThemes.ndGold,
+                                                child: CircleAvatar(
+                                                  // backgroundImage: snapshot.data
+                                                  //     .documents[index].data['photoUrl'],
+                                                  backgroundImage: NetworkImage(
+                                                      snapshot.data.docs[index]
+                                                          ['photoUrl']),
+                                                  radius: 26,
                                                 ),
                                               ),
                                             ),
-                                          ],
-                                        ),
+                                          ),
+                                          Container(
+                                            alignment: Alignment(0.0, 0.0),
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(20)),
+                                                gradient: LinearGradient(
+                                                  begin: Alignment.topCenter,
+                                                  end: Alignment.bottomCenter,
+                                                  colors: <Color>[
+                                                    Colors.black.withAlpha(0),
+                                                    Colors.black,
+                                                    Colors.black12,
+                                                  ],
+                                                ),
+                                              ),
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(4.0),
+                                                child: Text(
+                                                  snapshot.data.docs[index]
+                                                      ['displayName'],
+                                                  style: TextStyle(
+                                                      fontFamily: 'Solway',
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Colors.white,
+                                                      fontSize: 16.0),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    );
-                                  }),
-                            )
-                          ])),
-                        ]));
+                                    ),
+                                  );
+                                }),
+                          )
+                        ])),
+                      ]));
+                }
               });
         });
   }

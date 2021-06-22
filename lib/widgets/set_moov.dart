@@ -50,8 +50,6 @@ class _SearchSetMOOVState extends State<SearchSetMOOV> {
     searchController.dispose();
   }
 
-  int countLength = 0;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -103,15 +101,41 @@ class _SearchSetMOOVState extends State<SearchSetMOOV> {
                     snapshot.data.length == 0 ||
                     _searchTerm == null)
                   return FutureBuilder(
-                      future:
-                          postsRef.where("privacy", isEqualTo: "Public").get(),
+                      future: postsRef.get(),
                       builder: (context, snapshot) {
                         if (!snapshot.hasData) {
                           return Container();
                         }
-                        return PickMOOV(
-                            postId: snapshot.data.docs[0]['postId'],
-                            groupName: widget.groupName);
+                        String privacy = snapshot.data.docs[0]["privacy"];
+                        Map statuses = snapshot.data.docs[0]["statuses"];
+                        bool hide = false;
+                        if ((snapshot.data.docs[0]["userId"] !=
+                                    currentUser.id) &&
+                                privacy == "Friends Only" ||
+                            privacy == "Invite Only") {
+                          hide = true;
+                        }
+
+                        if (statuses.keys.contains(widget.groupId)) {
+                          hide = false;
+                        }
+
+                        if (hide == true) {
+                          return Container();
+                        }
+                        return (widget.pickMOOV)
+                            ? PickMOOV(
+                                postId: snapshot.data.docs[0]['postId'],
+                                groupName: widget.groupName)
+                            : SetMOOVResult(
+                                snapshot.data.docs[0]['title'],
+                                snapshot.data.docs[0]['userId'],
+                                snapshot.data.docs[0]['description'],
+                                snapshot.data.docs[0]['type'],
+                                snapshot.data.docs[0]['image'],
+                                snapshot.data.docs[0]['postId'],
+                                widget.groupId,
+                                widget.groupName);
                       });
 
                 List<AlgoliaObjectSnapshot> currSearchStuff = snapshot.data;
@@ -140,13 +164,15 @@ class _SearchSetMOOVState extends State<SearchSetMOOV> {
                                   hide = true;
                                 }
 
+                                if (currSearchStuff[index].data["userId"] ==
+                                    currentUser.id) {
+                                  hide = false;
+                                }
+
                                 if (statuses.keys.contains(widget.groupId)) {
                                   hide = false;
                                 }
-                                if (hide == false) {
-                                  countLength = currSearchStuff.length;
-                                }
-                                if (widget.pickMOOV) {
+                                if (widget.pickMOOV && hide == false) {
                                   return PickMOOV(
                                       postId:
                                           currSearchStuff[index].data["postId"],
@@ -293,11 +319,11 @@ class _SetMOOVResultState extends State<SetMOOVResult> {
                       ],
                     ),
                     child: CircleAvatar(
-                        radius: 27,
+                        radius: 20,
                         backgroundColor: TextThemes.ndGold,
                         child: CircleAvatar(
                           backgroundImage: NetworkImage(proPic),
-                          radius: 25,
+                          radius: 18,
                           backgroundColor: TextThemes.ndBlue,
                         )),
                   ),

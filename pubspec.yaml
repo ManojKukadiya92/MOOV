@@ -273,6 +273,7 @@ flutter:
     - lib/assets/music1.png
     - lib/assets/mopass.png
     - lib/assets/bm1.png
+    - lib/assets/calendarBack.jpeg
     - lib/assets/virtual1.png
     - lib/assets/popularSpots.png
     - lib/assets/placeholderparty1.jpg

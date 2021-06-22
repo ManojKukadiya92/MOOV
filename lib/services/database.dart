@@ -1018,7 +1018,7 @@ class Database {
 
         ///this is for deleted related suggested moovs
         .collectionGroup("suggestedMOOVs")
-        .where("nextMOOV", isEqualTo: postId)
+        .where("postId", isEqualTo: postId)
         .get()
         .then((snapshot) {
       for (DocumentSnapshot ds in snapshot.docs) {

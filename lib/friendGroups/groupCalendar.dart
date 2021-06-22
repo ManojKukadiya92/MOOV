@@ -11,6 +11,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 
@@ -155,6 +156,12 @@ class _GroupCalendarState extends State<GroupCalendar> {
         Stack(
           children: [
             TableCalendar<Event>(
+              headerStyle: HeaderStyle(
+                titleTextStyle: GoogleFonts.montserrat(color: TextThemes.ndBlue, fontWeight: FontWeight.w500, fontSize: 20),
+                titleTextFormatter: (date, locale) {
+                  return DateFormat("LLLL").format(date);
+                },
+              ),
               firstDay: kFirstDay,
               lastDay: kLastDay,
               focusedDay: _focusedDay,
@@ -182,27 +189,7 @@ class _GroupCalendarState extends State<GroupCalendar> {
                 _focusedDay = focusedDay;
               },
             ),
-            Center(
-                child: Padding(
-              padding: const EdgeInsets.only(top: 16, left: 20),
-              child: Bounce(
-                duration: Duration(milliseconds: 500),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => SearchSetMOOV(
-                            groupId: widget.groupId,
-                            groupName: widget.groupName)),
-                  );
-                },
-                child: Icon(
-                  Icons.add_circle,
-                  color: TextThemes.ndGold,
-                  size: 30,
-                ),
-              ),
-            ))
+           
           ],
         ),
         const SizedBox(height: 8.0),
@@ -301,7 +288,7 @@ class CalendarMOOV extends StatelessWidget {
                                   statuses[element] == 1 &&
                                   groupMembers.contains(element))
                               .toList();
-                        
+
                           return Row(
                             children: [
                               Bounce(
