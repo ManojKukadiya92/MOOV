@@ -129,35 +129,9 @@ class _GroupDetailState extends State<GroupDetail> {
                 if (snapshot2.data == null) return Container();
 
                 DocumentSnapshot course = snapshot2.data;
-                voters = course['voters'];
-
-                List<dynamic> votersIds = voters.keys.toList();
-                List<dynamic> votersValues = voters.values.toList();
-                int noVoteCount = votersValues
-                    .where((element) => element == 1)
-                    .toList()
-                    .length;
-                int yesVoteCount = votersValues
-                    .where((element) => element == 2)
-                    .toList()
-                    .length;
-                if (voters != null) {
-                  for (int i = 0; i < votersValues.length; i++) {
-                    if (votersIds[i] == currentUser.id) {
-                      if (votersValues[i] == 1) {
-                        status = 1;
-                      }
-                    }
-                    if (votersIds[i] == currentUser.id) {
-                      if (votersValues[i] == 2) {
-                        status = 2;
-                      }
-                    }
-                  }
-                }
+               
                 groupName = course['groupName'];
                 groupPic = course['groupPic'];
-                nextMOOV = course['nextMOOV'];
                 members = course['members'];
 
                 return (members.contains(strUserId))
@@ -479,11 +453,7 @@ class _GroupDetailState extends State<GroupDetail> {
                                                 snapshotSuggest
                                                     .data.docs.length;
                                             i++) {
-                                          String day = DateFormat('MMMd')
-                                              .format(snapshotSuggest
-                                                  .data.docs[i]['startDate']
-                                                  .toDate());
-
+                                       
                                           Event moov = Event(
                                               snapshotSuggest.data.docs[i]
                                                   ['title'],
@@ -491,8 +461,7 @@ class _GroupDetailState extends State<GroupDetail> {
                                                   ['postId'],
                                               snapshotSuggest.data.docs[i]
                                                   ['pic'],
-                                              snapshotSuggest.data.docs[i]
-                                                  ['groupStatuses'],
+                                              
                                               snapshotSuggest.data.docs[i]
                                                   ['startDate']);
 
@@ -508,15 +477,14 @@ class _GroupDetailState extends State<GroupDetail> {
                                                   obj.startDate.toDate().month,
                                                   obj.startDate.toDate().day));
                                         }
-                                        print(eventsDataMap);
 
                                         return SizedBox(
                                             height: 400,
                                             width: MediaQuery.of(context)
                                                 .size
                                                 .width,
-                                            child: TableEventsExample(
-                                                eventsDataMap));
+                                            child: GroupCalendar(eventsDataMap,
+                                                widget.gid, groupName, members));
                                       }),
                                   // Padding(
                                   //   padding: const EdgeInsets.only(top: 20.0),
@@ -539,7 +507,6 @@ class _GroupDetailState extends State<GroupDetail> {
                                                     type: PageTransitionType
                                                         .bottomToTop,
                                                     child: SearchSetMOOV(
-                                                        members: members,
                                                         groupId: gid,
                                                         groupName:
                                                             snapshot2.data[

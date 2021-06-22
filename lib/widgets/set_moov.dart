@@ -13,12 +13,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class SearchSetMOOV extends StatefulWidget {
-  final List members;
   final String groupId, groupName;
   final bool pickMOOV;
 
-  SearchSetMOOV(
-      {this.members, this.groupId, this.groupName, this.pickMOOV = false});
+  SearchSetMOOV({this.groupId, this.groupName, this.pickMOOV = false});
 
   @override
   _SearchSetMOOVState createState() => _SearchSetMOOVState();
@@ -163,9 +161,7 @@ class _SearchSetMOOVState extends State<SearchSetMOOV> {
                                               .data["description"],
                                           currSearchStuff[index].data["type"],
                                           currSearchStuff[index].data["image"],
-                                          widget.members,
                                           currSearchStuff[index].data["postId"],
-                                          currSearchStuff[index].data["unix"],
                                           widget.groupId,
                                           widget.groupName)
                                       : Container();
@@ -190,12 +186,10 @@ class SetMOOVResult extends StatefulWidget {
   final String description;
   final String type;
   final String image;
-  final List members;
   final String moov, gid, groupName;
-  final int unix;
 
   SetMOOVResult(this.title, this.userId, this.description, this.type,
-      this.image, this.members, this.moov, this.unix, this.gid, this.groupName);
+      this.image, this.moov, this.gid, this.groupName);
 
   @override
   _SetMOOVResultState createState() => _SetMOOVResultState();
@@ -316,9 +310,12 @@ class _SetMOOVResultState extends State<SetMOOVResult> {
                           .collection("suggestedMOOVs")
                           .snapshots(),
                       builder: (context, snapshot4) {
+                        if (!snapshot.hasData) {
+                          return Container();
+                        }
                         for (int i = 0; i < snapshot4.data.docs.length; i++) {
                           String suggestedAlready =
-                              snapshot4.data.docs[i]["nextMOOV"];
+                              snapshot4.data.docs[i]["postId"];
                           bool isSuggested = false;
                           if (suggestedAlready == widget.moov) {
                             isSuggested = true;
@@ -330,16 +327,8 @@ class _SetMOOVResultState extends State<SetMOOVResult> {
                                 : () {
                                     HapticFeedback.lightImpact();
 
-                                    Database().suggestMOOV(
-                                        currentUser.id,
-                                        widget.gid,
-                                        widget.moov,
-                                        widget.unix,
-                                        currentUser.displayName,
-                                        widget.members,
-                                        widget.title,
-                                        widget.image,
-                                        widget.groupName);
+                                    Database().suggestMOOV(widget.gid,
+                                        widget.moov, widget.groupName);
 
                                     Navigator.pop(context, widget.moov);
                                   },

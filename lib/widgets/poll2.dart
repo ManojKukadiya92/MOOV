@@ -256,8 +256,8 @@ class _PollViewState extends State<PollView> {
 
                                 var p = voters.keys.toList();
 
-                                return StreamBuilder(
-                                    stream: usersRef.doc(p[index]).snapshots(),
+                                return FutureBuilder(
+                                    future: usersRef.doc(p[index]).get(),
                                     builder: (context, snapshot2) {
                                       if (!snapshot2.hasData) {
                                         return Container();
@@ -374,8 +374,8 @@ class _PollViewState extends State<PollView> {
 
                                 var w = voters.keys.toList();
 
-                                return StreamBuilder(
-                                    stream: usersRef.doc(w[index]).snapshots(),
+                                return FutureBuilder(
+                                    future: usersRef.doc(w[index]).get(),
                                     builder: (context, snapshot3) {
                                       if (!snapshot3.hasData) {
                                         return Container();

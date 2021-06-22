@@ -335,7 +335,8 @@ class Database {
           .then((snapshot) {
         for (DocumentSnapshot ds in snapshot.docs) {
           print(ds.id);
-          if (ds.data()['livePosts'] != null && ds.data()['livePosts'].contains(postId)) {
+          if (ds.data()['livePosts'] != null &&
+              ds.data()['livePosts'].contains(postId)) {
             messagesRef
                 .doc(ds.id)
                 .collection("chat")
@@ -420,7 +421,8 @@ class Database {
           .then((snapshot) {
         for (DocumentSnapshot ds in snapshot.docs) {
           print(ds);
-          if (ds.data()['livePosts'] != null && ds.data()['livePosts'].contains(postId)) {
+          if (ds.data()['livePosts'] != null &&
+              ds.data()['livePosts'].contains(postId)) {
             messagesRef
                 .doc(ds.id)
                 .collection("chat")
@@ -518,7 +520,8 @@ class Database {
           .get()
           .then((snapshot) {
         for (DocumentSnapshot ds in snapshot.docs) {
-          if (ds.data()['livePosts'] != null && ds.data()['livePosts'].contains(postId)) {
+          if (ds.data()['livePosts'] != null &&
+              ds.data()['livePosts'].contains(postId)) {
             messagesRef
                 .doc(ds.id)
                 .collection("chat")
@@ -1260,8 +1263,8 @@ class Database {
     });
   }
 
-  Future<void> suggestMOOV(userId, gid, postId, unix, userName, members, title,
-      pic, groupName) async {
+  Future<void> suggestMOOV(
+      gid, postId, groupName) async {
     usersRef.doc(currentUser.id).get().then((value) {
       if (value['suggestLimit'] >= 1) {
         usersRef
@@ -1277,18 +1280,14 @@ class Database {
       // final DocumentReference ref2 = dbRef.doc('notreDame/data/users/$userId');
       // transaction.update(ref2, {'score': FieldValue.increment(30)});
 
-      groupsRef
-          .doc(gid)
-          .collection("suggestedMOOVs")
-          .doc(unix.toString() + " from " + userId)
-          .set({
-        "voters": {userId: 2},
-        "nextMOOV": postId,
-        "unix": unix,
-        "suggestorName": userName,
-        "suggestorId": userId
-      }, SetOptions(merge: true));
-      bool push = true;
+      postsRef.doc(postId).get().then((value) {
+        groupsRef.doc(gid).collection("suggestedMOOVs").doc(postId).set({
+          "postId": postId,
+          "pic": value['image'],
+          "startDate": value['startDate'],
+          "title": value['title']
+        });
+        bool push = true;
 
       notificationFeedRef
           .doc(gid)
@@ -1299,8 +1298,8 @@ class Database {
         "type": "suggestion",
         "push": push,
         "postId": postId,
-        "previewImg": pic,
-        "title": title,
+        "previewImg": value['image'],
+        "title": value['title'],
         "groupId": gid,
         "groupName": groupName,
         "username": currentUser.displayName,
@@ -1308,6 +1307,9 @@ class Database {
         "userProfilePic": currentUser.photoUrl,
         "timestamp": DateTime.now()
       });
+      });
+
+      
     });
   }
 

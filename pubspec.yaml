@@ -216,6 +216,7 @@ flutter:
     - lib/assets/woman.jpg
     - lib/assets/chinese.png
     - lib/assets/studybutton1.png
+    - lib/assets/ghost.png
     - lib/assets/govbutton1.png
     - lib/assets/massbutton1.png
     - lib/assets/dorm1.png

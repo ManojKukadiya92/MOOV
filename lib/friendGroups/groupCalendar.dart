@@ -1,20 +1,24 @@
 import 'dart:collection';
 
+import 'package:MOOV/pages/ProfilePageWithHeader.dart';
+import 'package:MOOV/pages/home.dart';
+import 'package:MOOV/pages/other_profile.dart';
 import 'package:MOOV/pages/post_detail.dart';
+import 'package:MOOV/utils/themes_styles.dart';
+import 'package:MOOV/widgets/set_moov.dart';
 import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 
 class Event {
   final String title, postId, pic;
-  final Map groupStatuses;
   final Timestamp startDate;
 
-  const Event(
-      this.title, this.postId, this.pic, this.groupStatuses, this.startDate);
+  const Event(this.title, this.postId, this.pic, this.startDate);
 
   @override
   String toString() => title;
@@ -24,20 +28,20 @@ class Event {
 ///
 /// Using a [LinkedHashMap] is highly recommended if you decide to use a map.
 
-final _kEventSource = {
-  DateTime.now(): [
-    Event('Today\'s Event 1e', "", "", {}, Timestamp.now()),
-    // Event('Today\'s Event 2'),
-    Event('Today\'s Event 2e', "", "", {}, Timestamp.now()),
-  ],
-  // DateTime.now(): [
-  //   // Event('Today\'s Event 2'),
-  // ],
-  // DateTime.now().add(Duration(days: 1)): [
-  //   Event('Today\'s Event 1ef'),
-  //   Event('Today\'s Event 2'),
-  // ]
-};
+// final _kEventSource = {
+//   DateTime.now(): [
+//     Event('Today\'s Event 1e', "", "", {}, Timestamp.now()),
+//     // Event('Today\'s Event 2'),
+//     Event('Today\'s Event 2e', "", "", {}, Timestamp.now()),
+//   ],
+// DateTime.now(): [
+//   // Event('Today\'s Event 2'),
+// ],
+// DateTime.now().add(Duration(days: 1)): [
+//   Event('Today\'s Event 1ef'),
+//   Event('Today\'s Event 2'),
+// ]
+//};
 
 int getHashCode(DateTime key) {
   return key.day * 1000000 + key.month * 10000 + key.year;
@@ -56,14 +60,17 @@ final kNow = DateTime.now();
 final kFirstDay = DateTime.now();
 final kLastDay = DateTime(kNow.year, kNow.month + 3, kNow.day);
 
-class TableEventsExample extends StatefulWidget {
+class GroupCalendar extends StatefulWidget {
   final Map eventsDataMap;
-  TableEventsExample(this.eventsDataMap);
+  final String groupId, groupName;
+  final List groupMembers;
+  GroupCalendar(
+      this.eventsDataMap, this.groupId, this.groupName, this.groupMembers);
   @override
-  _TableEventsExampleState createState() => _TableEventsExampleState();
+  _GroupCalendarState createState() => _GroupCalendarState();
 }
 
-class _TableEventsExampleState extends State<TableEventsExample> {
+class _GroupCalendarState extends State<GroupCalendar> {
   ValueNotifier<List<Event>> _selectedEvents;
   CalendarFormat _calendarFormat = CalendarFormat.week;
   RangeSelectionMode _rangeSelectionMode = RangeSelectionMode
@@ -145,33 +152,58 @@ class _TableEventsExampleState extends State<TableEventsExample> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        TableCalendar<Event>(
-          firstDay: kFirstDay,
-          lastDay: kLastDay,
-          focusedDay: _focusedDay,
-          selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-          rangeStartDay: _rangeStart,
-          rangeEndDay: _rangeEnd,
-          calendarFormat: _calendarFormat,
-          rangeSelectionMode: _rangeSelectionMode,
-          eventLoader: _getEventsForDay,
-          startingDayOfWeek: StartingDayOfWeek.monday,
-          calendarStyle: CalendarStyle(
-            // Use `CalendarStyle` to customize the UI
-            outsideDaysVisible: false,
-          ),
-          onDaySelected: _onDaySelected,
-          onRangeSelected: _onRangeSelected,
-          onFormatChanged: (format) {
-            if (_calendarFormat != format) {
-              setState(() {
-                _calendarFormat = format;
-              });
-            }
-          },
-          onPageChanged: (focusedDay) {
-            _focusedDay = focusedDay;
-          },
+        Stack(
+          children: [
+            TableCalendar<Event>(
+              firstDay: kFirstDay,
+              lastDay: kLastDay,
+              focusedDay: _focusedDay,
+              selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+              rangeStartDay: _rangeStart,
+              rangeEndDay: _rangeEnd,
+              calendarFormat: _calendarFormat,
+              rangeSelectionMode: _rangeSelectionMode,
+              eventLoader: _getEventsForDay,
+              startingDayOfWeek: StartingDayOfWeek.monday,
+              calendarStyle: CalendarStyle(
+                // Use `CalendarStyle` to customize the UI
+                outsideDaysVisible: false,
+              ),
+              onDaySelected: _onDaySelected,
+              onRangeSelected: _onRangeSelected,
+              onFormatChanged: (format) {
+                if (_calendarFormat != format) {
+                  setState(() {
+                    _calendarFormat = format;
+                  });
+                }
+              },
+              onPageChanged: (focusedDay) {
+                _focusedDay = focusedDay;
+              },
+            ),
+            Center(
+                child: Padding(
+              padding: const EdgeInsets.only(top: 16, left: 20),
+              child: Bounce(
+                duration: Duration(milliseconds: 500),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => SearchSetMOOV(
+                            groupId: widget.groupId,
+                            groupName: widget.groupName)),
+                  );
+                },
+                child: Icon(
+                  Icons.add_circle,
+                  color: TextThemes.ndGold,
+                  size: 30,
+                ),
+              ),
+            ))
+          ],
         ),
         const SizedBox(height: 8.0),
         Expanded(
@@ -181,7 +213,7 @@ class _TableEventsExampleState extends State<TableEventsExample> {
               return ListView.builder(
                 itemCount: value.length,
                 itemBuilder: (context, index) {
-                  return CalendarMOOV(value[index]);
+                  return CalendarMOOV(value[index], widget.groupMembers);
                   // return Container(
                   //   margin: const EdgeInsets.symmetric(
                   //     horizontal: 12.0,
@@ -208,7 +240,8 @@ class _TableEventsExampleState extends State<TableEventsExample> {
 
 class CalendarMOOV extends StatelessWidget {
   final Event event;
-  const CalendarMOOV(this.event);
+  final List groupMembers;
+  const CalendarMOOV(this.event, this.groupMembers);
 
   @override
   Widget build(BuildContext context) {
@@ -219,11 +252,13 @@ class CalendarMOOV extends StatelessWidget {
           child: Column(
             children: [
               Text(
-                DateFormat('h:mm').format(event.startDate.toDate()) +
-                    "\n" +
-                    DateFormat('a').format(event.startDate.toDate()),
-                style: TextStyle(fontWeight: FontWeight.w600),
+                DateFormat('h:mm').format(event.startDate.toDate()),
+                style: TextStyle(
+                    fontWeight: FontWeight.w600, color: TextThemes.ndBlue),
                 textAlign: TextAlign.center,
+              ),
+              Text(
+                DateFormat('a').format(event.startDate.toDate()),
               )
             ],
           ),
@@ -240,17 +275,150 @@ class CalendarMOOV extends StatelessWidget {
             ),
             child: ListTile(
                 trailing: Transform.translate(
-                  offset: Offset(16, 10),
+                  offset: Offset(12, 3),
                   child: SizedBox(
                     height: 50,
-                    width: 72,
-                    child: Row(
-                      children: [
-                        Icon(Icons.directions_run, color: Colors.green),
-                        Icon(Icons.accessibility, color: Colors.yellow[600]),
-                        Icon(Icons.directions_walk, color: Colors.red)
-                      ],
-                    ),
+                    width: 140,
+                    child: StreamBuilder(
+                        stream: postsRef.doc(event.postId).snapshots(),
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData) {
+                            return Container();
+                          }
+                          Map statuses = snapshot.data['statuses'];
+                          final List goingList = statuses.keys
+                              .where((element) =>
+                                  statuses[element] == 3 &&
+                                  groupMembers.contains(element))
+                              .toList();
+                          final List undecidedList = statuses.keys
+                              .where((element) =>
+                                  statuses[element] == 2 &&
+                                  groupMembers.contains(element))
+                              .toList();
+                          final List notGoingList = statuses.keys
+                              .where((element) =>
+                                  statuses[element] == 1 &&
+                                  groupMembers.contains(element))
+                              .toList();
+                        
+                          return Row(
+                            children: [
+                              Bounce(
+                                duration: Duration(milliseconds: 500),
+                                onPressed: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return _DialogBoxCalendar(
+                                          heading: "Who's going?",
+                                          people: goingList,
+                                        );
+                                      });
+                                },
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      goingList.length.toString(),
+                                      style: TextStyle(
+                                          color: Colors.green,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    Icon(Icons.directions_run,
+                                        color: Colors.green),
+                                  ],
+                                ),
+                              ),
+                              Bounce(
+                                duration: Duration(milliseconds: 500),
+                                onPressed: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return _DialogBoxCalendar(
+                                          heading: "Who's undecided?",
+                                          people: undecidedList,
+                                        );
+                                      });
+                                },
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      undecidedList.length.toString(),
+                                      style: TextStyle(
+                                          color: Colors.yellow[600],
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    Icon(Icons.accessibility,
+                                        color: Colors.yellow[600]),
+                                  ],
+                                ),
+                              ),
+                              Bounce(
+                                duration: Duration(milliseconds: 500),
+                                onPressed: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return _DialogBoxCalendar(
+                                          heading: "Who's not going?",
+                                          people: notGoingList,
+                                        );
+                                      });
+                                },
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      notGoingList.length.toString(),
+                                      style: TextStyle(
+                                          color: Colors.red,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    Icon(Icons.directions_walk,
+                                        color: Colors.red),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(width: 27),
+                              Bounce(
+                                duration: Duration(milliseconds: 500),
+                                onPressed: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        List ghostinList = groupMembers;
+                                        for (int i = 0;
+                                            i < groupMembers.length;
+                                            i++) {
+                                          if (statuses
+                                              .containsKey(groupMembers[i])) {
+                                            ghostinList.remove(groupMembers[i]);
+                                          }
+                                        }
+                                        return _DialogBoxCalendar(
+                                          heading: "Who's Ghostin?",
+                                          people: ghostinList,
+                                        );
+                                      });
+                                },
+                                child: Column(
+                                  children: [
+                                    SizedBox(height: 4),
+                                    Image.asset(
+                                      'lib/assets/ghost.png',
+                                      height: 20,
+                                    ),
+                                    SizedBox(height: 4),
+                                    Text("Who's\nghostin'?",
+                                        textAlign: TextAlign.center,
+                                        style:
+                                            TextStyle(fontSize: 8, height: 1))
+                                  ],
+                                ),
+                              ),
+                            ],
+                          );
+                        }),
                   ),
                 ),
                 onTap: () => print(event.postId),
@@ -268,7 +436,7 @@ class CalendarMOOV extends StatelessWidget {
                         openElevation: 10,
                         transitionType: ContainerTransitionType.fade,
                         transitionDuration: Duration(milliseconds: 500),
-                        openBuilder: (context, _) => PostDetail(""),
+                        openBuilder: (context, _) => PostDetail(event.postId),
                         closedElevation: 0,
                         closedBuilder: (context, _) => Stack(children: <Widget>[
                           FractionallySizedBox(
@@ -320,6 +488,7 @@ class CalendarMOOV extends StatelessWidget {
                                     padding: const EdgeInsets.all(4.0),
                                     child: Text(
                                       event.title,
+                                      textAlign: TextAlign.center,
                                       style: TextStyle(
                                           fontFamily: 'Solway',
                                           fontWeight: FontWeight.bold,
@@ -340,5 +509,115 @@ class CalendarMOOV extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+class _DialogBoxCalendar extends StatelessWidget {
+  final String heading;
+  final List people;
+  _DialogBoxCalendar({this.heading, this.people});
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      elevation: 0,
+      backgroundColor: Colors.transparent,
+      child: contentBox(context),
+    );
+  }
+
+  contentBox(context) {
+    return Container(
+        padding: EdgeInsets.all(5),
+        margin: EdgeInsets.only(top: 15),
+        decoration: BoxDecoration(
+            shape: BoxShape.rectangle,
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(15),
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.black, offset: Offset(0, 10), blurRadius: 10),
+            ]),
+        child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+          SizedBox(
+            height: 6,
+          ),
+          Text(
+            heading,
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+          ),
+          SizedBox(
+            height: 6,
+          ),
+          Container(
+            height: 90,
+            child: (people.isEmpty)
+                ? Text("\n\nNo one!")
+                : ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    physics: AlwaysScrollableScrollPhysics(),
+                    itemCount: people.length,
+                    itemBuilder: (_, index) {
+                      return FutureBuilder(
+                          future: usersRef.doc(people[index]).get(),
+                          builder: (context, snapshot) {
+                            if (!snapshot.hasData) {
+                              return Container();
+                            }
+
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 3.0, right: 3),
+                              child: Container(
+                                width: 80,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: <Widget>[
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 15.0, bottom: 10),
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          if (snapshot.data['id'] ==
+                                              currentUser.id) {
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        ProfilePageWithHeader()));
+                                          } else {
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        OtherProfile(
+                                                          snapshot.data['id'],
+                                                        )));
+                                          }
+                                        },
+                                        child: CircleAvatar(
+                                          radius: 23,
+                                          backgroundColor: TextThemes.ndGold,
+                                          child: CircleAvatar(
+                                            // backgroundImage: snapshot.data
+                                            //     .documents[index].data['photoUrl'],
+                                            backgroundImage: NetworkImage(
+                                                snapshot.data['photoUrl']),
+                                            radius: 20,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Text(snapshot.data['displayName'],
+                                        style: TextStyle(fontSize: 10))
+                                  ],
+                                ),
+                              ),
+                            );
+                          });
+                    }),
+          )
+        ]));
   }
 }
