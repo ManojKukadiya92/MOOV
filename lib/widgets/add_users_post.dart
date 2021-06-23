@@ -947,7 +947,7 @@ class _SearchUsersGroupState extends State<SearchUsersGroup> {
         ),
       ),
       backgroundColor: Colors.white,
-      body: Column(children: <Widget>[
+      body: ListView(children: <Widget>[
         TextField(
             style: TextStyle(fontSize: 20),
             controller: searchController,
@@ -982,52 +982,40 @@ class _SearchUsersGroupState extends State<SearchUsersGroup> {
         StreamBuilder<List<AlgoliaObjectSnapshot>>(
             stream: Stream.fromFuture(_operation(_searchTerm)),
             builder: (context, snapshot) {
-              if (!snapshot.hasData ||
-                  snapshot.data.length == 0 ||
-                  _searchTerm == null)
-                return Container(
-                    height: MediaQuery.of(context).size.height,
-                    child: Container(
-                      height: MediaQuery.of(context).size.height,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Colors.pink[300], Colors.pink[200]],
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                        ),
-                      ),
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Padding(
-                                padding: const EdgeInsets.all(50.0),
-                                child: RichText(
-                                    textAlign: TextAlign.center,
-                                    text: TextSpan(
-                                        style: TextThemes.mediumbody,
-                                        children: [
-                                          TextSpan(
-                                              text: "Squad",
-                                              style: TextStyle(
-                                                  fontSize: 30,
-                                                  fontWeight: FontWeight.w300)),
-                                          TextSpan(
-                                              text: " up",
-                                              style: TextStyle(
-                                                  fontSize: 30,
-                                                  fontWeight: FontWeight.w600)),
-                                          TextSpan(
-                                              text: ".",
-                                              style: TextStyle(
-                                                  fontSize: 30,
-                                                  fontWeight: FontWeight.w300))
-                                        ]))),
-                            Image.asset('lib/assets/ff.png')
-                          ],
-                        ),
-                      ),
-                    ));
+              if (_searchTerm == null || !snapshot.hasData) {
+                return FutureBuilder(
+                    future: usersRef.get(),
+                    builder: (context, snapshot0) {
+                      if (!snapshot0.hasData) {
+                        return Container();
+                      }
+                      return CustomScrollView(
+                        shrinkWrap: true,
+                        slivers: <Widget>[
+                          SliverList(
+                            delegate: SliverChildBuilderDelegate(
+                              (context, index) {
+                                return UserGroupResultAdd(
+                                      snapshot0.data.docs[index]
+                                          ["displayName"],
+                                      snapshot0.data.docs[index]["email"],
+                                      snapshot0.data.docs[index]["photoUrl"],
+                                      snapshot0.data.docs[index]["id"],
+                                      snapshot0.data.docs[index]["verifiedStatus"],
+                                      snapshot0.data.docs[index]["friendGroups"],
+                                      gname,
+                                      gid,
+                                      pic,
+                                      moov,
+                                      members);
+                              },
+                              childCount: snapshot0.data.docs.length ?? 0,
+                            ),
+                          ),
+                        ],
+                      );
+                    });
+              }
               List<AlgoliaObjectSnapshot> currSearchStuff = snapshot.data;
 
               switch (snapshot.connectionState) {
@@ -1212,7 +1200,7 @@ class _UserGroupResultAddState extends State<UserGroupResultAdd> {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(3.0))),
                     onPressed: () {
-                      Database().addUser(userId, gname, gid, displayName);
+                      Database().addUserToGroup(userId, gname, gid, displayName);
                       Database().addedToGroup(userId, gname, gid, pic);
                       setState(() {
                         status = true;
