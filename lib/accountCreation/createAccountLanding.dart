@@ -1,5 +1,6 @@
 import 'package:MOOV/pages/home.dart';
 import 'package:MOOV/utils/themes_styles.dart';
+import 'package:MOOV/widgets/google_map.dart';
 import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -82,7 +83,8 @@ class CreateAccountNew extends StatelessWidget {
                             Bounce(
                               duration: Duration(milliseconds: 500),
                               onPressed: () {
-                                accountButtonPressed(context, Home(), "");
+                                accountButtonPressed(
+                                    context: context, page: Home());
                               },
                               child: Container(
                                 height: 50.0,
@@ -116,8 +118,9 @@ class CreateAccountNew extends StatelessWidget {
                             Bounce(
                               duration: Duration(milliseconds: 500),
                               onPressed: () {
-                                accountButtonPressed(context,
-                                    _BusinessAccountNameCreation(), "");
+                                accountButtonPressed(
+                                    context: context,
+                                    page: _BusinessAccountNameCreation());
                               },
                               child: Container(
                                 height: 50.0,
@@ -160,7 +163,16 @@ class CreateAccountNew extends StatelessWidget {
   }
 }
 
-accountButtonPressed(BuildContext context, Widget page, String userInput) {
+accountButtonPressed(
+    {@required BuildContext context,
+    @required Widget page,
+    String bizName,
+    String bizType,
+    String bizLat,
+    String bizLong,
+    String bizAddress,
+    String bizPic,
+    String bizDescription}) {
   HapticFeedback.lightImpact();
 
   Navigator.push(
@@ -185,14 +197,8 @@ class __BusinessAccountNameCreationState
   final _formKey = GlobalKey<FormState>();
   final businessNameController = TextEditingController();
   bool _businessNameValid = false;
-  String _typeDropDownValue = "Restaurant/Bar";
-  List _typeDropDownList = [
-    "Restaurant/Bar",
-    "Theatre",
-    "Night Club",
-    "Sports Team"
-  ];
   String _chosenValue;
+  bool _typeChosen = false;
 
   @override
   Widget build(BuildContext context) {
@@ -219,7 +225,7 @@ class __BusinessAccountNameCreationState
                 delay: Duration(milliseconds: 700),
                 child: Padding(
                   padding: EdgeInsets.only(
-                      bottom: 15.0, left: 15, right: 15, top: 15),
+                      bottom: 40.0, left: 15, right: 15, top: 15),
                   child: TextFormField(
                     style: TextStyle(color: Colors.white),
 
@@ -274,50 +280,279 @@ class __BusinessAccountNameCreationState
                   ? DelayedDisplay(
                       delay: Duration(milliseconds: 300),
                       child: Padding(
-                        padding: EdgeInsets.only(
-                            bottom: 15.0, left: 15, right: 15, top: 15),
-                    child:  Center(
-        child: Container(
-          padding: const EdgeInsets.all(0.0),
-          child: DropdownButton<String>(
-            value: _chosenValue,
-            //elevation: 5,
-            style: TextStyle(color: Colors.black),
-
-            items: <String>[
-              'Restaurant/Bar',
-              'Theatre',
-              'Night Club',
-              'Sports Team',
-            ].map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value, style: TextStyle(color: Colors.white)),
-              );
-            }).toList(),
-            hint: Text(
-              "What type of business?",
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w300),
-            ),
-            onChanged: (String value) {
-              setState(() {
-                _chosenValue = value;
-              });
-            },
-          ),
-        ),
-      
-    )
+                          padding: EdgeInsets.only(
+                              bottom: 15.0, left: 15, right: 15, top: 0),
+                          child: Center(
+                            child: Theme(
+                              data: Theme.of(context).copyWith(
+                                canvasColor: TextThemes.ndBlue,
+                              ),
+                              child: DropdownButton<String>(
+                                iconSize: 0,
+                                value: _chosenValue,
+                                elevation: 5,
+                                items: <String>[
+                                  'Restaurant/Bar',
+                                  'Theatre',
+                                  'Night Club',
+                                  'Sports Team',
+                                ].map<DropdownMenuItem<String>>((String value) {
+                                  return DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Text(value,
+                                          style:
+                                              TextStyle(color: Colors.white)));
+                                }).toList(),
+                                hint: Text(
+                                  "What type of business?",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w300),
+                                ),
+                                onChanged: (String value) {
+                                  setState(() {
+                                    _typeChosen = true;
+                                    _chosenValue = value;
+                                  });
+                                },
+                              ),
+                            ),
+                          )),
+                    )
+                  : Container(),
+              _typeChosen
+                  ? Padding(
+                      padding: const EdgeInsets.only(top: 20.0, left: 200),
+                      child: DelayedDisplay(
+                        delay: Duration(milliseconds: 200),
+                        child: Bounce(
+                          duration: Duration(milliseconds: 500),
+                          onPressed: () {
+                            accountButtonPressed(
+                                context: context,
+                                page: BusinessAccountLocationCreation(
+                                    this.businessNameController.text,
+                                    this._chosenValue));
+                          },
+                          child: Container(
+                            height: 50.0,
+                            width: 100.0,
+                            decoration: BoxDecoration(
+                              color: TextThemes.ndBlue,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.3),
+                                  spreadRadius: 5,
+                                  blurRadius: 7,
+                                  offset: Offset(
+                                      0, 3), // changes position of shadow
+                                ),
+                              ],
+                              border: Border.all(color: Colors.white),
+                              borderRadius: BorderRadius.circular(30.0),
+                            ),
+                            child: Center(
+                                child: Icon(Icons.arrow_forward,
+                                    color: Colors.white)),
+                          ),
+                        ),
                       ),
                     )
-                  : Container()
+                  : Container(),
             ],
           ),
         ),
       ),
     );
+  }
+}
+
+class BusinessAccountLocationCreation extends StatefulWidget {
+  final String businessName, businessType;
+
+  BusinessAccountLocationCreation(this.businessName, this.businessType);
+
+  @override
+  _BusinessAccountLocationCreationState createState() =>
+      _BusinessAccountLocationCreationState();
+  static _BusinessAccountLocationCreationState of(BuildContext context) =>
+      context.findAncestorStateOfType<_BusinessAccountLocationCreationState>();
+}
+
+class _BusinessAccountLocationCreationState
+    extends State<BusinessAccountLocationCreation> {
+  String businessLocationLatitude = "";
+  String businessLocationLongitude = "";
+  String businessAddress = "";
+
+  set string(String value) => businessLocationLatitude = value;
+  set string2(String value) => businessLocationLongitude = value;
+  set string3(String value) => businessAddress = value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: TextThemes.ndBlue,
+      body: Column(
+        children: [
+          Expanded(
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: GoogleMap(
+                  businessName: widget.businessName,
+                  businessType: widget.businessType,
+                  fromMOOVMaker: false,
+                  callback: (val) => businessLocationLatitude = val,
+                  callback2: (val) => businessLocationLongitude = val,
+                  callback3: (val) => businessAddress = val),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class BusinessAccountOptionals extends StatefulWidget {
+  final String bizName, bizType, bizLat, bizLong, bizAddress;
+  BusinessAccountOptionals(
+    this.bizName,
+    this.bizType,
+    this.bizLat,
+    this.bizLong,
+    this.bizAddress,
+  );
+
+  @override
+  _BusinessAccountOptionalsState createState() =>
+      _BusinessAccountOptionalsState();
+}
+
+final String bizDescription = "";
+final String bizPic = "";
+final businessDescriptionController = TextEditingController();
+
+class _BusinessAccountOptionalsState extends State<BusinessAccountOptionals> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        backgroundColor: TextThemes.ndBlue,
+        body: Center(
+            child:
+                Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+          Align(
+              alignment: Alignment.topLeft,
+              child: Padding(
+                padding: const EdgeInsets.all(30.0),
+                child: Icon(Icons.arrow_back, color: Colors.white),
+              )),
+          Expanded(
+                      child: ListView(
+              children: [
+                SizedBox(height: 145),
+                DelayedDisplay(
+                  delay: Duration(milliseconds: 200),
+                  child: Text(
+                    "—Optional Details—",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w300,
+                      fontSize: 20.0,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                DelayedDisplay(
+                  delay: Duration(milliseconds: 200),
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 75.0),
+                    child: Text(
+                      "Business description",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w300,
+                        fontSize: 20.0,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+                DelayedDisplay(
+                  delay: Duration(milliseconds: 700),
+                  child: Padding(
+                    padding:
+                        EdgeInsets.only(bottom: 40.0, left: 15, right: 15, top: 15),
+                    child: TextFormField(
+                      keyboardType: TextInputType.multiline,
+                      maxLines: 3,
+                      minLines: 2,
+                      style: TextStyle(color: Colors.white),
+                      controller: businessDescriptionController,
+                      decoration: InputDecoration(
+                        hintText: "Business description..",
+                        hintStyle: GoogleFonts.montserrat(
+                            color: Colors.white.withOpacity(.5)),
+                        // suffixIcon: IconButton(
+                        //   icon: _incorrect
+                        //       ? Icon(Icons.lock, color: Colors.red)
+                        //       : Icon(Icons.lock_open, color: Colors.white),
+                        //   onPressed: () {
+                        //     // _tryUnlock();
+                        //     // titleController.clear();
+                        //   },
+                        // ),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(2)),
+                            borderSide: BorderSide(
+                              color: Colors.teal,
+                            )),
+                        fillColor: Colors.white,
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white),
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                DelayedDisplay(
+                  delay: Duration(milliseconds: 700),
+                  child: Bounce(
+                    duration: Duration(milliseconds: 500),
+                    onPressed: () {
+                      accountButtonPressed(context: context, page: Home());
+                    },
+                    child: Container(
+                      height: 50.0,
+                      width: 150.0,
+                      decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.3),
+                            spreadRadius: 5,
+                            blurRadius: 7,
+                            offset: Offset(0, 3), // changes position of shadow
+                          ),
+                        ],
+                        border: Border.all(color: Colors.white),
+                        color: TextThemes.ndGold,
+                        borderRadius: BorderRadius.circular(7.0),
+                      ),
+                      child: Center(
+                        child: Text(
+                          "Create",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ])));
   }
 }
