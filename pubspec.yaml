@@ -116,8 +116,7 @@ dependencies:
   syncfusion_flutter_calendar: ^18.4.33
   confetti: ^0.5.5
   table_calendar: ^3.0.0
-
-
+  delayed_display: ^2.0.0
 
 
 dependency_overrides:

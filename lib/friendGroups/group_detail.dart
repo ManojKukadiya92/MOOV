@@ -528,7 +528,7 @@ class _GroupDetailState extends State<GroupDetail> {
                                     }
 
                                     return SizedBox(
-                                        height: 400,
+                                        height: MediaQuery.of(context).size.height,
                                         width:
                                             MediaQuery.of(context).size.width,
                                         child: GroupCalendar(eventsDataMap,

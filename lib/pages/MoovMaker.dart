@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
+import 'package:MOOV/accountCreation/createAccountLanding.dart';
 import 'package:MOOV/businessInterfaces/CrowdManagement.dart';
 import 'package:MOOV/businessInterfaces/featureDeal.dart';
 import 'package:MOOV/friendGroups/OtherGroup.dart';
@@ -1185,14 +1186,10 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                                   const EdgeInsets.symmetric(horizontal: 12.0),
                               child: Column(
                                 children: [
-                                  coords.isEmpty
-                                      ? Icon(Icons.calendar_today,
-                                          color: TextThemes.ndGold, size: 30)
-                                      : Icon(Icons.check, color: Colors.green),
+                                  Icon(Icons.calendar_today,
+                                      color: TextThemes.ndGold, size: 30),
                                   SizedBox(height: 5),
-                                  coords.isEmpty
-                                      ? Text("Overlap?")
-                                      : Text("Got it!")
+                                  Text("Overlap?")
                                 ],
                               ),
                             ),
@@ -1613,6 +1610,7 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                         padding: const EdgeInsets.only(bottom: 5),
                         child: GestureDetector(
                           onTap: () {
+                            
                             Navigator.push(
                                     context,
                                     PageTransition(
@@ -1642,14 +1640,24 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                                           splashColor:
                                               Color.fromRGBO(220, 180, 57, 1.0),
                                           onPressed: () {
-                                            Navigator.push(
-                                                    context,
-                                                    PageTransition(
-                                                        type: PageTransitionType
-                                                            .bottomToTop,
-                                                        child: SearchUsersPost(
-                                                            inviteesNameList)))
-                                                .then(onGoBack);
+
+                                            
+                            Navigator.push(
+                                    context,
+                                    PageTransition(
+                                        type: PageTransitionType.bottomToTop,
+                                        child:
+                                            CreateAccountNew()
+                                            ))
+                                .then(onGoBack);
+                                            // Navigator.push(
+                                            //         context,
+                                            //         PageTransition(
+                                            //             type: PageTransitionType
+                                            //                 .bottomToTop,
+                                            //             child: SearchUsersPost(
+                                            //                 inviteesNameList)))
+                                            //     .then(onGoBack);
                                           },
                                         ),
                                         Text("Invite",
