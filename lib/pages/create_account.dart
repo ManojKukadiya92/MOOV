@@ -3,8 +3,6 @@ import 'dart:io';
 import 'dart:math';
 import 'package:MOOV/pages/MoovMaker.dart';
 import 'package:MOOV/widgets/google_map.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-
 import 'package:MOOV/helpers/themes.dart';
 import 'package:MOOV/main.dart';
 import 'package:MOOV/models/user.dart';

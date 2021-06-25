@@ -244,20 +244,20 @@ class _GoogleMapState extends State<GoogleMap> {
                             String distancetoStadium =
                                 NumberFormat.compact(locale: 'eu').format(y);
 
-                            BusinessAccountLocationCreation.of(context)
-                                .businessLocationLatitude = latitude.toString();
-                            BusinessAccountLocationCreation.of(context)
-                                    .businessLocationLongitude =
-                                longtitude.toString();
-                            BusinessAccountLocationCreation.of(context)
-                                    .businessAddress =
-                                selectedPlace.formattedAddress;
+                            // BusinessAccountLocationCreation.of(context)
+                            //     .businessLocationLatitude = latitude.toString();
+                            // BusinessAccountLocationCreation.of(context)
+                            //         .businessLocationLongitude =
+                            //     longtitude.toString();
+                            // BusinessAccountLocationCreation.of(context)
+                            //         .businessAddress =
+                            //     selectedPlace.formattedAddress;
 
-                            Future.delayed(Duration(milliseconds: 500), () {
-                              accountButtonPressed(
-                                  context: context,
-                                  page: BusinessAccountOptionals(widget.businessName, widget.businessType, latitude.toString(), longtitude.toString(),selectedPlace.formattedAddress, ));
-                            });
+                            // Future.delayed(Duration(milliseconds: 500), () {
+                            //   accountButtonPressed(
+                            //       context: context,
+                            //       page: BusinessAccountOptionals(widget.businessName, widget.businessType, latitude.(), longtitude.toString(),selectedPlace.formattedAddress, ));
+                            // });
 
                             return Container();
 

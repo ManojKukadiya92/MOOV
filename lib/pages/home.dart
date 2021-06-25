@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:MOOV/accountCreation/createAccountLanding.dart';
 import 'package:MOOV/businessInterfaces/BusinessDirectory.dart';
 import 'package:MOOV/businessInterfaces/livePassesSheet.dart';
 import 'package:MOOV/friendGroups/group_detail.dart';
@@ -638,7 +639,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       } else {
         final result = await Navigator.pushAndRemoveUntil(
           context,
-          PageRouteBuilder(pageBuilder: (_, __, ___) => CreateAccount()),
+          PageRouteBuilder(pageBuilder: (_, __, ___) => CreateAccountNew()),
 //ratedPG
           // PageRouteBuilder(pageBuilder: (_, __, ___) => WelcomePage()),
           (Route<dynamic> route) => false,
