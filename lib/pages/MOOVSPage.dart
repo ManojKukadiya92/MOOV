@@ -1,4 +1,4 @@
-import 'package:MOOV/friendGroups/friend_groups.dart';
+import 'package:MOOV/pages/friend_groups.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:MOOV/services/database.dart';

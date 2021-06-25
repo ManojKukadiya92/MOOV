@@ -256,8 +256,8 @@ class _PollViewState extends State<PollView> {
 
                                 var p = voters.keys.toList();
 
-                                return FutureBuilder(
-                                    future: usersRef.doc(p[index]).get(),
+                                return StreamBuilder(
+                                    stream: usersRef.doc(p[index]).snapshots(),
                                     builder: (context, snapshot2) {
                                       if (!snapshot2.hasData) {
                                         return Container();
@@ -374,8 +374,8 @@ class _PollViewState extends State<PollView> {
 
                                 var w = voters.keys.toList();
 
-                                return FutureBuilder(
-                                    future: usersRef.doc(w[index]).get(),
+                                return StreamBuilder(
+                                    stream: usersRef.doc(w[index]).snapshots(),
                                     builder: (context, snapshot3) {
                                       if (!snapshot3.hasData) {
                                         return Container();
@@ -710,163 +710,5 @@ class _PollMakerState extends State<PollMaker> {
                   ),
                 ),
     );
-  }
-}
-
-class PullUpPoll extends StatefulWidget {
-  final String messageId, postId;
-  const PullUpPoll(this.messageId, this.postId);
-
-  @override
-  _PullUpPollState createState() => _PullUpPollState();
-}
-
-class _PullUpPollState extends State<PullUpPoll> {
-  double option1 = 1;
-  double option2 = 90;
-  double option3 = 2.0;
-  double option4 = 3.0;
-
-  Map voters = {};
-  String creator = "me";
-  String userId;
-  String voter;
-  List<dynamic> option1List;
-  List<dynamic> option2List;
-
-  var x;
-  var y;
-
-  @override
-  Widget build(BuildContext context) {
-    String choice1;
-    String choice2;
-    String choice3;
-    String choice4;
-
-    final dateToCheck = Timestamp.now().toDate();
-    final aDate =
-        DateTime(dateToCheck.year, dateToCheck.month, dateToCheck.day);
-
-    String day = DateFormat('MMMd').format(aDate);
-
-    return StreamBuilder(
-        stream: messagesRef
-            .doc(widget.messageId)
-            .collection("pullUpTimeForPosts")
-            .doc(widget.postId)
-            .snapshots(),
-
-        // ignore: missing_return
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return Container();
-          }
-          // dynamic moovId;
-          bool isLargePhone = Screen.diagonal(context) > 766;
-
-          voters = snapshot.data['voters'];
-          // question = snapshot.data['question'];
-          choice1 = snapshot.data['choice1'];
-          choice2 = snapshot.data['choice2'];
-          choice3 = snapshot.data['choice3'];
-          choice4 = snapshot.data['choice4'];
-
-          List _list = voters.values.toList();
-
-          option1 =
-              _list.where((element) => element == 1).toList().length.toDouble();
-          option2 =
-              _list.where((element) => element == 2).toList().length.toDouble();
-
-          option3 =
-              _list.where((element) => element == 3).toList().length.toDouble();
-
-          option4 =
-              _list.where((element) => element == 4).toList().length.toDouble();
-
-          option1List = _list.where((element) => element == 1).toList();
-
-          option2List = _list.where((element) => element == 2).toList();
-
-          // var count = _list.where((c) => c.product_id == 2).toList().length;
-
-          for (var entry in voters.entries) {
-            x = entry.key;
-            y = entry.value;
-
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0),
-              child: Container(
-                height: 240,
-                child: Column(
-                  children: [
-                    Polls(
-                        question: Text(""),
-                        children: [
-                          // This cannot be less than 2, else will throw an exception
-                          Polls.options(title: choice1, value: option1),
-                          Polls.options(title: choice2, value: option2),
-                          Polls.options(title: choice3, value: option3),
-                          Polls.options(title: choice4, value: option4),
-                        ],
-                        pollStyle: TextStyle(color: TextThemes.ndBlue),
-                        currentUser: currentUser.id,
-                        creatorID: this.creator,
-                        voteData: voters,
-                        // voteData: usersWhoVoted,
-                        // userChoice: usersWhoVoted[this.userId],
-                        userChoice: voters[currentUser.id],
-                        onVoteBackgroundColor: Colors.blue,
-                        leadingBackgroundColor: TextThemes.ndGold,
-                        backgroundColor: Colors.white,
-                        onVote: (choice) {
-                          HapticFeedback.lightImpact();
-
-                          for (var entry in voters.entries) {
-                            x = entry.key;
-                            y = entry.value;
-                          }
-
-                          setState(() {
-                            x = choice;
-                          });
-
-                          messagesRef
-                              .doc(widget.messageId)
-                              .collection("pullUpTimeForPosts")
-                              .doc(widget.postId)
-                              .set({
-                            "voters": {currentUser.id: choice}
-                          }, SetOptions(merge: true));
-
-                          if (choice == 1) {
-                            setState(() {
-                              option1 += 1.0;
-                            });
-                          }
-                          if (choice == 2) {
-                            setState(() {
-                              option2 += 1.0;
-                            });
-                          }
-
-                          if (choice == 3) {
-                            setState(() {
-                              option3 += 1.0;
-                            });
-                          }
-                          if (choice == 4) {
-                            setState(() {
-                              option4 += 1.0;
-                            });
-                          }
-                        }),
-                  ],
-                ),
-              ),
-            );
-          }
-        });
   }
 }

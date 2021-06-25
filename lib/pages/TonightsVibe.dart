@@ -35,7 +35,7 @@ class __ContentsState extends State<_Contents> {
         Stack(children: [
           Padding(
             padding: isLargePhone
-                ? const EdgeInsets.only(top: 100)
+                ? const EdgeInsets.only(top: 90)
                 : const EdgeInsets.only(top: 40),
             child: Center(
               child: AnimatedOpacity(

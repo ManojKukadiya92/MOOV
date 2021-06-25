@@ -1,11 +1,12 @@
 import 'dart:io';
 import 'dart:ui';
-import 'package:MOOV/friendGroups/group_detail.dart';
 import 'package:MOOV/main.dart';
 import 'package:MOOV/pages/HomePage.dart';
+import 'package:MOOV/pages/group_detail.dart';
 import 'package:MOOV/pages/home.dart';
 import 'package:MOOV/pages/other_profile.dart';
 import 'package:MOOV/services/database.dart';
+
 import 'package:MOOV/utils/themes_styles.dart';
 import 'package:MOOV/widgets/add_users_post.dart';
 import 'package:MOOV/widgets/camera.dart';

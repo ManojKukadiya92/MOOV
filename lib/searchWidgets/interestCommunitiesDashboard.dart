@@ -92,7 +92,7 @@ class _CommunityGroupsState extends State<CommunityGroups> {
                                   fontSize: 17),
                             ),
                             SizedBox(height: 10),
-                            Icon(
+                            /*Icon(
                                 IconData(
                                     snapshot.data.docs[i]['groupIcon']
                                         ['codePoint'],
@@ -100,7 +100,7 @@ class _CommunityGroupsState extends State<CommunityGroups> {
                                         ['groupIcon']['fontFamily'],
                                     fontPackage: "font_awesome_flutter"),
                                 color: Colors.white,
-                                size: 40),
+                                size: 40),*/
                             // Icon(Icons.face, size: 40, color: Colors.white),
                           ],
                         ),

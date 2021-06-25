@@ -1,26 +1,24 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
-import 'package:MOOV/accountCreation/createAccountLanding.dart';
 import 'package:MOOV/businessInterfaces/CrowdManagement.dart';
 import 'package:MOOV/businessInterfaces/featureDeal.dart';
-import 'package:MOOV/friendGroups/OtherGroup.dart';
-import 'package:MOOV/friendGroups/group_detail.dart';
 import 'package:MOOV/main.dart';
-import 'package:MOOV/businessInterfaces/BusinessTab.dart';
-import 'package:MOOV/pages/CalendarPage.dart';
+import 'package:MOOV/pages/BusinessTab.dart';
 import 'package:MOOV/widgets/google_map.dart';
 import 'package:MOOV/widgets/sundayWrapup.dart';
-import 'package:confetti/confetti.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:MOOV/pages/OtherGroup.dart';
+import 'package:MOOV/pages/group_detail.dart';
 import 'package:MOOV/pages/other_profile.dart';
 import 'package:MOOV/services/database.dart';
 import 'package:MOOV/widgets/add_users_post.dart';
 import 'package:MOOV/widgets/camera.dart';
+import 'package:MOOV/widgets/progress.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
@@ -93,13 +91,18 @@ class _MoovMakerState extends State<MoovMaker> {
                   ),
                 ),
                 Padding(
-                    padding: const EdgeInsets.only(bottom: 15.0),
-                    child: Container(
-                        child: Text("MOOV Maker",
-                            style: GoogleFonts.montserrat(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                                fontSize: 25.0)))),
+                  padding: const EdgeInsets.only(bottom: 15.0),
+                  child: Container(
+                    child: Text(
+                      "MOOV Maker",
+                      style: TextStyle(
+                          fontFamily: 'Solway',
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          fontSize: 25.0),
+                    ),
+                  ),
+                ),
                 Align(
                   alignment: Alignment.topLeft,
                   child: IconButton(
@@ -139,8 +142,6 @@ class _MoovMakerFormState extends State<MoovMakerForm>
 
   @override
   void initState() {
-    _controllerCenterLeft =
-        ConfettiController(duration: const Duration(seconds: 2));
     _animationController =
         AnimationController(vsync: this, duration: Duration(seconds: 2));
     _animation = Tween(begin: 0.0, end: 12.0).animate(
@@ -152,7 +153,6 @@ class _MoovMakerFormState extends State<MoovMakerForm>
   }
 
   bool isUploading = false;
-  bool _isSuccessful = false;
 
   File _image;
   var placeholderImage;
@@ -391,12 +391,14 @@ class _MoovMakerFormState extends State<MoovMakerForm>
             postTitles.add(value.docs[i]['title']);
           }
 
+
           // print(previousPosts[i][i])
           // print(previousPosts[i][i]['title']);
           // print(value.docs[i]['title']);
           setState(() {
             ran = true;
           });
+          print("HER");
         }
         setState(() {});
       });
@@ -405,8 +407,6 @@ class _MoovMakerFormState extends State<MoovMakerForm>
       return previousPosts;
     }
   }
-
-  ConfettiController _controllerCenterLeft;
 
   DateTime currentValue = DateTime.now();
   DateTime currentValues;
@@ -526,50 +526,227 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                     color: Colors.blue, type: SpinKitWaveType.center),
               ],
             )
-          : _isSuccessful
-              ? Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(height: 300),
-                        Text("They said yes!",
-                            style: GoogleFonts.montserrat(
-                                fontWeight: FontWeight.w600)),
-                        SizedBox(height: 10),
-                        // SpinKitWave(
-                        //     duration: Duration(milliseconds: 1),
-                        //     color: TextThemes.ndGold,
-                        //     type: SpinKitWaveType.center),
-                      ],
-                    ),
-                    Align(
-                      alignment: Alignment.bottomRight,
-                      child: ConfettiWidget(
-                        confettiController: _controllerCenterLeft,
-                        blastDirection: pi, // radial value - LEFT
-                        particleDrag: 0.05, // apply drag to the confetti
-                        emissionFrequency: 0.05, // how often it should emit
-                        numberOfParticles: 20, // number of particles to emit
-                        gravity: 0.05, // gravity - or fall speed
-                        shouldLoop: false,
-                        colors: [
-                          TextThemes.ndBlue,
-                          TextThemes.ndGold
-                          // Colors.pink
-                        ], // manually specify the colors to be used
+          : SingleChildScrollView(
+              child: Column(children: <Widget>[
+                //posting on behalf of student club
+                currentUser.userType['clubExecutive'] != null
+                    ? Padding(
+                        padding: const EdgeInsets.only(bottom: 18.0),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width * .45,
+                          child: ButtonTheme(
+                            child: DropdownButtonFormField(
+                              style: isLargePhone
+                                  ? null
+                                  : TextStyle(
+                                      fontSize: 12.5, color: Colors.black),
+                              value: clubPostValue,
+                              icon: Icon(Icons.corporate_fare,
+                                  color: TextThemes.ndGold),
+                              decoration: InputDecoration(
+                                labelText: "Posting your club meeting?",
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                              ),
+                              items: clubNameMap.keys
+                                  .toList()
+                                  .map((dynamic value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                              onChanged: (String newValue) {
+                                setState(() {
+                                  clubPostValue = newValue;
+                                });
+                              },
+                              validator: (value) {
+                                if (value.isEmpty) {
+                                  return 'What are we doing?';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                        ),
+                      )
+                    : Container(),
+
+                //option for biz to make MOOVs recurring
+                currentUser.isBusiness
+                    ? Padding(
+                        padding: const EdgeInsets.only(
+                            top: 0.0, left: 65, right: 40, bottom: 15),
+                        child: Column(
+                          children: <Widget>[
+                            Container(
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: TextThemes.ndBlue,
+                                  ),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10))),
+                              child: ExpansionTile(
+                                initiallyExpanded:
+                                    widget.fromMaxOc || widget.fromMoovOver
+                                        ? true
+                                        : false,
+                                title: Text(
+                                  "Make this MOOV recurring?",
+                                  style: TextStyle(
+                                      fontSize: 14.0,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                children: <Widget>[
+                                  Row(
+                                    children: [
+                                      SizedBox(width: 10),
+                                      GradientIcon(
+                                          Icons.calendar_today,
+                                          25.0,
+                                          LinearGradient(
+                                            colors: <Color>[
+                                              Colors.blue,
+                                              Colors.blue[500],
+                                              Colors.blue,
+                                            ],
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
+                                          )),
+                                      Expanded(
+                                        child: CheckboxListTile(
+                                            title: Text("Daily"),
+                                            value: _dailyRecurring,
+                                            onChanged: (bool value) => setState(
+                                                () => _dailyRecurring = value)),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      SizedBox(width: 10),
+                                      GradientIcon(
+                                          Icons.calendar_today,
+                                          25.0,
+                                          LinearGradient(
+                                            colors: <Color>[
+                                              Colors.purple[700],
+                                              Colors.purple[200],
+                                              Colors.blue,
+                                            ],
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
+                                          )),
+                                      Expanded(
+                                        child: CheckboxListTile(
+                                            title: Text("Weekly"),
+                                            value: _weeklyRecurring,
+                                            onChanged: (bool value) => setState(
+                                                () =>
+                                                    _weeklyRecurring = value)),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      SizedBox(width: 10),
+                                      GradientIcon(
+                                          Icons.calendar_today,
+                                          25.0,
+                                          LinearGradient(
+                                            colors: <Color>[
+                                              Colors.purple,
+                                              Colors.purple[500],
+                                              Colors.blue[900],
+                                            ],
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
+                                          )),
+                                      Expanded(
+                                        child: CheckboxListTile(
+                                            title: Text("Bi-Weekly"),
+                                            value: _biweeklyRecurring,
+                                            onChanged: (bool value) => setState(
+                                                () => _biweeklyRecurring =
+                                                    value)),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      SizedBox(width: 10),
+                                      GradientIcon(
+                                          Icons.calendar_today,
+                                          25.0,
+                                          LinearGradient(
+                                            colors: <Color>[
+                                              Colors.purple[800],
+                                              Colors.purple[500],
+                                              Colors.purple,
+                                            ],
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
+                                          )),
+                                      Expanded(
+                                        child: CheckboxListTile(
+                                            title: Text("Monthly"),
+                                            value: _monthlyRecurring,
+                                            onChanged: (bool value) => setState(
+                                                () =>
+                                                    _monthlyRecurring = value)),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : Container(),
+
+                Padding(
+                  padding: EdgeInsets.only(
+                      bottom: currentUser.isBusiness ? 5 : 15.0,
+                      left: 15,
+                      right: 15),
+                  child: TextFormField(
+                    controller: titleController,
+                    decoration: InputDecoration(
+                      icon: Icon(
+                        Icons.create,
+                        color: TextThemes.ndGold,
+                      ),
+                      labelText: "MOOV Title",
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
                       ),
                     ),
-                  ],
-                )
-              : SingleChildScrollView(
-                  child: Column(children: <Widget>[
-                    //posting on behalf of student club
-                    currentUser.userType['clubExecutive'] != null
-                        ? Padding(
-                            padding: const EdgeInsets.only(bottom: 18.0),
-                            child: Container(
+                    // The validator receives the text that the user has entered.
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return 'Title?';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                currentUser.isBusiness
+                    ? Container()
+                    : Padding(
+                        padding: EdgeInsets.only(top: 5, bottom: 15.0, left: 5),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(right: 10.0, left: 8),
+                              child: Icon(Icons.question_answer,
+                                  color: TextThemes.ndGold),
+                            ),
+                            Container(
                               width: MediaQuery.of(context).size.width * .45,
                               child: ButtonTheme(
                                 child: DropdownButtonFormField(
@@ -577,26 +754,24 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                                       ? null
                                       : TextStyle(
                                           fontSize: 12.5, color: Colors.black),
-                                  value: clubPostValue,
-                                  icon: Icon(Icons.corporate_fare,
+                                  value: typeDropdownValue,
+                                  icon: Icon(Icons.museum,
                                       color: TextThemes.ndGold),
                                   decoration: InputDecoration(
-                                    labelText: "Posting your club meeting?",
+                                    labelText: "Select Event Type",
                                     enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10.0),
                                     ),
                                   ),
-                                  items: clubNameMap.keys
-                                      .toList()
-                                      .map((dynamic value) {
-                                    return DropdownMenuItem<String>(
+                                  items: listOfTypes.map((String value) {
+                                    return new DropdownMenuItem<String>(
                                       value: value,
-                                      child: Text(value),
+                                      child: new Text(value),
                                     );
                                   }).toList(),
                                   onChanged: (String newValue) {
                                     setState(() {
-                                      clubPostValue = newValue;
+                                      typeDropdownValue = newValue;
                                     });
                                   },
                                   validator: (value) {
@@ -608,287 +783,140 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                                 ),
                               ),
                             ),
-                          )
-                        : Container(),
-
-                    //option for biz to make MOOVs recurring
-                    currentUser.isBusiness
-                        ? Padding(
-                            padding: const EdgeInsets.only(
-                                top: 0.0, left: 65, right: 40, bottom: 15),
-                            child: Column(
-                              children: <Widget>[
-                                Container(
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: TextThemes.ndBlue,
-                                      ),
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(10))),
-                                  child: ExpansionTile(
-                                    initiallyExpanded:
-                                        widget.fromMaxOc || widget.fromMoovOver
-                                            ? true
-                                            : false,
-                                    title: Text(
-                                      "Make this MOOV recurring?",
-                                      style: TextStyle(
-                                          fontSize: 14.0,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    children: <Widget>[
-                                      Row(
-                                        children: [
-                                          SizedBox(width: 10),
-                                          GradientIcon(
-                                              Icons.calendar_today,
-                                              25.0,
-                                              LinearGradient(
-                                                colors: <Color>[
-                                                  Colors.blue,
-                                                  Colors.blue[500],
-                                                  Colors.blue,
-                                                ],
-                                                begin: Alignment.topLeft,
-                                                end: Alignment.bottomRight,
-                                              )),
-                                          Expanded(
-                                            child: CheckboxListTile(
-                                                title: Text("Daily"),
-                                                value: _dailyRecurring,
-                                                onChanged: (bool value) =>
-                                                    setState(() =>
-                                                        _dailyRecurring =
-                                                            value)),
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          SizedBox(width: 10),
-                                          GradientIcon(
-                                              Icons.calendar_today,
-                                              25.0,
-                                              LinearGradient(
-                                                colors: <Color>[
-                                                  Colors.purple[700],
-                                                  Colors.purple[200],
-                                                  Colors.blue,
-                                                ],
-                                                begin: Alignment.topLeft,
-                                                end: Alignment.bottomRight,
-                                              )),
-                                          Expanded(
-                                            child: CheckboxListTile(
-                                                title: Text("Weekly"),
-                                                value: _weeklyRecurring,
-                                                onChanged: (bool value) =>
-                                                    setState(() =>
-                                                        _weeklyRecurring =
-                                                            value)),
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          SizedBox(width: 10),
-                                          GradientIcon(
-                                              Icons.calendar_today,
-                                              25.0,
-                                              LinearGradient(
-                                                colors: <Color>[
-                                                  Colors.purple,
-                                                  Colors.purple[500],
-                                                  Colors.blue[900],
-                                                ],
-                                                begin: Alignment.topLeft,
-                                                end: Alignment.bottomRight,
-                                              )),
-                                          Expanded(
-                                            child: CheckboxListTile(
-                                                title: Text("Bi-Weekly"),
-                                                value: _biweeklyRecurring,
-                                                onChanged: (bool value) =>
-                                                    setState(() =>
-                                                        _biweeklyRecurring =
-                                                            value)),
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          SizedBox(width: 10),
-                                          GradientIcon(
-                                              Icons.calendar_today,
-                                              25.0,
-                                              LinearGradient(
-                                                colors: <Color>[
-                                                  Colors.purple[800],
-                                                  Colors.purple[500],
-                                                  Colors.purple,
-                                                ],
-                                                begin: Alignment.topLeft,
-                                                end: Alignment.bottomRight,
-                                              )),
-                                          Expanded(
-                                            child: CheckboxListTile(
-                                                title: Text("Monthly"),
-                                                value: _monthlyRecurring,
-                                                onChanged: (bool value) =>
-                                                    setState(() =>
-                                                        _monthlyRecurring =
-                                                            value)),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )
-                        : Container(),
-
-                    Padding(
-                      padding: EdgeInsets.only(
-                          bottom: currentUser.isBusiness ? 5 : 15.0,
-                          left: 15,
-                          right: 15),
-                      child: TextFormField(
-                        controller: titleController,
-                        decoration: InputDecoration(
-                          icon: Icon(
-                            Icons.create,
-                            color: TextThemes.ndGold,
-                          ),
-                          labelText: "MOOV Title",
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                        ),
-                        // The validator receives the text that the user has entered.
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return 'Title?';
-                          }
-                          return null;
-                        },
-                      ),
-                    ),
-                    currentUser.isBusiness
-                        ? Container()
-                        : Padding(
-                            padding:
-                                EdgeInsets.only(top: 5, bottom: 15.0, left: 5),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      right: 10.0, left: 8),
-                                  child: Icon(Icons.question_answer,
-                                      color: TextThemes.ndGold),
-                                ),
-                                Container(
-                                  width:
-                                      MediaQuery.of(context).size.width * .45,
-                                  child: ButtonTheme(
-                                    child: DropdownButtonFormField(
-                                      style: isLargePhone
-                                          ? null
-                                          : TextStyle(
-                                              fontSize: 12.5,
-                                              color: Colors.black),
-                                      value: typeDropdownValue,
-                                      icon: Icon(Icons.museum,
-                                          color: TextThemes.ndGold),
-                                      decoration: InputDecoration(
-                                        labelText: "Select Event Type",
-                                        enabledBorder: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10.0),
-                                        ),
-                                      ),
-                                      items: listOfTypes.map((String value) {
-                                        return new DropdownMenuItem<String>(
-                                          value: value,
-                                          child: new Text(value),
-                                        );
-                                      }).toList(),
-                                      onChanged: (String newValue) {
-                                        setState(() {
-                                          typeDropdownValue = newValue;
-                                        });
-                                      },
-                                      validator: (value) {
-                                        if (value.isEmpty) {
-                                          return 'What are we doing?';
-                                        }
-                                        return null;
-                                      },
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 10.0),
-                                  child: Container(
-                                    width:
-                                        MediaQuery.of(context).size.width * .35,
-                                    child: ButtonTheme(
-                                      child: DropdownButtonFormField(
-                                        style: isLargePhone
-                                            ? null
-                                            : TextStyle(
-                                                fontSize: 12.5,
-                                                color: Colors.black),
-                                        value: privacyDropdownValue,
-                                        icon: Icon(Icons.privacy_tip_outlined,
-                                            color: TextThemes.ndGold),
-                                        decoration: InputDecoration(
-                                          labelText: "Visibility",
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10.0),
-                                          ),
-                                        ),
-                                        items: privacyList.map((String value) {
-                                          return new DropdownMenuItem<String>(
-                                            value: value,
-                                            child: new Text(value),
-                                          );
-                                        }).toList(),
-                                        onChanged: (String newValue) {
-                                          setState(() {
-                                            privacyDropdownValue = newValue;
-                                          });
-                                        },
-                                        validator: (value) {
-                                          if (value.isEmpty) {
-                                            return 'Who can come?';
-                                          }
-                                          return null;
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                    !currentUser.isBusiness
-                        ? Row(
-                            children: [
-                              Expanded(
-                                child: Padding(
-                                  padding: EdgeInsets.only(
-                                      left: 15.0, right: 0, top: 5, bottom: 5),
-                                  child: TextFormField(
-                                    controller: addressController,
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 10.0),
+                              child: Container(
+                                width: MediaQuery.of(context).size.width * .35,
+                                child: ButtonTheme(
+                                  child: DropdownButtonFormField(
+                                    style: isLargePhone
+                                        ? null
+                                        : TextStyle(
+                                            fontSize: 12.5,
+                                            color: Colors.black),
+                                    value: privacyDropdownValue,
+                                    icon: Icon(Icons.privacy_tip_outlined,
+                                        color: TextThemes.ndGold),
                                     decoration: InputDecoration(
-                                      icon: Icon(Icons.place,
-                                          color: TextThemes.ndGold),
-                                      labelText: "Location or Address",
+                                      labelText: "Visibility",
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                      ),
+                                    ),
+                                    items: privacyList.map((String value) {
+                                      return new DropdownMenuItem<String>(
+                                        value: value,
+                                        child: new Text(value),
+                                      );
+                                    }).toList(),
+                                    onChanged: (String newValue) {
+                                      setState(() {
+                                        privacyDropdownValue = newValue;
+                                      });
+                                    },
+                                    validator: (value) {
+                                      if (value.isEmpty) {
+                                        return 'Who can come?';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                !currentUser.isBusiness
+                    ? Row(
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding: EdgeInsets.only(
+                                  left: 15.0, right: 0, top: 5, bottom: 5),
+                              child: TextFormField(
+                                controller: addressController,
+                                decoration: InputDecoration(
+                                  icon: Icon(Icons.place,
+                                      color: TextThemes.ndGold),
+                                  labelText: "Location or Address",
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                ),
+                                // The validator receives the text that the user has entered.
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return "Where's it at?";
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: coords.isEmpty
+                                ? () => Navigator.of(context)
+                                    .push(MaterialPageRoute(
+                                        builder: (context) => GoogleMap(
+                                              fromMOOVMaker: true,
+                                              coords: coords,
+                                            )))
+                                    .then(onGoBack)
+                                : null,
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20.0),
+                              child: Column(
+                                children: [
+                                  coords.isEmpty
+                                      ? Image.asset('lib/assets/mapIcon.png',
+                                          height: 30)
+                                      : Icon(Icons.check, color: Colors.green),
+                                  SizedBox(height: 5),
+                                  coords.isEmpty
+                                      ? Text("Map?")
+                                      : Text("Got it!")
+                                ],
+                              ),
+                            ),
+                          )
+                        ],
+                      )
+                    : Container(),
+
+                widget.fromPostDeal
+                    ? AnimatedBuilder(
+                        animation: _animation,
+                        builder: (context, _) {
+                          return Stack(
+                            children: [
+                              Container(
+                                margin: EdgeInsets.all(15),
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: Colors.white,
+                                  boxShadow: [
+                                    for (int i = 1; i <= 2; i++)
+                                      BoxShadow(
+                                        color: TextThemes.ndGold.withOpacity(
+                                            _animationController.value / 2),
+                                        spreadRadius: _animation.value * i,
+                                      )
+                                  ],
+                                ),
+                                child: Padding(
+                                  padding: EdgeInsets.all(15.0),
+                                  child: TextFormField(
+                                    controller: descriptionController,
+                                    decoration: InputDecoration(
+                                      icon: Icon(
+                                        Icons.description,
+                                        color: TextThemes.ndGold,
+                                      ),
+                                      labelText: "Details about the MOOV",
                                       enabledBorder: OutlineInputBorder(
                                         borderRadius:
                                             BorderRadius.circular(10.0),
@@ -897,145 +925,14 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                                     // The validator receives the text that the user has entered.
                                     validator: (value) {
                                       if (value.isEmpty) {
-                                        return "Where's it at?";
+                                        return "What's going down?";
                                       }
                                       return null;
                                     },
+                                    onChanged: (value) {
+                                      print(value);
+                                    },
                                   ),
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: coords.isEmpty
-                                    ? () => Navigator.of(context)
-                                        .push(MaterialPageRoute(
-                                            builder: (context) => GoogleMap(
-                                                  fromMOOVMaker: true,
-                                                  coords: coords,
-                                                )))
-                                        .then(onGoBack)
-                                    : null,
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 20.0),
-                                  child: Column(
-                                    children: [
-                                      coords.isEmpty
-                                          ? Image.asset(
-                                              'lib/assets/mapIcon.png',
-                                              height: 30)
-                                          : Icon(Icons.check,
-                                              color: Colors.green),
-                                      SizedBox(height: 5),
-                                      coords.isEmpty
-                                          ? Text("Map?")
-                                          : Text("Got it!")
-                                    ],
-                                  ),
-                                ),
-                              )
-                            ],
-                          )
-                        : Container(),
-
-                    widget.fromPostDeal
-                        ? AnimatedBuilder(
-                            animation: _animation,
-                            builder: (context, _) {
-                              return Stack(
-                                children: [
-                                  Container(
-                                    margin: EdgeInsets.all(15),
-                                    padding: const EdgeInsets.all(16),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      color: Colors.white,
-                                      boxShadow: [
-                                        for (int i = 1; i <= 2; i++)
-                                          BoxShadow(
-                                            color: TextThemes.ndGold
-                                                .withOpacity(
-                                                    _animationController.value /
-                                                        2),
-                                            spreadRadius: _animation.value * i,
-                                          )
-                                      ],
-                                    ),
-                                    child: Padding(
-                                      padding: EdgeInsets.all(15.0),
-                                      child: TextFormField(
-                                        controller: descriptionController,
-                                        decoration: InputDecoration(
-                                          icon: Icon(
-                                            Icons.description,
-                                            color: TextThemes.ndGold,
-                                          ),
-                                          labelText: "Details about the MOOV",
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10.0),
-                                          ),
-                                        ),
-                                        // The validator receives the text that the user has entered.
-                                        validator: (value) {
-                                          if (value.isEmpty) {
-                                            return "What's going down?";
-                                          }
-                                          return null;
-                                        },
-                                        onChanged: (value) {
-                                          print(value);
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                  Positioned(
-                                    bottom: 20,
-                                    right: 25,
-                                    child: GestureDetector(
-                                      onTap: () => showDialog(
-                                          context: context,
-                                          builder: (BuildContext context) {
-                                            return FeatureDealDialog(
-                                              description:
-                                                  """MOOV exists to spotlight local businesses to college students."""
-                                                  """\n\nThe better your deal, the more likely they'll come.""",
-                                            );
-                                          }),
-                                      child: Text(
-                                        "Sweeten the deal..",
-                                        style: TextStyle(
-                                            color: TextThemes.ndBlue,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              );
-                            })
-                        : Stack(
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.all(15.0),
-                                child: TextFormField(
-                                  controller: descriptionController,
-                                  decoration: InputDecoration(
-                                    icon: Icon(
-                                      Icons.description,
-                                      color: TextThemes.ndGold,
-                                    ),
-                                    labelText: "Details about the MOOV",
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                    ),
-                                  ),
-                                  // The validator receives the text that the user has entered.
-                                  validator: (value) {
-                                    if (value.isEmpty) {
-                                      return "What's going down?";
-                                    }
-                                    return null;
-                                  },
-                                  onChanged: (value) => _onChanged(value),
                                 ),
                               ),
                               Positioned(
@@ -1047,1294 +944,1233 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                                       builder: (BuildContext context) {
                                         return FeatureDealDialog(
                                           description:
-                                              """MOOV can fill your event with students, especially if it's featured."""
-                                              """\n\nYou might want to set your max occupancy, so you don't get swamped!""",
+                                              """MOOV exists to spotlight local businesses to college students."""
+                                              """\n\nThe better your deal, the more likely they'll come.""",
                                         );
                                       }),
-                                  child: detailLength < 16
-                                      ? Text(
-                                          "Feature..",
-                                          style: TextStyle(
-                                              color: TextThemes.ndBlue,
-                                              fontWeight: FontWeight.bold),
-                                        )
-                                      : Container(),
+                                  child: Text(
+                                    "Sweeten the deal..",
+                                    style: TextStyle(
+                                        color: TextThemes.ndBlue,
+                                        fontWeight: FontWeight.bold),
+                                  ),
                                 ),
                               )
                             ],
-                          ),
-
-                    // Padding(
-                    //   padding: EdgeInsets.all(20.0),
-                    //   child: DropdownButtonFormField(
-                    //     value: locationDropdownValue,
-                    //     icon: Icon(Icons.arrow_downward, color: TextThemes.ndGold),
-                    //     decoration: InputDecoration(
-                    //       labelText: "Select Location",
-                    //       enabledBorder: OutlineInputBorder(
-                    //         borderRadius: BorderRadius.circular(10.0),
-                    //       ),
-                    //     ),
-                    //     items: listOfLocations.map((String value) {
-                    //       return new DropdownMenuItem<String>(
-                    //         value: value,
-                    //         child: new Text(value),
-                    //       );
-                    //     }).toList(),
-                    //     onChanged: (String newValue) {
-                    //       setState(() {
-                    //         locationDropdownValue = newValue;
-                    //       });
-                    //     },
-                    //     validator: (value) {
-                    //       if (value.isEmpty) {
-                    //         return 'Select Event Type';
-                    //       }
-                    //       return null;
-                    //     },
-                    //   ),
-                    // ),
-
-                    Padding(
-                      padding:
-                          const EdgeInsets.only(top: 5, left: 55, bottom: 10),
-                      child: Row(
+                          );
+                        })
+                    : Stack(
                         children: [
-                          Expanded(
-                            child: Container(
-                              child: DateTimeField(
-                                format: format,
-                                keyboardType: TextInputType.datetime,
-                                decoration: InputDecoration(
-                                    labelText: 'Enter Start Time',
-                                    enabledBorder: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10.0)),
-                                    floatingLabelBehavior:
-                                        FloatingLabelBehavior.always),
-                                onChanged: (DateTime newValue) {
-                                  setState(() {
-                                    currentValue = currentValues; // = newValue;
-                                    //   newValue = currentValue;
-                                  });
-                                },
-                                onShowPicker: (context, currentValue) async {
-                                  final date = await showDatePicker(
-                                    context: context,
-                                    firstDate: DateTime.now(),
-                                    initialDate: DateTime.now(),
-                                    lastDate: DateTime(2023),
-                                    builder:
-                                        (BuildContext context, Widget child) {
-                                      return Theme(
-                                        data: ThemeData.light().copyWith(
-                                          primaryColor: TextThemes.ndGold,
-                                          accentColor: TextThemes.ndGold,
-                                          colorScheme: ColorScheme.light(
-                                              primary: TextThemes.ndBlue),
-                                          buttonTheme: ButtonThemeData(
-                                              textTheme:
-                                                  ButtonTextTheme.primary),
-                                        ),
-                                        child: child,
-                                      );
-                                    },
-                                  );
-                                  if (date != null) {
-                                    final time = await showTimePicker(
-                                      initialEntryMode:
-                                          TimePickerEntryMode.input,
-                                      context: context,
-                                      initialTime: TimeOfDay.fromDateTime(
-                                          currentValue ?? DateTime.now()),
-                                      builder:
-                                          (BuildContext context, Widget child) {
-                                        return Theme(
-                                          data: ThemeData.light().copyWith(
-                                            primaryColor: TextThemes.ndGold,
-                                            accentColor: TextThemes.ndGold,
-                                            colorScheme: ColorScheme.light(
-                                                primary: TextThemes.ndBlue),
-                                            buttonTheme: ButtonThemeData(
-                                                textTheme:
-                                                    ButtonTextTheme.primary),
-                                          ),
-                                          child: child,
-                                        );
-                                      },
-                                    );
-                                    currentValues =
-                                        DateTimeField.combine(date, time);
-                                    return currentValues;
-                                  } else {
-                                    return currentValue;
-                                  }
-                                },
+                          Padding(
+                            padding: EdgeInsets.all(15.0),
+                            child: TextFormField(
+                              controller: descriptionController,
+                              decoration: InputDecoration(
+                                icon: Icon(
+                                  Icons.description,
+                                  color: TextThemes.ndGold,
+                                ),
+                                labelText: "Details about the MOOV",
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
                               ),
+                              // The validator receives the text that the user has entered.
+                              validator: (value) {
+                                if (value.isEmpty) {
+                                  return "What's going down?";
+                                }
+                                return null;
+                              },
+                              onChanged: (value) => _onChanged(value),
                             ),
                           ),
-                          GestureDetector(
-                            onTap: coords.isEmpty
-                                ? () => Navigator.of(context)
-                                    .push(MaterialPageRoute(
-                                        builder: (context) => CalendarPage(
-                                            currentValue ?? DateTime.now())))
-                                    .then(onGoBack)
-                                : null,
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 12.0),
-                              child: Column(
-                                children: [
-                                  Icon(Icons.calendar_today,
-                                      color: TextThemes.ndGold, size: 30),
-                                  SizedBox(height: 5),
-                                  Text("Overlap?")
-                                ],
-                              ),
+                          Positioned(
+                            bottom: 20,
+                            right: 25,
+                            child: GestureDetector(
+                              onTap: () => showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return FeatureDealDialog(
+                                      description:
+                                          """MOOV can fill your event with students, especially if it's featured."""
+                                          """\n\nYou might want to set your max occupancy, so you don't get swamped!""",
+                                    );
+                                  }),
+                              child: detailLength < 16
+                                  ? Text(
+                                      "Feature..",
+                                      style: TextStyle(
+                                          color: TextThemes.ndBlue,
+                                          fontWeight: FontWeight.bold),
+                                    )
+                                  : Container(),
                             ),
                           )
                         ],
                       ),
+
+                // Padding(
+                //   padding: EdgeInsets.all(20.0),
+                //   child: DropdownButtonFormField(
+                //     value: locationDropdownValue,
+                //     icon: Icon(Icons.arrow_downward, color: TextThemes.ndGold),
+                //     decoration: InputDecoration(
+                //       labelText: "Select Location",
+                //       enabledBorder: OutlineInputBorder(
+                //         borderRadius: BorderRadius.circular(10.0),
+                //       ),
+                //     ),
+                //     items: listOfLocations.map((String value) {
+                //       return new DropdownMenuItem<String>(
+                //         value: value,
+                //         child: new Text(value),
+                //       );
+                //     }).toList(),
+                //     onChanged: (String newValue) {
+                //       setState(() {
+                //         locationDropdownValue = newValue;
+                //       });
+                //     },
+                //     validator: (value) {
+                //       if (value.isEmpty) {
+                //         return 'Select Event Type';
+                //       }
+                //       return null;
+                //     },
+                //   ),
+                // ),
+
+                Padding(
+                  padding: const EdgeInsets.only(
+                      top: 5, left: 15, bottom: 10, right: 15),
+                  child: Container(
+                    child: DateTimeField(
+                      format: format,
+                      keyboardType: TextInputType.datetime,
+                      decoration: InputDecoration(
+                          icon: Icon(Icons.timelapse, color: TextThemes.ndGold),
+                          suffixIcon: Icon(
+                            Icons.calendar_today,
+                            color: TextThemes.ndGold,
+                          ),
+                          labelText: 'Enter Start Time',
+                          enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0)),
+                          floatingLabelBehavior: FloatingLabelBehavior.always),
+                      onChanged: (DateTime newValue) {
+                        setState(() {
+                          currentValue = currentValues; // = newValue;
+                          //   newValue = currentValue;
+                        });
+                      },
+                      onShowPicker: (context, currentValue) async {
+                        final date = await showDatePicker(
+                          context: context,
+                          firstDate: DateTime.now(),
+                          initialDate: DateTime.now(),
+                          lastDate: DateTime(2023),
+                          builder: (BuildContext context, Widget child) {
+                            return Theme(
+                              data: ThemeData.light().copyWith(
+                                primaryColor: TextThemes.ndGold,
+                                accentColor: TextThemes.ndGold,
+                                colorScheme: ColorScheme.light(
+                                    primary: TextThemes.ndBlue),
+                                buttonTheme: ButtonThemeData(
+                                    textTheme: ButtonTextTheme.primary),
+                              ),
+                              child: child,
+                            );
+                          },
+                        );
+                        if (date != null) {
+                          final time = await showTimePicker(
+                            initialEntryMode: TimePickerEntryMode.input,
+                            context: context,
+                            initialTime: TimeOfDay.fromDateTime(
+                                currentValue ?? DateTime.now()),
+                            builder: (BuildContext context, Widget child) {
+                              return Theme(
+                                data: ThemeData.light().copyWith(
+                                  primaryColor: TextThemes.ndGold,
+                                  accentColor: TextThemes.ndGold,
+                                  colorScheme: ColorScheme.light(
+                                      primary: TextThemes.ndBlue),
+                                  buttonTheme: ButtonThemeData(
+                                      textTheme: ButtonTextTheme.primary),
+                                ),
+                                child: child,
+                              );
+                            },
+                          );
+                          currentValues = DateTimeField.combine(date, time);
+                          return currentValues;
+                        } else {
+                          return currentValue;
+                        }
+                      },
                     ),
-                    currentUser.mobileOrderMenu != null &&
-                            currentUser.mobileOrderMenu['item1'].isNotEmpty
-                        ? Stack(
-                            children: [
-                              Container(
-                                height: 104,
-                                width: MediaQuery.of(context).size.width,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 0.0, right: 0, top: 37),
-                                  child: Row(
-                                    children: [
-                                      currentUser.mobileOrderMenu['item1']
-                                              .isNotEmpty
-                                          ? Container(
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  .333,
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: [
-                                                  SizedBox(
-                                                    height: 30,
-                                                    child: Checkbox(
-                                                        value: _item1,
-                                                        onChanged:
-                                                            (bool value) =>
-                                                                setState(() =>
-                                                                    _item1 =
-                                                                        value)),
-                                                  ),
-                                                  SizedBox(
-                                                    height: 34,
-                                                    child: Text(
-                                                        currentUser
-                                                                .mobileOrderMenu[
-                                                            'item1']['name'],
-                                                        style: TextStyle(
-                                                            fontSize: 14),
-                                                        maxLines: 2),
-                                                  ),
-                                                ],
-                                              ),
-                                            )
-                                          : Container(),
-                                      currentUser.mobileOrderMenu['item2']
-                                              .isNotEmpty
-                                          ? Container(
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  .333,
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: [
-                                                  SizedBox(
-                                                    height: 29,
-                                                    child: Checkbox(
-                                                        value: _item2,
-                                                        onChanged:
-                                                            (bool value) =>
-                                                                setState(() =>
-                                                                    _item2 =
-                                                                        value)),
-                                                  ),
-                                                  SizedBox(
-                                                    height: 34,
-                                                    child: Text(
-                                                        currentUser
-                                                                .mobileOrderMenu[
-                                                            'item2']['name'],
-                                                        style: TextStyle(
-                                                            fontSize: 14),
-                                                        maxLines: 2),
-                                                  ),
-                                                ],
-                                              ),
-                                            )
-                                          : Container(),
-                                      currentUser.mobileOrderMenu['item3']
-                                              .isNotEmpty
-                                          ? Container(
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  .333,
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: [
-                                                  SizedBox(
-                                                    height: 30,
-                                                    child: Checkbox(
-                                                        value: _item3,
-                                                        onChanged:
-                                                            (bool value) =>
-                                                                setState(() =>
-                                                                    _item3 =
-                                                                        value)),
-                                                  ),
-                                                  SizedBox(
-                                                    height: 34,
-                                                    child: Text(
-                                                        currentUser
-                                                                .mobileOrderMenu[
-                                                            'item3']['name'],
-                                                        style: TextStyle(
-                                                            fontSize: 14),
-                                                        maxLines: 2),
-                                                  ),
-                                                ],
-                                              ),
-                                            )
-                                          : Container()
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                decoration: BoxDecoration(
-                                    border: Border.all(),
-                                    borderRadius: BorderRadius.circular(15)),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text("Offer Mobile Ordering?",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(fontSize: 12)),
-                                ),
-                              ),
-                            ],
-                          )
-                        : Container(),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          top: 0.0, left: 40, right: 12.5),
-                      child: Column(
-                        children: <Widget>[
-                          ExpansionTile(
-                            initiallyExpanded:
-                                widget.fromMaxOc || widget.fromMoovOver
-                                    ? true
-                                    : false,
-                            title: Text(
-                              "Optional Details",
-                              style: TextStyle(
-                                  fontSize: 18.0, fontWeight: FontWeight.bold),
-                            ),
-                            children: <Widget>[
-                              widget.fromMoovOver
-                                  ? AnimatedBuilder(
-                                      animation: _animation,
-                                      builder: (context, _) {
-                                        return Container(
-                                          margin: EdgeInsets.all(7.5),
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            color: Colors.white,
-                                            boxShadow: [
-                                              for (int i = 1; i <= 2; i++)
-                                                BoxShadow(
-                                                  color: TextThemes.ndGold
-                                                      .withOpacity(
-                                                          _animationController
-                                                                  .value /
-                                                              2),
-                                                  spreadRadius:
-                                                      _animation.value * i / 2,
-                                                )
-                                            ],
-                                          ),
-                                          child: Row(
+                  ),
+                ),
+                currentUser.mobileOrderMenu != null &&
+                        currentUser.mobileOrderMenu['item1'].isNotEmpty
+                    ? Stack(
+                        children: [
+                          Container(
+                            height: 104,
+                            width: MediaQuery.of(context).size.width,
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 0.0, right: 0, top: 37),
+                              child: Row(
+                                children: [
+                                  currentUser
+                                          .mobileOrderMenu['item1'].isNotEmpty
+                                      ? Container(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              .333,
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
                                             children: [
-                                              SizedBox(width: 10),
-                                              GradientIcon(
-                                                  Icons
-                                                      .confirmation_num_outlined,
-                                                  25.0,
-                                                  LinearGradient(
-                                                    colors: <Color>[
-                                                      Colors.red,
-                                                      Colors.yellow,
-                                                      Colors.blue,
-                                                    ],
-                                                    begin: Alignment.topLeft,
-                                                    end: Alignment.bottomRight,
-                                                  )),
-                                              Expanded(
-                                                child: Stack(
-                                                  alignment: Alignment.center,
-                                                  children: [
-                                                    CheckboxListTile(
-                                                        title: Text(
-                                                            "MOOV Over Pass™"),
-                                                        value: _moovOver,
-                                                        onChanged:
-                                                            (bool value) =>
-                                                                setState(() =>
-                                                                    _moovOver =
-                                                                        value)),
-                                                    Positioned(
-                                                        top: 15,
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .only(
-                                                                  left: 60.0),
-                                                          child:
-                                                              GestureDetector(
-                                                            onTap: () =>
-                                                                showDialog(
-                                                                    context:
-                                                                        context,
-                                                                    builder: (_) =>
-                                                                        CupertinoAlertDialog(
-                                                                          title:
-                                                                              Text("No more waiting"),
-                                                                          content:
-                                                                              Padding(
-                                                                            padding:
-                                                                                const EdgeInsets.only(top: 8.0),
-                                                                            child:
-                                                                                Text("A MOOV Over Pass will allow customers to skip the line in exchange for \$10."),
-                                                                          ),
-                                                                        ),
-                                                                    barrierDismissible:
-                                                                        true),
-                                                            child: Icon(Icons
-                                                                .info_outline),
-                                                          ),
-                                                        ))
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                      })
-                                  : Row(
-                                      children: [
-                                        SizedBox(width: 10),
-                                        GradientIcon(
-                                            Icons.confirmation_num_outlined,
-                                            25.0,
-                                            LinearGradient(
-                                              colors: <Color>[
-                                                Colors.red,
-                                                Colors.yellow,
-                                                Colors.blue,
-                                              ],
-                                              begin: Alignment.topLeft,
-                                              end: Alignment.bottomRight,
-                                            )),
-                                        Expanded(
-                                          child: Stack(
-                                            alignment: Alignment.center,
-                                            children: [
-                                              CheckboxListTile(
-                                                  title:
-                                                      Text("MOOV Over Pass™"),
-                                                  value: _moovOver,
-                                                  onChanged: (bool value) =>
-                                                      setState(() =>
-                                                          _moovOver = value)),
-                                              Positioned(
-                                                  top: 15,
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 60.0),
-                                                    child: GestureDetector(
-                                                      onTap: () => showDialog(
-                                                          context: context,
-                                                          builder: (_) =>
-                                                              CupertinoAlertDialog(
-                                                                title: Text(
-                                                                    "No more waiting"),
-                                                                content:
-                                                                    Padding(
-                                                                  padding: const EdgeInsets
-                                                                          .only(
-                                                                      top: 8.0),
-                                                                  child: Text(
-                                                                      "A MOOV Over Pass™ will allow customers to skip the line in exchange for \$10."),
-                                                                ),
-                                                              ),
-                                                          barrierDismissible:
-                                                              true),
-                                                      child: Icon(
-                                                          Icons.info_outline),
-                                                    ),
-                                                  ))
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                              widget.fromMaxOc
-                                  ? AnimatedBuilder(
-                                      animation: _animation,
-                                      builder: (context, _) {
-                                        return Container(
-                                          margin: EdgeInsets.all(7.5),
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            color: Colors.white,
-                                            boxShadow: [
-                                              for (int i = 1; i <= 2; i++)
-                                                BoxShadow(
-                                                  color: TextThemes.ndGold
-                                                      .withOpacity(
-                                                          _animationController
-                                                                  .value /
-                                                              2),
-                                                  spreadRadius:
-                                                      _animation.value * i / 2,
-                                                )
-                                            ],
-                                          ),
-                                          child: ListTile(
-                                            title: Row(
-                                              children: <Widget>[
-                                                Expanded(
-                                                    flex: 4,
-                                                    child:
-                                                        Text('Max Occupancy')),
-                                                Expanded(
-                                                  flex: 1,
-                                                  child: TextField(
-                                                    textAlign: TextAlign.center,
-                                                    controller:
-                                                        maxOccupancyController,
-                                                    keyboardType:
-                                                        TextInputType.number,
-                                                    onChanged: (value) =>
+                                              SizedBox(
+                                                height: 30,
+                                                child: Checkbox(
+                                                    value: _item1,
+                                                    onChanged: (bool value) =>
                                                         setState(() =>
-                                                            maxOccupancy =
-                                                                value),
-
-                                                    // your TextField's Content
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
+                                                            _item1 = value)),
+                                              ),
+                                              SizedBox(
+                                                height: 34,
+                                                child: Text(
+                                                    currentUser.mobileOrderMenu[
+                                                        'item1']['name'],
+                                                    style:
+                                                        TextStyle(fontSize: 14),
+                                                    maxLines: 2),
+                                              ),
+                                            ],
                                           ),
-                                        );
-                                      })
-                                  : ListTile(
-                                      title: Row(
-                                        children: <Widget>[
+                                        )
+                                      : Container(),
+                                  currentUser
+                                          .mobileOrderMenu['item2'].isNotEmpty
+                                      ? Container(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              .333,
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              SizedBox(
+                                                height: 29,
+                                                child: Checkbox(
+                                                    value: _item2,
+                                                    onChanged: (bool value) =>
+                                                        setState(() =>
+                                                            _item2 = value)),
+                                              ),
+                                              SizedBox(
+                                                height: 34,
+                                                child: Text(
+                                                    currentUser.mobileOrderMenu[
+                                                        'item2']['name'],
+                                                    style:
+                                                        TextStyle(fontSize: 14),
+                                                    maxLines: 2),
+                                              ),
+                                            ],
+                                          ),
+                                        )
+                                      : Container(),
+                                  currentUser
+                                          .mobileOrderMenu['item3'].isNotEmpty
+                                      ? Container(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              .333,
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              SizedBox(
+                                                height: 30,
+                                                child: Checkbox(
+                                                    value: _item3,
+                                                    onChanged: (bool value) =>
+                                                        setState(() =>
+                                                            _item3 = value)),
+                                              ),
+                                              SizedBox(
+                                                height: 34,
+                                                child: Text(
+                                                    currentUser.mobileOrderMenu[
+                                                        'item3']['name'],
+                                                    style:
+                                                        TextStyle(fontSize: 14),
+                                                    maxLines: 2),
+                                              ),
+                                            ],
+                                          ),
+                                        )
+                                      : Container()
+                                ],
+                              ),
+                            ),
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                                border: Border.all(),
+                                borderRadius: BorderRadius.circular(15)),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text("Offer Mobile Ordering?",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontSize: 12)),
+                            ),
+                          ),
+                        ],
+                      )
+                    : Container(),
+                Padding(
+                  padding:
+                      const EdgeInsets.only(top: 0.0, left: 40, right: 12.5),
+                  child: Column(
+                    children: <Widget>[
+                      ExpansionTile(
+                        initiallyExpanded:
+                            widget.fromMaxOc || widget.fromMoovOver
+                                ? true
+                                : false,
+                        title: Text(
+                          "Optional Details",
+                          style: TextStyle(
+                              fontSize: 18.0, fontWeight: FontWeight.bold),
+                        ),
+                        children: <Widget>[
+                          widget.fromMoovOver
+                              ? AnimatedBuilder(
+                                  animation: _animation,
+                                  builder: (context, _) {
+                                    return Container(
+                                      margin: EdgeInsets.all(7.5),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        color: Colors.white,
+                                        boxShadow: [
+                                          for (int i = 1; i <= 2; i++)
+                                            BoxShadow(
+                                              color: TextThemes.ndGold
+                                                  .withOpacity(
+                                                      _animationController
+                                                              .value /
+                                                          2),
+                                              spreadRadius:
+                                                  _animation.value * i / 2,
+                                            )
+                                        ],
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          SizedBox(width: 10),
+                                          GradientIcon(
+                                              Icons.confirmation_num_outlined,
+                                              25.0,
+                                              LinearGradient(
+                                                colors: <Color>[
+                                                  Colors.red,
+                                                  Colors.yellow,
+                                                  Colors.blue,
+                                                ],
+                                                begin: Alignment.topLeft,
+                                                end: Alignment.bottomRight,
+                                              )),
                                           Expanded(
-                                              flex: 4,
-                                              child: Text('Max Occupancy')),
-                                          Expanded(
-                                            flex: 1,
-                                            child: TextField(
-                                              textAlign: TextAlign.center,
-                                              controller:
-                                                  maxOccupancyController,
-                                              keyboardType:
-                                                  TextInputType.number,
-                                              onChanged: (value) => setState(
-                                                  () => maxOccupancy = value),
-
-                                              // your TextField's Content
+                                            child: Stack(
+                                              alignment: Alignment.center,
+                                              children: [
+                                                CheckboxListTile(
+                                                    title:
+                                                        Text("MOOV Over Pass™"),
+                                                    value: _moovOver,
+                                                    onChanged: (bool value) =>
+                                                        setState(() =>
+                                                            _moovOver = value)),
+                                                Positioned(
+                                                    top: 15,
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              left: 60.0),
+                                                      child: GestureDetector(
+                                                        onTap: () => showDialog(
+                                                            context: context,
+                                                            builder: (_) =>
+                                                                CupertinoAlertDialog(
+                                                                  title: Text(
+                                                                      "No more waiting"),
+                                                                  content:
+                                                                      Padding(
+                                                                    padding: const EdgeInsets
+                                                                            .only(
+                                                                        top:
+                                                                            8.0),
+                                                                    child: Text(
+                                                                        "A MOOV Over Pass will allow customers to skip the line in exchange for \$10."),
+                                                                  ),
+                                                                ),
+                                                            barrierDismissible:
+                                                                true),
+                                                        child: Icon(
+                                                            Icons.info_outline),
+                                                      ),
+                                                    ))
+                                              ],
                                             ),
                                           ),
                                         ],
                                       ),
-                                    ),
-                              ListTile(
-                                title: Row(
-                                  children: <Widget>[
+                                    );
+                                  })
+                              : Row(
+                                  children: [
+                                    SizedBox(width: 10),
+                                    GradientIcon(
+                                        Icons.confirmation_num_outlined,
+                                        25.0,
+                                        LinearGradient(
+                                          colors: <Color>[
+                                            Colors.red,
+                                            Colors.yellow,
+                                            Colors.blue,
+                                          ],
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                        )),
                                     Expanded(
-                                        flex: 4,
-                                        child: Text('Cost Per Person')),
-                                    Expanded(
-                                      flex: 1,
-                                      child: TextField(
-                                        textAlign: TextAlign.center,
-                                        inputFormatters: [
-                                          CurrencyTextInputFormatter(
-                                            decimalDigits: 0,
-                                            symbol: '\$',
-                                          )
+                                      child: Stack(
+                                        alignment: Alignment.center,
+                                        children: [
+                                          CheckboxListTile(
+                                              title: Text("MOOV Over Pass™"),
+                                              value: _moovOver,
+                                              onChanged: (bool value) =>
+                                                  setState(
+                                                      () => _moovOver = value)),
+                                          Positioned(
+                                              top: 15,
+                                              child: Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 60.0),
+                                                child: GestureDetector(
+                                                  onTap: () => showDialog(
+                                                      context: context,
+                                                      builder: (_) =>
+                                                          CupertinoAlertDialog(
+                                                            title: Text(
+                                                                "No more waiting"),
+                                                            content: Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                          .only(
+                                                                      top: 8.0),
+                                                              child: Text(
+                                                                  "A MOOV Over Pass™ will allow customers to skip the line in exchange for \$10."),
+                                                            ),
+                                                          ),
+                                                      barrierDismissible: true),
+                                                  child:
+                                                      Icon(Icons.info_outline),
+                                                ),
+                                              ))
                                         ],
-                                        controller: paymentAmountController,
-                                        keyboardType: TextInputType.number,
-                                        onChanged: (value) => setState(
-                                            () => paymentAmount = value),
                                       ),
                                     ),
                                   ],
                                 ),
-                              ),
-                              // CheckboxListTile(
-                              //     title: new Text("Needs a Barcode (Verification)"),
-                              //     value: barcode,
-                              //     onChanged: (bool value) =>
-                              //         setState(() => barcode = value)),
-                            ],
+                          widget.fromMaxOc
+                              ? AnimatedBuilder(
+                                  animation: _animation,
+                                  builder: (context, _) {
+                                    return Container(
+                                      margin: EdgeInsets.all(7.5),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        color: Colors.white,
+                                        boxShadow: [
+                                          for (int i = 1; i <= 2; i++)
+                                            BoxShadow(
+                                              color: TextThemes.ndGold
+                                                  .withOpacity(
+                                                      _animationController
+                                                              .value /
+                                                          2),
+                                              spreadRadius:
+                                                  _animation.value * i / 2,
+                                            )
+                                        ],
+                                      ),
+                                      child: ListTile(
+                                        title: Row(
+                                          children: <Widget>[
+                                            Expanded(
+                                                flex: 4,
+                                                child: Text('Max Occupancy')),
+                                            Expanded(
+                                              flex: 1,
+                                              child: TextField(
+                                                textAlign: TextAlign.center,
+                                                controller:
+                                                    maxOccupancyController,
+                                                keyboardType:
+                                                    TextInputType.number,
+                                                onChanged: (value) => setState(
+                                                    () => maxOccupancy = value),
+
+                                                // your TextField's Content
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  })
+                              : ListTile(
+                                  title: Row(
+                                    children: <Widget>[
+                                      Expanded(
+                                          flex: 4,
+                                          child: Text('Max Occupancy')),
+                                      Expanded(
+                                        flex: 1,
+                                        child: TextField(
+                                          textAlign: TextAlign.center,
+                                          controller: maxOccupancyController,
+                                          keyboardType: TextInputType.number,
+                                          onChanged: (value) => setState(
+                                              () => maxOccupancy = value),
+
+                                          // your TextField's Content
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                          ListTile(
+                            title: Row(
+                              children: <Widget>[
+                                Expanded(
+                                    flex: 4, child: Text('Cost Per Person')),
+                                Expanded(
+                                  flex: 1,
+                                  child: TextField(
+                                    textAlign: TextAlign.center,
+                                    inputFormatters: [
+                                      CurrencyTextInputFormatter(
+                                        decimalDigits: 0,
+                                        symbol: '\$',
+                                      )
+                                    ],
+                                    controller: paymentAmountController,
+                                    keyboardType: TextInputType.number,
+                                    onChanged: (value) =>
+                                        setState(() => paymentAmount = value),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
+                          // CheckboxListTile(
+                          //     title: new Text("Needs a Barcode (Verification)"),
+                          //     value: barcode,
+                          //     onChanged: (bool value) =>
+                          //         setState(() => barcode = value)),
                         ],
                       ),
-                    ),
-                    Padding(
-                        padding: const EdgeInsets.only(bottom: 5),
-                        child: GestureDetector(
-                          onTap: () {
-                            
-                            Navigator.push(
-                                    context,
-                                    PageTransition(
-                                        type: PageTransitionType.bottomToTop,
-                                        child:
-                                            SearchUsersPost(inviteesNameList)))
-                                .then(onGoBack);
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 15.0, vertical: 5),
-                            child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Column(
-                                      children: [
-                                        IconButton(
-                                          padding: EdgeInsets.all(0.0),
-                                          icon: Icon(
-                                            Icons.person_add,
-                                            size: 35,
-                                          ),
-                                          color: TextThemes.ndBlue,
-                                          splashColor:
-                                              Color.fromRGBO(220, 180, 57, 1.0),
-                                          onPressed: () {
-
-                                            
-                            Navigator.push(
-                                    context,
-                                    PageTransition(
-                                        type: PageTransitionType.bottomToTop,
-                                        child:
-                                            CreateAccountNew()
-                                            ))
-                                .then(onGoBack);
-                                            // Navigator.push(
-                                            //         context,
-                                            //         PageTransition(
-                                            //             type: PageTransitionType
-                                            //                 .bottomToTop,
-                                            //             child: SearchUsersPost(
-                                            //                 inviteesNameList)))
-                                            //     .then(onGoBack);
-                                          },
-                                        ),
-                                        Text("Invite",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold)),
-                                      ],
+                    ],
+                  ),
+                ),
+                Padding(
+                    padding: const EdgeInsets.only(bottom: 5),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                                context,
+                                PageTransition(
+                                    type: PageTransitionType.bottomToTop,
+                                    child: SearchUsersPost(inviteesNameList)))
+                            .then(onGoBack);
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 15.0, vertical: 5),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  children: [
+                                    IconButton(
+                                      padding: EdgeInsets.all(0.0),
+                                      icon: Icon(
+                                        Icons.person_add,
+                                        size: 35,
+                                      ),
+                                      color: TextThemes.ndBlue,
+                                      splashColor:
+                                          Color.fromRGBO(220, 180, 57, 1.0),
+                                      onPressed: () {
+                                        Navigator.push(
+                                                context,
+                                                PageTransition(
+                                                    type: PageTransitionType
+                                                        .bottomToTop,
+                                                    child: SearchUsersPost(
+                                                        inviteesNameList)))
+                                            .then(onGoBack);
+                                      },
                                     ),
-                                  ),
-                                  Container(
-                                    height: 100,
-                                    width: inviteesNameList.length == 0
-                                        ? 0
-                                        : MediaQuery.of(context).size.width *
-                                            .74,
-                                    child: ListView.builder(
-                                        scrollDirection: Axis.horizontal,
-                                        physics:
-                                            AlwaysScrollableScrollPhysics(),
-                                        itemCount: inviteesNameList.length,
-                                        itemBuilder: (_, index) {
-                                          bool hide = false;
-                                          if (!_isNumeric(
-                                              inviteesNameList[index])) {
-                                            hide = true;
-                                          }
-                                          return (hide == false)
-                                              ? StreamBuilder(
-                                                  stream: usersRef
-                                                      .doc(inviteesNameList[
-                                                          index])
-                                                      .snapshots(),
-                                                  builder: (context, snapshot) {
-                                                    // bool isLargePhone = Screen.diagonal(context) > 766;
+                                    Text("Invite",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold)),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                height: 100,
+                                width: inviteesNameList.length == 0
+                                    ? 0
+                                    : MediaQuery.of(context).size.width * .74,
+                                child: ListView.builder(
+                                    scrollDirection: Axis.horizontal,
+                                    physics: AlwaysScrollableScrollPhysics(),
+                                    itemCount: inviteesNameList.length,
+                                    itemBuilder: (_, index) {
+                                      bool hide = false;
+                                      if (!_isNumeric(
+                                          inviteesNameList[index])) {
+                                        hide = true;
+                                      }
+                                      return (hide == false)
+                                          ? StreamBuilder(
+                                              stream: usersRef
+                                                  .doc(inviteesNameList[index])
+                                                  .snapshots(),
+                                              builder: (context, snapshot) {
+                                                // bool isLargePhone = Screen.diagonal(context) > 766;
 
-                                                    if (!snapshot.hasData)
-                                                      return CircularProgressIndicator();
+                                                if (!snapshot.hasData)
+                                                  return CircularProgressIndicator();
 
-                                                    userName = snapshot
-                                                        .data['displayName'];
-                                                    userPic = snapshot
-                                                        .data['photoUrl'];
+                                                userName = snapshot
+                                                    .data['displayName'];
+                                                userPic =
+                                                    snapshot.data['photoUrl'];
 
-                                                    // userMoovs = snapshot.data['likedMoovs'];
+                                                // userMoovs = snapshot.data['likedMoovs'];
 
-                                                    return Container(
-                                                      height: 50,
-                                                      child: Column(
-                                                        children: <Widget>[
-                                                          GestureDetector(
-                                                            onTap: () {
-                                                              Navigator.of(context).push(
-                                                                  MaterialPageRoute(
-                                                                      builder: (context) =>
+                                                return Container(
+                                                  height: 50,
+                                                  child: Column(
+                                                    children: <Widget>[
+                                                      GestureDetector(
+                                                        onTap: () {
+                                                          Navigator.of(context).push(
+                                                              MaterialPageRoute(
+                                                                  builder:
+                                                                      (context) =>
                                                                           OtherProfile(
                                                                             inviteesNameList[index],
                                                                           )));
-                                                            },
+                                                        },
+                                                        child: CircleAvatar(
+                                                          radius: 34,
+                                                          backgroundColor:
+                                                              TextThemes.ndGold,
+                                                          child: CircleAvatar(
+                                                            backgroundImage:
+                                                                NetworkImage(
+                                                                    userPic),
+                                                            radius: 32,
+                                                            backgroundColor:
+                                                                TextThemes
+                                                                    .ndBlue,
                                                             child: CircleAvatar(
-                                                              radius: 34,
-                                                              backgroundColor:
-                                                                  TextThemes
-                                                                      .ndGold,
-                                                              child:
-                                                                  CircleAvatar(
-                                                                backgroundImage:
-                                                                    NetworkImage(
-                                                                        userPic),
-                                                                radius: 32,
-                                                                backgroundColor:
-                                                                    TextThemes
-                                                                        .ndBlue,
-                                                                child:
-                                                                    CircleAvatar(
-                                                                  // backgroundImage: snapshot.data
-                                                                  //     .documents[index].data['photoUrl'],
-                                                                  backgroundImage:
-                                                                      NetworkImage(
-                                                                          userPic),
-                                                                  radius: 32,
-                                                                ),
-                                                              ),
+                                                              // backgroundImage: snapshot.data
+                                                              //     .documents[index].data['photoUrl'],
+                                                              backgroundImage:
+                                                                  NetworkImage(
+                                                                      userPic),
+                                                              radius: 32,
                                                             ),
                                                           ),
-                                                          Padding(
+                                                        ),
+                                                      ),
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(5.0),
+                                                        child: Center(
+                                                          child: Padding(
                                                             padding:
                                                                 const EdgeInsets
-                                                                    .all(5.0),
-                                                            child: Center(
-                                                              child: Padding(
-                                                                padding: const EdgeInsets
                                                                         .symmetric(
                                                                     horizontal:
                                                                         5.0),
-                                                                child: RichText(
-                                                                  overflow:
-                                                                      TextOverflow
-                                                                          .ellipsis,
-                                                                  textScaleFactor:
-                                                                      1.0,
-                                                                  text: TextSpan(
-                                                                      style: TextThemes
-                                                                          .mediumbody,
-                                                                      children: [
-                                                                        TextSpan(
-                                                                            text:
-                                                                                userName,
-                                                                            style:
-                                                                                TextStyle(color: Colors.black, fontWeight: FontWeight.w500)),
-                                                                      ]),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    );
-                                                  })
-                                              : Container();
-                                        }),
-                                  ),
-                                ]),
-                          ),
-                        )),
-                    Container(
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 23.0),
-                        child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            physics: AlwaysScrollableScrollPhysics(),
-                            itemCount: inviteesNameList.length,
-                            itemBuilder: (_, index) {
-                              bool hide = false;
-                              if (_isNumeric(inviteesNameList[index])) {
-                                hide = true;
-                              }
-                              if (inviteesNameList.length == 0) {
-                                noHeight = true;
-                              }
-                              if (inviteesNameList.length != 0) {
-                                noHeight = false;
-                              }
-                              return (hide == false)
-                                  ? StreamBuilder(
-                                      stream: groupsRef
-                                          .doc(inviteesNameList[index])
-                                          .snapshots(),
-                                      builder: (context, snapshot) {
-                                        // bool isLargePhone = Screen.diagonal(context) > 766;
-
-                                        if (!snapshot.hasData)
-                                          return CircularProgressIndicator();
-
-                                        userName = snapshot.data['groupName'];
-                                        userPic = snapshot.data['groupPic'];
-                                        String groupId =
-                                            snapshot.data['groupId'];
-                                        List members = snapshot.data['members'];
-
-                                        // userMoovs = snapshot.data['likedMoovs'];
-
-                                        return Container(
-                                          height: 50,
-                                          child: Column(
-                                            children: <Widget>[
-                                              GestureDetector(
-                                                onTap: () => Navigator.of(
-                                                        context)
-                                                    .push(MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            members.contains(
-                                                                    currentUser
-                                                                        .id)
-                                                                ? GroupDetail(
-                                                                    groupId)
-                                                                : OtherGroup(
-                                                                    groupId))),
-                                                child: Stack(
-                                                    alignment: Alignment.center,
-                                                    children: <Widget>[
-                                                      SizedBox(
-                                                        width: isLargePhone
-                                                            ? MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width *
-                                                                0.3
-                                                            : MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width *
-                                                                0.3,
-                                                        height: isLargePhone
-                                                            ? MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .height *
-                                                                0.09
-                                                            : MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .height *
-                                                                0.07,
-                                                        child: Container(
-                                                          child: ClipRRect(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        10),
-                                                            child:
-                                                                CachedNetworkImage(
-                                                              imageUrl: userPic,
-                                                              fit: BoxFit.cover,
-                                                            ),
-                                                          ),
-                                                          margin:
-                                                              EdgeInsets.only(
-                                                                  left: 10,
-                                                                  top: 0,
-                                                                  right: 10,
-                                                                  bottom: 0),
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            color: Colors.white,
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .all(
-                                                              Radius.circular(
-                                                                  10),
-                                                            ),
-                                                            boxShadow: [
-                                                              BoxShadow(
-                                                                color: Colors
-                                                                    .grey
-                                                                    .withOpacity(
-                                                                        0.5),
-                                                                spreadRadius: 5,
-                                                                blurRadius: 7,
-                                                                offset: Offset(
-                                                                    0,
-                                                                    3), // changes position of shadow
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      Container(
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          borderRadius:
-                                                              BorderRadius.all(
-                                                                  Radius
-                                                                      .circular(
-                                                                          20)),
-                                                          gradient:
-                                                              LinearGradient(
-                                                            begin: Alignment
-                                                                .topCenter,
-                                                            end: Alignment
-                                                                .bottomCenter,
-                                                            colors: <Color>[
-                                                              Colors.black
-                                                                  .withAlpha(0),
-                                                              Colors.black,
-                                                              Colors.black12,
-                                                            ],
-                                                          ),
-                                                        ),
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(4.0),
-                                                          child: ConstrainedBox(
-                                                            constraints: BoxConstraints(
-                                                                maxWidth: MediaQuery.of(
-                                                                            context)
-                                                                        .size
-                                                                        .width *
-                                                                    .2),
-                                                            child: Text(
-                                                              userName,
-                                                              maxLines: 2,
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .center,
+                                                            child: RichText(
                                                               overflow:
                                                                   TextOverflow
                                                                       .ellipsis,
-                                                              style: TextStyle(
-                                                                  fontFamily:
-                                                                      'Solway',
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  color: Colors
-                                                                      .white,
-                                                                  fontSize:
-                                                                      isLargePhone
-                                                                          ? 11.0
-                                                                          : 9),
+                                                              textScaleFactor:
+                                                                  1.0,
+                                                              text: TextSpan(
+                                                                  style: TextThemes
+                                                                      .mediumbody,
+                                                                  children: [
+                                                                    TextSpan(
+                                                                        text:
+                                                                            userName,
+                                                                        style: TextStyle(
+                                                                            color:
+                                                                                Colors.black,
+                                                                            fontWeight: FontWeight.w500)),
+                                                                  ]),
                                                             ),
                                                           ),
                                                         ),
                                                       ),
-                                                      // Positioned(
-                                                      //   bottom: isLargePhone ? 0 : 0,
-                                                      //   right: 55,
-                                                      //   child: Row(
-                                                      //     mainAxisAlignment:
-                                                      //         MainAxisAlignment
-                                                      //             .center,
-                                                      //     children: [
-                                                      //       Stack(children: [
-                                                      //         Padding(
-                                                      //             padding:
-                                                      //                 const EdgeInsets
-                                                      //                     .all(4.0),
-                                                      //             child: members
-                                                      //                         .length >
-                                                      //                     1
-                                                      //                 ? CircleAvatar(
-                                                      //                     radius:
-                                                      //                         25.0,
-                                                      //                     backgroundImage:
-                                                      //                         NetworkImage(
-                                                      //                       course[1][
-                                                      //                           'photoUrl'],
-                                                      //                     ),
-                                                      //                   )
-                                                      //                 : Container()),
-                                                      //         Padding(
-                                                      //             padding:
-                                                      //                 const EdgeInsets
-                                                      //                         .only(
-                                                      //                     top: 4,
-                                                      //                     left: 25.0),
-                                                      //             child: CircleAvatar(
-                                                      //               radius: 25.0,
-                                                      //               backgroundImage:
-                                                      //                   NetworkImage(
-                                                      //                 course[0][
-                                                      //                     'photoUrl'],
-                                                      //               ),
-                                                      //             )),
-                                                      //         Padding(
-                                                      //           padding:
-                                                      //               const EdgeInsets
-                                                      //                       .only(
-                                                      //                   top: 4,
-                                                      //                   left: 50.0),
-                                                      //           child: CircleAvatar(
-                                                      //             radius: 25.0,
-                                                      //             child:
-                                                      //                 members.length >
-                                                      //                         2
-                                                      //                     ? Text(
-                                                      //                         "+" +
-                                                      //                             (length.toString()),
-                                                      //                         style: TextStyle(
-                                                      //                             color:
-                                                      //                                 TextThemes.ndGold,
-                                                      //                             fontWeight: FontWeight.w500),
-                                                      //                       )
-                                                      //                     : Text(
-                                                      //                         (members
-                                                      //                             .length
-                                                      //                             .toString()),
-                                                      //                         style: TextStyle(
-                                                      //                             color:
-                                                      //                                 TextThemes.ndGold,
-                                                      //                             fontWeight: FontWeight.w500),
-                                                      //                       ),
-                                                      //             backgroundColor:
-                                                      //                 TextThemes
-                                                      //                     .ndBlue,
-                                                      //           ),
-                                                      //         ),
-                                                      //       ])
-                                                      //     ],
-                                                      //   ),
-                                                      // ),
-                                                    ]),
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                      })
-                                  : Container();
-                            }),
-                      ),
-                      height: noHeight ? 0 : 100,
-                      width: noHeight
-                          ? 0
-                          : MediaQuery.of(context).size.width * .74,
-                    ),
-
-                    _image != null
-                        ? Padding(
-                            padding: const EdgeInsets.only(bottom: 18.0),
-                            child:
-                                Stack(alignment: Alignment.center, children: [
-                              Container(
-                                height: 125,
-                                width: MediaQuery.of(context).size.width * .8,
-                                child: Center(
-                                    child: AspectRatio(
-                                        aspectRatio: 16 / 9,
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(4),
-                                          child: Image.file(_image,
-                                              fit: BoxFit.cover),
-                                        ))),
+                                                    ],
+                                                  ),
+                                                );
+                                              })
+                                          : Container();
+                                    }),
                               ),
-                              GestureDetector(
-                                  onTap: () => selectImage(context),
-                                  child: Icon(Icons.camera_alt))
                             ]),
-                          )
-                        : ElevatedButton(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text('Upload Image/GIF',
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 20)),
-                            ),
-                            onPressed: () => selectImage(context),
-                            style: ElevatedButton.styleFrom(
-                                primary: TextThemes.ndBlue,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8.0)))),
+                      ),
+                    )),
+                Container(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 23.0),
+                    child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        physics: AlwaysScrollableScrollPhysics(),
+                        itemCount: inviteesNameList.length,
+                        itemBuilder: (_, index) {
+                          bool hide = false;
+                          if (_isNumeric(inviteesNameList[index])) {
+                            hide = true;
+                          }
+                          if (inviteesNameList.length == 0) {
+                            noHeight = true;
+                          }
+                          if (inviteesNameList.length != 0) {
+                            noHeight = false;
+                          }
+                          return (hide == false)
+                              ? StreamBuilder(
+                                  stream: groupsRef
+                                      .doc(inviteesNameList[index])
+                                      .snapshots(),
+                                  builder: (context, snapshot) {
+                                    // bool isLargePhone = Screen.diagonal(context) > 766;
 
-                    noImage == true && _image == null
-                        ? Text(
-                            "No pic, no fun.",
-                            style: TextStyle(color: Colors.red),
-                          )
-                        : Container(),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10.0, bottom: 30),
-                      child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              padding: EdgeInsets.zero,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15))),
-                          child: Ink(
-                            decoration: BoxDecoration(
-                                color: TextThemes.ndGold,
-                                borderRadius: BorderRadius.circular(15)),
-                            child: Container(
-                              width: 115,
-                              height: 40,
-                              alignment: Alignment.center,
-                              child: Text(
-                                'Post!',
-                                style: TextStyle(
-                                    fontSize: 20, color: Colors.white),
-                              ),
-                            ),
+                                    if (!snapshot.hasData)
+                                      return CircularProgressIndicator();
+
+                                    userName = snapshot.data['groupName'];
+                                    userPic = snapshot.data['groupPic'];
+                                    String groupId = snapshot.data['groupId'];
+                                    List members = snapshot.data['members'];
+
+                                    // userMoovs = snapshot.data['likedMoovs'];
+
+                                    return Container(
+                                      height: 50,
+                                      child: Column(
+                                        children: <Widget>[
+                                          GestureDetector(
+                                            onTap: () => Navigator.of(context)
+                                                .push(MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        members.contains(
+                                                                currentUser.id)
+                                                            ? GroupDetail(
+                                                                groupId)
+                                                            : OtherGroup(
+                                                                groupId))),
+                                            child: Stack(
+                                                alignment: Alignment.center,
+                                                children: <Widget>[
+                                                  SizedBox(
+                                                    width: isLargePhone
+                                                        ? MediaQuery.of(context)
+                                                                .size
+                                                                .width *
+                                                            0.3
+                                                        : MediaQuery.of(context)
+                                                                .size
+                                                                .width *
+                                                            0.3,
+                                                    height: isLargePhone
+                                                        ? MediaQuery.of(context)
+                                                                .size
+                                                                .height *
+                                                            0.09
+                                                        : MediaQuery.of(context)
+                                                                .size
+                                                                .height *
+                                                            0.07,
+                                                    child: Container(
+                                                      child: ClipRRect(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(10),
+                                                        child:
+                                                            CachedNetworkImage(
+                                                          imageUrl: userPic,
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                      ),
+                                                      margin: EdgeInsets.only(
+                                                          left: 10,
+                                                          top: 0,
+                                                          right: 10,
+                                                          bottom: 0),
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.white,
+                                                        borderRadius:
+                                                            BorderRadius.all(
+                                                          Radius.circular(10),
+                                                        ),
+                                                        boxShadow: [
+                                                          BoxShadow(
+                                                            color: Colors.grey
+                                                                .withOpacity(
+                                                                    0.5),
+                                                            spreadRadius: 5,
+                                                            blurRadius: 7,
+                                                            offset: Offset(0,
+                                                                3), // changes position of shadow
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                    decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.all(
+                                                              Radius.circular(
+                                                                  20)),
+                                                      gradient: LinearGradient(
+                                                        begin:
+                                                            Alignment.topCenter,
+                                                        end: Alignment
+                                                            .bottomCenter,
+                                                        colors: <Color>[
+                                                          Colors.black
+                                                              .withAlpha(0),
+                                                          Colors.black,
+                                                          Colors.black12,
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              4.0),
+                                                      child: ConstrainedBox(
+                                                        constraints: BoxConstraints(
+                                                            maxWidth: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width *
+                                                                .2),
+                                                        child: Text(
+                                                          userName,
+                                                          maxLines: 2,
+                                                          textAlign:
+                                                              TextAlign.center,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          style: TextStyle(
+                                                              fontFamily:
+                                                                  'Solway',
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              color:
+                                                                  Colors.white,
+                                                              fontSize:
+                                                                  isLargePhone
+                                                                      ? 11.0
+                                                                      : 9),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  // Positioned(
+                                                  //   bottom: isLargePhone ? 0 : 0,
+                                                  //   right: 55,
+                                                  //   child: Row(
+                                                  //     mainAxisAlignment:
+                                                  //         MainAxisAlignment
+                                                  //             .center,
+                                                  //     children: [
+                                                  //       Stack(children: [
+                                                  //         Padding(
+                                                  //             padding:
+                                                  //                 const EdgeInsets
+                                                  //                     .all(4.0),
+                                                  //             child: members
+                                                  //                         .length >
+                                                  //                     1
+                                                  //                 ? CircleAvatar(
+                                                  //                     radius:
+                                                  //                         25.0,
+                                                  //                     backgroundImage:
+                                                  //                         NetworkImage(
+                                                  //                       course[1][
+                                                  //                           'photoUrl'],
+                                                  //                     ),
+                                                  //                   )
+                                                  //                 : Container()),
+                                                  //         Padding(
+                                                  //             padding:
+                                                  //                 const EdgeInsets
+                                                  //                         .only(
+                                                  //                     top: 4,
+                                                  //                     left: 25.0),
+                                                  //             child: CircleAvatar(
+                                                  //               radius: 25.0,
+                                                  //               backgroundImage:
+                                                  //                   NetworkImage(
+                                                  //                 course[0][
+                                                  //                     'photoUrl'],
+                                                  //               ),
+                                                  //             )),
+                                                  //         Padding(
+                                                  //           padding:
+                                                  //               const EdgeInsets
+                                                  //                       .only(
+                                                  //                   top: 4,
+                                                  //                   left: 50.0),
+                                                  //           child: CircleAvatar(
+                                                  //             radius: 25.0,
+                                                  //             child:
+                                                  //                 members.length >
+                                                  //                         2
+                                                  //                     ? Text(
+                                                  //                         "+" +
+                                                  //                             (length.toString()),
+                                                  //                         style: TextStyle(
+                                                  //                             color:
+                                                  //                                 TextThemes.ndGold,
+                                                  //                             fontWeight: FontWeight.w500),
+                                                  //                       )
+                                                  //                     : Text(
+                                                  //                         (members
+                                                  //                             .length
+                                                  //                             .toString()),
+                                                  //                         style: TextStyle(
+                                                  //                             color:
+                                                  //                                 TextThemes.ndGold,
+                                                  //                             fontWeight: FontWeight.w500),
+                                                  //                       ),
+                                                  //             backgroundColor:
+                                                  //                 TextThemes
+                                                  //                     .ndBlue,
+                                                  //           ),
+                                                  //         ),
+                                                  //       ])
+                                                  //     ],
+                                                  //   ),
+                                                  // ),
+                                                ]),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  })
+                              : Container();
+                        }),
+                  ),
+                  height: noHeight ? 0 : 100,
+                  width: noHeight ? 0 : MediaQuery.of(context).size.width * .74,
+                ),
+
+                _image != null
+                    ? Padding(
+                        padding: const EdgeInsets.only(bottom: 18.0),
+                        child: Stack(alignment: Alignment.center, children: [
+                          Container(
+                            height: 125,
+                            width: MediaQuery.of(context).size.width * .8,
+                            child: Center(
+                                child: AspectRatio(
+                                    aspectRatio: 16 / 9,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(4),
+                                      child:
+                                          Image.file(_image, fit: BoxFit.cover),
+                                    ))),
                           ),
-                          onPressed: () async {
-                            GeoPoint location;
+                          GestureDetector(
+                              onTap: () => selectImage(context),
+                              child: Icon(Icons.camera_alt))
+                        ]),
+                      )
+                    : ElevatedButton(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text('Upload Image/GIF',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 20)),
+                        ),
+                        onPressed: () => selectImage(context),
+                        style: ElevatedButton.styleFrom(
+                            primary: TextThemes.ndBlue,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0)))),
 
-                            if (coords.isNotEmpty) {
-                              List parse = coords.toString().split(",");
-                              String parse0 = parse[0].replaceAll("[", "");
+                noImage == true && _image == null
+                    ? Text(
+                        "No pic, no fun.",
+                        style: TextStyle(color: Colors.red),
+                      )
+                    : Container(),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10.0, bottom: 30),
+                  child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.zero,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15))),
+                      child: Ink(
+                        decoration: BoxDecoration(
+                            color: TextThemes.ndGold,
+                            borderRadius: BorderRadius.circular(15)),
+                        child: Container(
+                          width: 115,
+                          height: 40,
+                          alignment: Alignment.center,
+                          child: Text(
+                            'Post!',
+                            style: TextStyle(fontSize: 20, color: Colors.white),
+                          ),
+                        ),
+                      ),
+                      onPressed: () async {
+                        GeoPoint location;
 
-                              String parse2 = parse[1].replaceAll("]", "");
-                              double latitude = double.parse(parse0);
+                        if (coords.isNotEmpty) {
+                          List parse = coords.toString().split(",");
+                          String parse0 = parse[0].replaceAll("[", "");
 
-                              double longitude = double.parse(parse2);
+                          String parse2 = parse[1].replaceAll("]", "");
+                          double latitude = double.parse(parse0);
 
-                              location = GeoPoint(latitude, longitude);
+                          double longitude = double.parse(parse2);
+
+                          location = GeoPoint(latitude, longitude);
+                        }
+
+                        HapticFeedback.lightImpact();
+
+                        // for (int i = 0;
+                        //     i < inviteesNameList.length;
+                        //     i++) {
+                        //   if (!_isNumeric(inviteesNameList[i]) &&
+                        //       inviteesNameList.length > 0) {
+                        //     final DocumentSnapshot result =
+                        //         await groupsRef
+                        //             .doc(inviteesNameList[i])
+                        //             .get();
+                        //     result.data()['members'].forEach(
+                        //         (element) => groupList.add(element));
+                        //   }
+                        // }
+                        // print(groupList);
+
+                        if (_image == null) {
+                          setState(() {
+                            noImage = true;
+                          });
+                        }
+                        if (_formKey.currentState.validate() &&
+                            _image != null) {
+                          setState(() {
+                            isUploading = true;
+                          });
+                        }
+
+                        final GoogleSignInAccount user =
+                            googleSignIn.currentUser;
+                        final strUserId = user.id;
+                        if (inviteesNameList.length == 0) {
+                          print("EMTPY");
+                        }
+                        if (_formKey.currentState.validate()) {
+                          if (_image != null) {
+                            firebase_storage.Reference ref = firebase_storage
+                                .FirebaseStorage.instance
+                                .ref()
+                                .child(
+                                    "images/" + user.id + titleController.text);
+                            if (maxOccupancyController.text.isEmpty) {
+                              maxOccupancyInt = 8000000;
                             }
 
-                            HapticFeedback.lightImpact();
-
-                            // for (int i = 0;
-                            //     i < inviteesNameList.length;
-                            //     i++) {
-                            //   if (!_isNumeric(inviteesNameList[i]) &&
-                            //       inviteesNameList.length > 0) {
-                            //     final DocumentSnapshot result =
-                            //         await groupsRef
-                            //             .doc(inviteesNameList[i])
-                            //             .get();
-                            //     result.data()['members'].forEach(
-                            //         (element) => groupList.add(element));
-                            //   }
-                            // }
-                            // print(groupList);
-
-                            if (_image == null) {
-                              setState(() {
-                                noImage = true;
-                              });
+                            if (maxOccupancyController.text.isNotEmpty) {
+                              maxOccupancyInt =
+                                  int.parse(maxOccupancyController.text);
                             }
-                            if (_formKey.currentState.validate() &&
-                                _image != null) {
-                              setState(() {
-                                isUploading = true;
-                              });
+                            if (paymentAmountController.text.isNotEmpty) {
+                              String x =
+                                  paymentAmountController.text.substring(1);
+                              paymentAmountInt = int.parse(x);
                             }
 
-                            final GoogleSignInAccount user =
-                                googleSignIn.currentUser;
-                            final strUserId = user.id;
-                            if (inviteesNameList.length == 0) {
-                              print("EMTPY");
-                            }
-                            if (_formKey.currentState.validate()) {
-                              if (_image != null) {
-                                firebase_storage.Reference ref =
-                                    firebase_storage.FirebaseStorage.instance
-                                        .ref()
-                                        .child("images/" +
-                                            user.id +
-                                            titleController.text);
-                                if (maxOccupancyController.text.isEmpty) {
-                                  maxOccupancyInt = 8000000;
-                                }
+                            String recurringType = "";
 
-                                if (maxOccupancyController.text.isNotEmpty) {
-                                  maxOccupancyInt =
-                                      int.parse(maxOccupancyController.text);
-                                }
-                                if (paymentAmountController.text.isNotEmpty) {
-                                  String x =
-                                      paymentAmountController.text.substring(1);
-                                  paymentAmountInt = int.parse(x);
-                                }
-
-                                String recurringType = "";
-
-                                if (currentUser.isBusiness) {
-                                  if (_monthlyRecurring != false) {
-                                    recurringType = "monthly";
-                                  }
-                                  if (_biweeklyRecurring != false) {
-                                    recurringType = "biweekly";
-                                  }
-                                  if (_weeklyRecurring != false) {
-                                    recurringType = "weekly";
-                                  }
-                                  if (_dailyRecurring != false) {
-                                    recurringType = "daily";
-                                  }
-                                }
-
-                                //mobile ordering menu
-                                if (currentUser.mobileOrderMenu != null) {
-                                  if (currentUser
-                                          .mobileOrderMenu['item1'].isEmpty ||
-                                      !_item1) {
-                                    _item1 = false;
-                                  }
-                                  if (currentUser
-                                          .mobileOrderMenu['item2'].isEmpty ||
-                                      !_item2) {
-                                    _item2 = false;
-                                  }
-                                  if (currentUser
-                                          .mobileOrderMenu['item3'].isEmpty ||
-                                      !_item3) {
-                                    _item3 = false;
-                                  }
-                                }
-
-                                firebase_storage.UploadTask uploadTask;
-
-                                uploadTask = ref.putFile(_image);
-
-                                firebase_storage.TaskSnapshot taskSnapshot =
-                                    await uploadTask;
-                                if (uploadTask.snapshot.state ==
-                                    firebase_storage.TaskState.success) {
-                                  print("added to Firebase Storage");
-                                  final String postId =
-                                      generateRandomString(20);
-                                  final String downloadUrl =
-                                      await taskSnapshot.ref.getDownloadURL();
-                                  currentUser.isBusiness
-                                      ? Database().createBusinessPost(
-                                          title: titleController.text,
-                                          type: currentUser.businessType ==
-                                                  "Restaurant/Bar"
-                                              ? "Food/Drink"
-                                              : currentUser.businessType ==
-                                                      "Theatre"
-                                                  ? "Shows"
-                                                  : "Recreation",
-                                          privacy: "Public",
-                                          description: descriptionController
-                                              .text,
-                                          address: currentUser.dorm,
-                                          startDate: currentValue,
-                                          unix:
-                                              currentValue
-                                                  .millisecondsSinceEpoch,
-                                          startDateSimpleString:
-                                              DateFormat(
-                                                      'yMd')
-                                                  .format(currentValue),
-                                          statuses: inviteesNameList,
-                                          maxOccupancy: maxOccupancyInt,
-                                          paymentAmount: paymentAmountInt,
-                                          imageUrl: downloadUrl,
-                                          userId: strUserId,
-                                          postId: postId,
-                                          recurringType: recurringType,
-                                          posterName: currentUser.displayName,
-                                          push: push,
-                                          moovOver: _moovOver,
-                                          mobileOrderMenu: {
-                                              "item1": _item1,
-                                              "item2": _item2,
-                                              "item3": _item3
-                                            })
-                                      : Database()
-                                          .createPost(
-                                              title: titleController.text,
-                                              type: typeDropdownValue,
-                                              privacy: privacyDropdownValue,
-                                              description:
-                                                  descriptionController.text,
-                                              address: addressController.text,
-                                              startDate: currentValue,
-                                              startDateSimpleString:
-                                                  DateFormat('yMd')
-                                                      .format(currentValue),
-                                              clubId:
-                                                  clubNameMap[clubPostValue],
-                                              unix: currentValue
-                                                  .millisecondsSinceEpoch,
-                                              statuses: inviteesNameList,
-                                              maxOccupancy: maxOccupancyInt,
-                                              paymentAmount: paymentAmountInt,
-                                              imageUrl: downloadUrl,
-                                              userId: strUserId,
-                                              postId: postId,
-                                              posterName:
-                                                  currentUser.displayName,
-                                              push: push,
-                                              location: location,
-                                              moovOver: _moovOver);
-
-                                  nextSunday().then((value) {
-                                    wrapupRef
-                                        .doc(currentUser.id)
-                                        .collection('wrapUp')
-                                        .doc(value)
-                                        .set({
-                                      "ownMOOVs": FieldValue.arrayUnion([
-                                        {
-                                          "pic": downloadUrl,
-                                          "postId": postId,
-                                          "title": titleController.text
-                                        }
-                                      ]),
-                                    }, SetOptions(merge: true));
-                                  });
-                                  _controllerCenterLeft.play();
-                                  HapticFeedback.lightImpact();
-
-                                  setState(() {
-                                    isUploading = false;
-                                    _isSuccessful = true;
-                                  });
-                                }
-                                Future.delayed(Duration(seconds: 2), () {
-                                  Navigator.pop(context);
-                                });
+                            if (currentUser.isBusiness) {
+                              if (_monthlyRecurring != false) {
+                                recurringType = "monthly";
+                              }
+                              if (_biweeklyRecurring != false) {
+                                recurringType = "biweekly";
+                              }
+                              if (_weeklyRecurring != false) {
+                                recurringType = "weekly";
+                              }
+                              if (_dailyRecurring != false) {
+                                recurringType = "daily";
                               }
                             }
-                          }),
-                    ),
-                  ]),
+
+                            //mobile ordering menu
+                            if (currentUser.mobileOrderMenu != null) {
+                              if (currentUser
+                                      .mobileOrderMenu['item1'].isEmpty ||
+                                  !_item1) {
+                                _item1 = false;
+                              }
+                              if (currentUser
+                                      .mobileOrderMenu['item2'].isEmpty ||
+                                  !_item2) {
+                                _item2 = false;
+                              }
+                              if (currentUser
+                                      .mobileOrderMenu['item3'].isEmpty ||
+                                  !_item3) {
+                                _item3 = false;
+                              }
+                            }
+
+                            firebase_storage.UploadTask uploadTask;
+
+                            uploadTask = ref.putFile(_image);
+
+                            firebase_storage.TaskSnapshot taskSnapshot =
+                                await uploadTask;
+                            if (uploadTask.snapshot.state ==
+                                firebase_storage.TaskState.success) {
+                              print("added to Firebase Storage");
+                              final String postId = generateRandomString(20);
+                              final String downloadUrl =
+                                  await taskSnapshot.ref.getDownloadURL();
+                              currentUser.isBusiness
+                                  ? Database().createBusinessPost(
+                                      title: titleController.text,
+                                      type: currentUser.businessType ==
+                                              "Restaurant/Bar"
+                                          ? "Food/Drink"
+                                          : currentUser.businessType ==
+                                                  "Theatre"
+                                              ? "Shows"
+                                              : "Recreation",
+                                      privacy: "Public",
+                                      description: descriptionController.text,
+                                      address: currentUser.dorm,
+                                      startDate: currentValue,
+                                      unix: currentValue.millisecondsSinceEpoch,
+                                      startDateSimpleString: DateFormat('yMd')
+                                          .format(currentValue),
+                                      statuses: inviteesNameList,
+                                      maxOccupancy: maxOccupancyInt,
+                                      paymentAmount: paymentAmountInt,
+                                      imageUrl: downloadUrl,
+                                      userId: strUserId,
+                                      postId: postId,
+                                      recurringType: recurringType,
+                                      posterName: currentUser.displayName,
+                                      push: push,
+                                      moovOver: _moovOver,
+                                      mobileOrderMenu: {
+                                          "item1": _item1,
+                                          "item2": _item2,
+                                          "item3": _item3
+                                        })
+                                  : Database().createPost(
+                                      title: titleController.text,
+                                      type: typeDropdownValue,
+                                      privacy: privacyDropdownValue,
+                                      description: descriptionController.text,
+                                      address: addressController.text,
+                                      startDate: currentValue,
+                                      startDateSimpleString: DateFormat('yMd')
+                                          .format(currentValue),
+                                      clubId: clubNameMap[clubPostValue],
+                                      unix: currentValue.millisecondsSinceEpoch,
+                                      statuses: inviteesNameList,
+                                      maxOccupancy: maxOccupancyInt,
+                                      paymentAmount: paymentAmountInt,
+                                      imageUrl: downloadUrl,
+                                      userId: strUserId,
+                                      postId: postId,
+                                      posterName: currentUser.displayName,
+                                      push: push,
+                                      location: location,
+                                      moovOver: _moovOver);
+
+                              nextSunday().then((value) {
+                                wrapupRef
+                                    .doc(currentUser.id)
+                                    .collection('wrapUp')
+                                    .doc(value)
+                                    .set({
+                                  "ownMOOVs": FieldValue.arrayUnion([
+                                    {
+                                      "pic": downloadUrl,
+                                      "postId": postId,
+                                      "title": titleController.text
+                                    }
+                                  ]),
+                                }, SetOptions(merge: true));
+                              });
+
+                              setState(() {
+                                isUploading = false;
+                              });
+                            }
+                            Navigator.pop(context);
+                          }
+                        }
+                      }),
                 ),
+              ]),
+            ),
     );
   }
 
@@ -2355,7 +2191,6 @@ class _MoovMakerFormState extends State<MoovMakerForm>
   @override
   void dispose() {
     _animationController.dispose();
-    _controllerCenterLeft.dispose();
     super.dispose();
     addressController.dispose();
     titleController.dispose();

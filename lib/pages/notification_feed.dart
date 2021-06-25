@@ -1,17 +1,23 @@
-import 'package:MOOV/friendGroups/group_detail.dart';
+import 'dart:ffi';
+
 import 'package:MOOV/main.dart';
 import 'package:MOOV/pages/HomePage.dart';
 import 'package:MOOV/pages/NewSearch.dart';
+import 'package:MOOV/pages/ProfilePage.dart';
 import 'package:MOOV/pages/ProfilePageWithHeader.dart';
 import 'package:MOOV/pages/other_profile.dart';
 import 'package:MOOV/pages/post_detail.dart';
+import 'package:MOOV/services/database.dart';
 import 'package:MOOV/utils/themes_styles.dart';
+import 'package:MOOV/widgets/friend_requests.dart';
 import 'package:MOOV/widgets/progress.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:http/http.dart';
+import 'group_detail.dart';
 import 'home.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -90,7 +96,7 @@ class _NotificationFeedState extends State<NotificationFeed>
     });
     return docIds;
   }
-
+  
   getGroupFeed(int groupCount) async {
     QuerySnapshot snapshot = await notificationFeedRef
         .doc(currentUser.friendGroups[groupCount - 1])
@@ -141,7 +147,10 @@ class _NotificationFeedState extends State<NotificationFeed>
                     color: Colors.white,
                   ),
                   onPressed: () {
-                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Home()),
+                    );
                   },
                 ),
                 backgroundColor: TextThemes.ndBlue,
@@ -249,7 +258,7 @@ class _NotificationFeedState extends State<NotificationFeed>
                       child: _currentIndex == 1
                           ? GradientText(
                               "Friend Groups",
-                              16.5,
+                                16.5,
                               gradient: LinearGradient(colors: [
                                 Colors.blue.shade400,
                                 Colors.blue.shade900,

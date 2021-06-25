@@ -197,13 +197,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.15.0"
-  confetti:
-    dependency: "direct main"
-    description:
-      name: confetti
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.5.5"
   convert:
     dependency: transitive
     description:
@@ -260,13 +253,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
-  delayed_display:
-    dependency: "direct main"
-    description:
-      name: delayed_display
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.0"
   draggable_scrollbar:
     dependency: "direct main"
     description:
@@ -766,7 +752,7 @@ packages:
     source: hosted
     version: "1.1.0"
   intl:
-    dependency: "direct overridden"
+    dependency: "direct main"
     description:
       name: intl
       url: "https://pub.dartlang.org"
@@ -1059,13 +1045,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.5"
-  random_color:
-    dependency: transitive
-    description:
-      name: random_color
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.5"
   random_string:
     dependency: "direct main"
     description:
@@ -1157,13 +1136,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.2.0"
-  simple_gesture_detector:
-    dependency: transitive
-    description:
-      name: simple_gesture_detector
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.2.0"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -1232,13 +1204,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.0"
-  syncfusion_flutter_calendar:
-    dependency: "direct main"
-    description:
-      name: syncfusion_flutter_calendar
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "18.4.34"
   syncfusion_flutter_charts:
     dependency: "direct main"
     description:
@@ -1253,13 +1218,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "18.4.34"
-  syncfusion_flutter_datepicker:
-    dependency: transitive
-    description:
-      name: syncfusion_flutter_datepicker
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "18.4.34-beta"
   syncfusion_flutter_maps:
     dependency: "direct main"
     description:
@@ -1274,13 +1232,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.2.0+2"
-  table_calendar:
-    dependency: "direct main"
-    description:
-      name: table_calendar
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.0.0"
   term_glyph:
     dependency: transitive
     description:
@@ -1302,13 +1253,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.29"
-  timezone:
-    dependency: transitive
-    description:
-      name: timezone
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.5.9"
   tuple:
     dependency: transitive
     description:

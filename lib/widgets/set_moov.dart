@@ -13,10 +13,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class SearchSetMOOV extends StatefulWidget {
+  final List members;
   final String groupId, groupName;
   final bool pickMOOV;
 
-  SearchSetMOOV({this.groupId, this.groupName, this.pickMOOV = false});
+  SearchSetMOOV(
+      {this.members, this.groupId, this.groupName, this.pickMOOV = false});
 
   @override
   _SearchSetMOOVState createState() => _SearchSetMOOVState();
@@ -49,6 +51,8 @@ class _SearchSetMOOVState extends State<SearchSetMOOV> {
     super.dispose();
     searchController.dispose();
   }
+
+  int countLength = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -101,41 +105,15 @@ class _SearchSetMOOVState extends State<SearchSetMOOV> {
                     snapshot.data.length == 0 ||
                     _searchTerm == null)
                   return FutureBuilder(
-                      future: postsRef.get(),
+                      future:
+                          postsRef.where("privacy", isEqualTo: "Public").get(),
                       builder: (context, snapshot) {
                         if (!snapshot.hasData) {
                           return Container();
                         }
-                        String privacy = snapshot.data.docs[0]["privacy"];
-                        Map statuses = snapshot.data.docs[0]["statuses"];
-                        bool hide = false;
-                        if ((snapshot.data.docs[0]["userId"] !=
-                                    currentUser.id) &&
-                                privacy == "Friends Only" ||
-                            privacy == "Invite Only") {
-                          hide = true;
-                        }
-
-                        if (statuses.keys.contains(widget.groupId)) {
-                          hide = false;
-                        }
-
-                        if (hide == true) {
-                          return Container();
-                        }
-                        return (widget.pickMOOV)
-                            ? PickMOOV(
-                                postId: snapshot.data.docs[0]['postId'],
-                                groupName: widget.groupName)
-                            : SetMOOVResult(
-                                snapshot.data.docs[0]['title'],
-                                snapshot.data.docs[0]['userId'],
-                                snapshot.data.docs[0]['description'],
-                                snapshot.data.docs[0]['type'],
-                                snapshot.data.docs[0]['image'],
-                                snapshot.data.docs[0]['postId'],
-                                widget.groupId,
-                                widget.groupName);
+                        return PickMOOV(
+                            postId: snapshot.data.docs[0]['postId'],
+                            groupName: widget.groupName);
                       });
 
                 List<AlgoliaObjectSnapshot> currSearchStuff = snapshot.data;
@@ -164,15 +142,13 @@ class _SearchSetMOOVState extends State<SearchSetMOOV> {
                                   hide = true;
                                 }
 
-                                if (currSearchStuff[index].data["userId"] ==
-                                    currentUser.id) {
-                                  hide = false;
-                                }
-
                                 if (statuses.keys.contains(widget.groupId)) {
                                   hide = false;
                                 }
-                                if (widget.pickMOOV && hide == false) {
+                                if (hide == false) {
+                                  countLength = currSearchStuff.length;
+                                }
+                                if (widget.pickMOOV) {
                                   return PickMOOV(
                                       postId:
                                           currSearchStuff[index].data["postId"],
@@ -187,7 +163,9 @@ class _SearchSetMOOVState extends State<SearchSetMOOV> {
                                               .data["description"],
                                           currSearchStuff[index].data["type"],
                                           currSearchStuff[index].data["image"],
+                                          widget.members,
                                           currSearchStuff[index].data["postId"],
+                                          currSearchStuff[index].data["unix"],
                                           widget.groupId,
                                           widget.groupName)
                                       : Container();
@@ -212,10 +190,12 @@ class SetMOOVResult extends StatefulWidget {
   final String description;
   final String type;
   final String image;
+  final List members;
   final String moov, gid, groupName;
+  final int unix;
 
   SetMOOVResult(this.title, this.userId, this.description, this.type,
-      this.image, this.moov, this.gid, this.groupName);
+      this.image, this.members, this.moov, this.unix, this.gid, this.groupName);
 
   @override
   _SetMOOVResultState createState() => _SetMOOVResultState();
@@ -319,11 +299,11 @@ class _SetMOOVResultState extends State<SetMOOVResult> {
                       ],
                     ),
                     child: CircleAvatar(
-                        radius: 20,
+                        radius: 27,
                         backgroundColor: TextThemes.ndGold,
                         child: CircleAvatar(
                           backgroundImage: NetworkImage(proPic),
-                          radius: 18,
+                          radius: 25,
                           backgroundColor: TextThemes.ndBlue,
                         )),
                   ),
@@ -336,12 +316,9 @@ class _SetMOOVResultState extends State<SetMOOVResult> {
                           .collection("suggestedMOOVs")
                           .snapshots(),
                       builder: (context, snapshot4) {
-                        if (!snapshot.hasData) {
-                          return Container();
-                        }
                         for (int i = 0; i < snapshot4.data.docs.length; i++) {
                           String suggestedAlready =
-                              snapshot4.data.docs[i]["postId"];
+                              snapshot4.data.docs[i]["nextMOOV"];
                           bool isSuggested = false;
                           if (suggestedAlready == widget.moov) {
                             isSuggested = true;
@@ -353,8 +330,16 @@ class _SetMOOVResultState extends State<SetMOOVResult> {
                                 : () {
                                     HapticFeedback.lightImpact();
 
-                                    Database().suggestMOOV(widget.gid,
-                                        widget.moov, widget.groupName);
+                                    Database().suggestMOOV(
+                                        currentUser.id,
+                                        widget.gid,
+                                        widget.moov,
+                                        widget.unix,
+                                        currentUser.displayName,
+                                        widget.members,
+                                        widget.title,
+                                        widget.image,
+                                        widget.groupName);
 
                                     Navigator.pop(context, widget.moov);
                                   },

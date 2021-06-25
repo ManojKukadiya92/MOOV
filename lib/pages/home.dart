@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'package:MOOV/businessInterfaces/BusinessDirectory.dart';
 import 'package:MOOV/businessInterfaces/livePassesSheet.dart';
-import 'package:MOOV/friendGroups/group_detail.dart';
 import 'package:MOOV/helpers/SPHelper.dart';
 import 'package:MOOV/helpers/themes.dart';
 import 'package:MOOV/models/user.dart';
@@ -16,10 +15,10 @@ import 'package:MOOV/pages/ProfilePage.dart';
 import 'package:MOOV/pages/TonightsVibe.dart';
 import 'package:MOOV/pages/blockedPage.dart';
 import 'package:MOOV/pages/create_account.dart';
+import 'package:MOOV/pages/group_detail.dart';
 import 'package:MOOV/pages/leaderboard.dart';
 import 'package:MOOV/pages/notification_feed.dart';
 import 'package:MOOV/pages/other_profile.dart';
-import 'package:MOOV/pages/passwordPage.dart';
 import 'package:MOOV/pages/post_detail.dart';
 import 'package:MOOV/services/database.dart';
 import 'package:MOOV/studentClubs/studentClubDashboard.dart';
@@ -38,7 +37,7 @@ import 'package:page_transition/page_transition.dart';
 
 final GoogleSignIn googleSignIn = GoogleSignIn();
 final Reference storageRef = FirebaseStorage.instance.ref();
-final usersRef = FirebaseFirestore.instance
+final CollectionReference usersRef = FirebaseFirestore.instance
     .collection('notreDame')
     .doc('data')
     .collection('users');
@@ -78,7 +77,7 @@ final adminRef = FirebaseFirestore.instance
     .collection('notreDame')
     .doc('data')
     .collection('admin');
-final communityGroupsRef = FirebaseFirestore.instance
+  final communityGroupsRef = FirebaseFirestore.instance
     .collection('notreDame')
     .doc('data')
     .collection('communityGroups');
@@ -183,14 +182,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
 //      FlutterAppBadger.updateBadgeCount(1);
       if (recipientId == currentUser.id) {
-        String otherPerson;
-
-        if (pushId.substring(21) == currentUser.id) {
-          otherPerson = pushId.substring(0, 21);
-        } else {
-          otherPerson = pushId.substring(21);
-        }
-
         print(pushId);
         Flushbar snackbar = Flushbar(
             onTap: (data) {
@@ -207,7 +198,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                     MaterialPageRoute(
                         builder: (context) => MessageDetail(
                             directMessageId: pushId,
-                            otherPerson: otherPerson,
+                            otherPerson: recipientId,
                             members: [],
                             sendingPost: {})));
               }
@@ -291,13 +282,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         page = message["data"]['page'];
         recipientId = message["data"]['recipient'];
       }
-      String otherPerson;
-
-      if (pushId.substring(21) == currentUser.id) {
-        otherPerson = pushId.substring(0, 21);
-      } else {
-        otherPerson = pushId.substring(21);
-      }
 
       if (page == "post") {
         Navigator.push(context,
@@ -309,7 +293,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             MaterialPageRoute(
                 builder: (context) => MessageDetail(
                     directMessageId: pushId,
-                    otherPerson: otherPerson,
+                    otherPerson: recipientId,
                     members: [],
                     sendingPost: {})));
       }
@@ -387,15 +371,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       //     MaterialPageRoute(
       //         builder: (context) => PostDetail("MEB1KyztxCHY50VT29wL")));
       // print("DATA ${data}");
-
-      String otherPerson;
-
-      if (pushId.substring(21) == currentUser.id) {
-        otherPerson = pushId.substring(0, 21);
-      } else {
-        otherPerson = pushId.substring(21);
-      }
-
       if (page == "post") {
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => PostDetail(pushId)));
@@ -406,7 +381,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             MaterialPageRoute(
                 builder: (context) => MessageDetail(
                     directMessageId: pushId,
-                    otherPerson: otherPerson,
+                    otherPerson: recipientId,
                     members: [],
                     sendingPost: {})));
       }
@@ -506,14 +481,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
       usersRef.doc(user.id).update({'test': message.toString()});
 
-      String otherPerson;
-
-      if (pushId.substring(21) == currentUser.id) {
-        otherPerson = pushId.substring(0, 21);
-      } else {
-        otherPerson = pushId.substring(21);
-      }
-
       Flushbar snackbar = Flushbar(
           onTap: (data) {
             // print("DATA ${data}");
@@ -527,7 +494,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                   MaterialPageRoute(
                       builder: (context) => MessageDetail(
                           directMessageId: pushId,
-                          otherPerson: otherPerson,
+                          otherPerson: recipientId,
                           members: [],
                           sendingPost: {})));
             }
@@ -600,35 +567,23 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
     DocumentSnapshot adminDoc = await adminRef.doc('login').get();
     bool blocked = false;
-    bool locked = true;
 
     if (!doc.exists) {
-      // checking if a business or nd.edu address or staff
-      List whiteList =
-          adminDoc.data()['whiteList']; //businesses can get through screening
-      List blackList = adminDoc.data()['blackList']; // staff/faculty blocked
+      //checking if a business or nd.edu address or staff
+      // List whiteList =
+      //     adminDoc.data()['whiteList']; //businesses can get through screening
+      // List blackList = adminDoc.data()['blackList']; // staff/faculty blocked
 
-      if (blackList.contains(user.email)) {
-        blocked = true;
-        print("staff/faculty. get fucked");
-      }
-      if (!user.email.contains('@nd.edu') && !whiteList.contains(user.email)) {
-        blocked = true;
-        print("not a student or a business. get fucked");
-      }
+      // if (blackList.contains(user.email)) {
+      //   blocked = true;
+      //   print("staff/faculty. get fucked");
+      // }
+      // if (!user.email.contains('@nd.edu') && !whiteList.contains(user.email)) {
+      //   blocked = true;
+      //   print("not a student or a business. get fucked");
+      // }
 
-      if (whiteList.contains(user.email)) {
-        locked = false;
-      }
-
-      if (locked) {
-        print("H");
-        final result = await Navigator.pushAndRemoveUntil(
-          context,
-          PageRouteBuilder(pageBuilder: (_, __, ___) => PasswordPage()),
-          (Route<dynamic> route) => false,
-        );
-      }
+      // 2) if the user doesn't exist, and ISNT BLOCKED, then we want to take them to the create account page
       if (blocked) {
         final result = await Navigator.pushAndRemoveUntil(
           context,
@@ -709,6 +664,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   // }
   ////       /////
 
+
   Scaffold buildAuthScreen() {
     // Future<String> randomPostMaker() async {
     //   String randomPost;
@@ -746,7 +702,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         body: FutureBuilder(
             future: usersRef.doc(currentUser.id).get(),
             builder: (context, snapshot) {
-              if (!snapshot.hasData || snapshot.data == null) {
+              if (!snapshot.hasData || !snapshot.data.exists) {
                 return Container();
               }
               int moovMoneyBalance = snapshot.data['moovMoney'];

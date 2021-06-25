@@ -88,7 +88,7 @@ class MOTDUI extends StatelessWidget {
                 course['paymentAmount'] != 0) {
               type = "pay";
             }
-            if (course.data()['mobileOrderMenu'] != null && (course.data()['mobileOrderMenu']['item1'] || course.data()['mobileOrderMenu']['item2'] || course.data()['mobileOrderMenu']['item3'])) {
+            if (course.data()['mobileOrderMenu'] != null) {
               type = "order";
             }
 
@@ -151,7 +151,7 @@ class MOTDUI extends StatelessWidget {
                                   child: Container(
                                     decoration: BoxDecoration(
                                       borderRadius:
-                                          BorderRadius.all(Radius.circular(20)),
+                                          BorderRadius.all(Radius.circular(0)),
                                       gradient: LinearGradient(
                                         begin: Alignment.topCenter,
                                         end: Alignment.bottomCenter,
@@ -368,21 +368,12 @@ class BiteSizePostUI extends StatelessWidget {
                 ? Positioned(
                     bottom: 5,
                     right: 5,
-                    child: Container(
-                      decoration: BoxDecoration(
-                          color: Colors.blueGrey[50],
-                          borderRadius:
-                              BorderRadius.all(Radius.circular(30.0))),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: Row(
-                          children: [
-                            Text(goingCount.toString(),
-                                style: TextStyle(color: Colors.green)),
-                            Icon(Icons.directions_run, color: Colors.green),
-                          ],
-                        ),
-                      ),
+                    child: Row(
+                      children: [
+                        Text(goingCount.toString(),
+                            style: TextStyle(color: Colors.green)),
+                        Icon(Icons.directions_run, color: Colors.green),
+                      ],
                     ))
                 : Container()
           ],

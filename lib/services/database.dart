@@ -334,9 +334,7 @@ class Database {
           .get()
           .then((snapshot) {
         for (DocumentSnapshot ds in snapshot.docs) {
-          print(ds.id);
-          if (ds.data()['livePosts'] != null &&
-              ds.data()['livePosts'].contains(postId)) {
+          if (ds.data()['livePosts'].contains(postId)) {
             messagesRef
                 .doc(ds.id)
                 .collection("chat")
@@ -420,9 +418,7 @@ class Database {
           .get()
           .then((snapshot) {
         for (DocumentSnapshot ds in snapshot.docs) {
-          print(ds);
-          if (ds.data()['livePosts'] != null &&
-              ds.data()['livePosts'].contains(postId)) {
+          if (ds.data()['livePosts'].contains(postId)) {
             messagesRef
                 .doc(ds.id)
                 .collection("chat")
@@ -520,8 +516,7 @@ class Database {
           .get()
           .then((snapshot) {
         for (DocumentSnapshot ds in snapshot.docs) {
-          if (ds.data()['livePosts'] != null &&
-              ds.data()['livePosts'].contains(postId)) {
+          if (ds.data()['livePosts'].contains(postId)) {
             messagesRef
                 .doc(ds.id)
                 .collection("chat")
@@ -1018,7 +1013,7 @@ class Database {
 
         ///this is for deleted related suggested moovs
         .collectionGroup("suggestedMOOVs")
-        .where("postId", isEqualTo: postId)
+        .where("nextMOOV", isEqualTo: postId)
         .get()
         .then((snapshot) {
       for (DocumentSnapshot ds in snapshot.docs) {
@@ -1240,7 +1235,7 @@ class Database {
     });
   }
 
-  Future<void> addUserToGroup(id, gname, gid, displayName) async {
+  Future<void> addUser(id, gname, gid, displayName) async {
     usersRef.doc(currentUser.id).get().then((value) {
       if (value['groupLimit'] >= 1) {
         usersRef
@@ -1250,13 +1245,6 @@ class Database {
             .doc(currentUser.id)
             .update({"score": FieldValue.increment(75)});
       }
-      groupsRef.doc(gid).set({
-        "members": FieldValue.arrayUnion([id]),
-        "memberNames": FieldValue.arrayUnion([displayName])
-      }, SetOptions(merge: true));
-      usersRef.doc(id).set({
-        "friendGroups": FieldValue.arrayUnion([gid])
-      }, SetOptions(merge: true));
     });
   }
 
@@ -1270,7 +1258,8 @@ class Database {
     });
   }
 
-  Future<void> suggestMOOV(gid, postId, groupName) async {
+  Future<void> suggestMOOV(userId, gid, postId, unix, userName, members, title,
+      pic, groupName) async {
     usersRef.doc(currentUser.id).get().then((value) {
       if (value['suggestLimit'] >= 1) {
         usersRef
@@ -1286,33 +1275,36 @@ class Database {
       // final DocumentReference ref2 = dbRef.doc('notreDame/data/users/$userId');
       // transaction.update(ref2, {'score': FieldValue.increment(30)});
 
-      postsRef.doc(postId).get().then((value) {
-        groupsRef.doc(gid).collection("suggestedMOOVs").doc(postId).set({
-          "postId": postId,
-          "pic": value['image'],
-          "startDate": value['startDate'],
-          "title": value['title']
-        });
-        bool push = true;
+      groupsRef
+          .doc(gid)
+          .collection("suggestedMOOVs")
+          .doc(unix.toString() + " from " + userId)
+          .set({
+        "voters": {userId: 2},
+        "nextMOOV": postId,
+        "unix": unix,
+        "suggestorName": userName,
+        "suggestorId": userId
+      }, SetOptions(merge: true));
+      bool push = true;
 
-        notificationFeedRef
-            .doc(gid)
-            .collection('feedItems')
-            .doc('suggest ' + postId)
-            .set({
-          "seen": false,
-          "type": "suggestion",
-          "push": push,
-          "postId": postId,
-          "previewImg": value['image'],
-          "title": value['title'],
-          "groupId": gid,
-          "groupName": groupName,
-          "username": currentUser.displayName,
-          "userId": currentUser.id,
-          "userProfilePic": currentUser.photoUrl,
-          "timestamp": DateTime.now()
-        });
+      notificationFeedRef
+          .doc(gid)
+          .collection('feedItems')
+          .doc('suggest ' + postId)
+          .set({
+        "seen": false,
+        "type": "suggestion",
+        "push": push,
+        "postId": postId,
+        "previewImg": pic,
+        "title": title,
+        "groupId": gid,
+        "groupName": groupName,
+        "username": currentUser.displayName,
+        "userId": currentUser.id,
+        "userProfilePic": currentUser.photoUrl,
+        "timestamp": DateTime.now()
       });
     });
   }

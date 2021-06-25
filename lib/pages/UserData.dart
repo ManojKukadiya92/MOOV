@@ -167,20 +167,15 @@ class _UserDataState extends State<UserData> {
                                                   .toString(),
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold)),
-                                      currentUser.isBusiness
-                                          ? Text(
-                                              "Location: " + currentUser.dorm,
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold))
-                                          : Text(
-                                              "Demographic: " +
-                                                  currentUser.year +
-                                                  " " +
-                                                  currentUser.gender +
-                                                  " in " +
-                                                  currentUser.dorm,
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold)),
+                                      Text(
+                                          "Demographic: " +
+                                              currentUser.year +
+                                              " " +
+                                              currentUser.gender +
+                                              " in " +
+                                              currentUser.dorm,
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold)),
                                       Text("Email: " + currentUser.email,
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold)),
@@ -188,12 +183,12 @@ class _UserDataState extends State<UserData> {
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold)),
 
-                                     currentUser.venmoUsername != null ? Text(
+                                      Text(
                                           "Venmo: @" +
                                               currentUser.venmoUsername
                                                   .toString(),
                                           style: TextStyle(
-                                              fontWeight: FontWeight.bold)) : Container(),
+                                              fontWeight: FontWeight.bold)),
                                       Text(
                                           "Score: " +
                                               currentUser.score.toString(),

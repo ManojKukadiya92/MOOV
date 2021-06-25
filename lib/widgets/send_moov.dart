@@ -15,23 +15,17 @@ class SendMOOVSearch extends StatefulWidget {
   final String ownerId, previewImg;
   final dynamic startDate, moovId;
   final String title, ownerName;
-  SendMOOVSearch(
-    this.ownerId,
-    this.previewImg,
-    this.startDate,
-    this.moovId,
-    this.title,
-    this.ownerName,
-  );
+  SendMOOVSearch(this.ownerId, this.previewImg, this.startDate, this.moovId,
+      this.title, this.ownerName,);
 
   @override
   _SendMOOVSearchState createState() => _SendMOOVSearchState(
-        this.ownerId,
-        this.previewImg,
-        this.startDate,
-        this.moovId,
-        this.title,
-        this.ownerName,
+      this.ownerId,
+      this.previewImg,
+      this.startDate,
+      this.moovId,
+      this.title,
+      this.ownerName,
       );
 }
 
@@ -242,40 +236,11 @@ class _SendMOOVSearchState extends State<SendMOOVSearch>
             StreamBuilder<List<AlgoliaObjectSnapshot>>(
                 stream: Stream.fromFuture(_operation(_searchTerm)),
                 builder: (context, snapshot) {
-                  if (!snapshot.hasData || _searchTerm == null)
-                    return FutureBuilder(
-                        future: usersRef.get(),
-                        builder: (context, snapshot2) {
-                          if (!snapshot2.hasData) {
-                            return Container();
-                          }
-                          return CustomScrollView(
-                            shrinkWrap: true,
-                            slivers: <Widget>[
-                              SliverList(
-                                delegate: SliverChildBuilderDelegate(
-                                  (context, index) {
-                                    return SendMOOVResult(
-                                      snapshot2.data.docs[index]["displayName"],
-                                      snapshot2.data.docs[index]["email"],
-                                      snapshot2.data.docs[index]["photoUrl"],
-                                      snapshot2.data.docs[index]["id"],
-                                      snapshot2.data.docs[index]
-                                          ["verifiedStatus"],
-                                      ownerId,
-                                      previewImg,
-                                      startDate,
-                                      moovId,
-                                      title,
-                                      ownerName,
-                                    );
-                                  },
-                                  childCount: 30,
-                                ),
-                              ),
-                            ],
-                          );
-                        });
+                  if (!snapshot.hasData ||
+                      snapshot.data.length == 0 ||
+                      _searchTerm == null) {
+                  
+                  }
 
                   List<AlgoliaObjectSnapshot> currSearchStuff = snapshot.data;
 
@@ -321,7 +286,8 @@ class _SendMOOVSearchState extends State<SendMOOVSearch>
                                                       return _searchTerm
                                                                   .length >
                                                               0
-                                                          ? SendMOOVResult(
+                                                          ? 
+                                                          SendMOOVResult(
                                                               currSearchStuff[
                                                                           index]
                                                                       .data[
@@ -347,7 +313,7 @@ class _SendMOOVSearchState extends State<SendMOOVSearch>
                                                               moovId,
                                                               title,
                                                               ownerName,
-                                                            )
+                                                              )
                                                           : Container();
                                                     },
                                                     childCount: currSearchStuff
@@ -366,10 +332,7 @@ class _SendMOOVSearchState extends State<SendMOOVSearch>
                                                     (context, index) {
                                                       return _searchTerm
                                                                   .length >
-                                                              0 && currSearchStuff1[
-                                                                          index]
-                                                                      .data[
-                                                                  "members"].contains(currentUser.id)
+                                                              0
                                                           ? DisplayGroupResult(
                                                               groupName: currSearchStuff1[
                                                                           index]
@@ -425,32 +388,32 @@ class SendMOOVResult extends StatefulWidget {
   final String title, ownerName;
 
   SendMOOVResult(
-    this.displayName,
-    this.email,
-    this.proPic,
-    this.userId,
-    this.verifiedStatus,
-    this.ownerId,
-    this.previewImg,
-    this.startDate,
-    this.moovId,
-    this.title,
-    this.ownerName,
-  );
+      this.displayName,
+      this.email,
+      this.proPic,
+      this.userId,
+      this.verifiedStatus,
+      this.ownerId,
+      this.previewImg,
+      this.startDate,
+      this.moovId,
+      this.title,
+      this.ownerName,
+      );
 
   @override
   _SendMOOVResultState createState() => _SendMOOVResultState(
-        this.displayName,
-        this.email,
-        this.proPic,
-        this.userId,
-        this.verifiedStatus,
-        this.ownerId,
-        this.previewImg,
-        this.startDate,
-        this.moovId,
-        this.title,
-        this.ownerName,
+      this.displayName,
+      this.email,
+      this.proPic,
+      this.userId,
+      this.verifiedStatus,
+      this.ownerId,
+      this.previewImg,
+      this.startDate,
+      this.moovId,
+      this.title,
+      this.ownerName,
       );
 }
 
@@ -466,18 +429,18 @@ class _SendMOOVResultState extends State<SendMOOVResult> {
   bool status = false;
 
   _SendMOOVResultState(
-    this.displayName,
-    this.email,
-    this.proPic,
-    this.userId,
-    this.verifiedStatus,
-    this.ownerId,
-    this.previewImg,
-    this.startDate,
-    this.moovId,
-    this.title,
-    this.ownerName,
-  );
+      this.displayName,
+      this.email,
+      this.proPic,
+      this.userId,
+      this.verifiedStatus,
+      this.ownerId,
+      this.previewImg,
+      this.startDate,
+      this.moovId,
+      this.title,
+      this.ownerName,
+      );
 
   String directMessageId;
 

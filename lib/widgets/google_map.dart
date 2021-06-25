@@ -1,10 +1,8 @@
-import 'package:MOOV/accountCreation/createAccountLanding.dart';
 import 'package:MOOV/pages/NewSearch.dart';
 import 'package:MOOV/pages/create_account.dart';
 import 'package:MOOV/pages/home.dart';
 import 'package:MOOV/utils/themes_styles.dart';
 import 'package:MOOV/widgets/progress.dart';
-import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -21,16 +19,13 @@ class GoogleMap extends StatefulWidget {
   final Callback callback2;
   final Callback callback3;
   final List coords;
-  final String businessName, businessType;
 
   GoogleMap(
       {this.fromMOOVMaker,
       this.callback,
       this.callback2,
       this.callback3,
-      this.coords,
-      this.businessName,
-      this.businessType});
+      this.coords});
 
   static final kInitialPosition = LatLng(-33.8567844, 151.213108);
 
@@ -109,35 +104,9 @@ class _GoogleMapState extends State<GoogleMap> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  SizedBox(height: 50),
-                  DelayedDisplay(
-                    delay: Duration(milliseconds: 200),
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: IconButton(
-                              icon: Icon(
-                                Icons.arrow_back,
-                                color: Colors.white,
-                              ),
-                              onPressed: () {
-                                Navigator.pop(context);
-                              }),
-                        ),
-                        Text(
-                          "Where's your business?",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w300,
-                            fontSize: 20.0,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 30),
+                  SizedBox(height: 20),
+                  Text("Your Location"),
+                  SizedBox(height: 10),
                   Expanded(
                     child: Container(
                       height: 500,
@@ -171,7 +140,8 @@ class _GoogleMapState extends State<GoogleMap> {
                                   height: 30,
                                   borderRadius: BorderRadius.circular(12.0),
                                   child: state == SearchingState.Searching
-                                      ? Center(child: linearProgress())
+                                      ? Center(
+                                          child: linearProgress())
                                       : TextButton(
                                           child: Text("Set Address",
                                               style: TextStyle(
@@ -200,17 +170,9 @@ class _GoogleMapState extends State<GoogleMap> {
                   ),
                   SizedBox(height: 20),
                   selectedPlace == null
-                      ? DelayedDisplay(
-                          delay: Duration(milliseconds: 200),
-                          child: Text(
-                            "Drag the pin to the exact spot",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w300,
-                              fontSize: 14.0,
-                              color: Colors.white,
-                            ),
-                          ),
-                        )
+                      ? Container(
+                          height: 50,
+                          child: Text("Drag the pin to your exact spot!"))
                       : FutureBuilder(
                           future: locationFromAddress(
                               selectedPlace.formattedAddress),
@@ -219,10 +181,11 @@ class _GoogleMapState extends State<GoogleMap> {
                                 ConnectionState.done) {
                               return linearProgress();
                             }
+                            print(selectedPlace.geometry.location);
                             if (!snapshot.hasData) {
                               return Container(
-                                  child: Text("Can't find an address here!",
-                                      style: TextStyle(color: Colors.white)));
+                                  height: 50,
+                                  child: Text("Can't find an address here!"));
                             }
 
                             List<String> parse =
@@ -244,45 +207,34 @@ class _GoogleMapState extends State<GoogleMap> {
                             String distancetoStadium =
                                 NumberFormat.compact(locale: 'eu').format(y);
 
-                            BusinessAccountLocationCreation.of(context)
-                                .businessLocationLatitude = latitude.toString();
-                            BusinessAccountLocationCreation.of(context)
+                            CreateAccount.of(context).businessLocationLatitude =
+                                latitude.toString();
+                            CreateAccount.of(context)
                                     .businessLocationLongitude =
                                 longtitude.toString();
-                            BusinessAccountLocationCreation.of(context)
-                                    .businessAddress =
+                            CreateAccount.of(context).businessAddress =
                                 selectedPlace.formattedAddress;
 
-                            Future.delayed(Duration(milliseconds: 500), () {
-                              accountButtonPressed(
-                                  context: context,
-                                  page: BusinessAccountOptionals(widget.businessName, widget.businessType, latitude.toString(), longtitude.toString(),selectedPlace.formattedAddress, ));
-                            });
-
-                            return Container();
-
-                            // return Padding(
-                            //   padding:
-                            //       const EdgeInsets.symmetric(horizontal: 8.0),
-                            //   child: Column(
-                            //     children: [
-                            //       Text(
-                            //         selectedPlace.formattedAddress ?? "",
-                            //         textAlign: TextAlign.center,
-                            //         style: TextStyle(color: TextThemes.ndGold),
-                            //       ),
-                            //       SizedBox(height: 5),
-                            //       Text(
-                            //         "You are $distancetoStadium ft. from Notre Dame Stadium!",
-                            //         style: TextStyle(
-                            //             fontSize: 8, color: Colors.white),
-                            //         textAlign: TextAlign.center,
-                            //       )
-                            //     ],
-                            //   ),
-                            // );
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    selectedPlace.formattedAddress ?? "",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(color: TextThemes.ndBlue),
+                                  ),
+                                  SizedBox(height: 5),
+                                  Text(
+                                    "You are $distancetoStadium ft. from Notre Dame Stadium!",
+                                    style: TextStyle(fontSize: 8),
+                                    textAlign: TextAlign.center,
+                                  )
+                                ],
+                              ),
+                            );
                           }),
-                  SizedBox(height: 35),
                 ],
               ),
             ))
@@ -362,10 +314,9 @@ class _GoogleMapState extends State<GoogleMap> {
 
                             //usePlaceDetailSearch: true,
                             onPlacePicked: (result) {
+                              selectedPlace = result;
                               // Navigator.of(context).pop();
-                              setState(() {
-                                selectedPlace = result;
-                              });
+                              setState(() {});
                             },
                             //forceSearchOnZoomChanged: true,
                             //automaticallyImplyAppBarLeading: false,

@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
-import 'package:MOOV/friendGroups/friend_groups.dart';
+
 import 'package:MOOV/main.dart';
+import 'package:MOOV/pages/friend_groups.dart';
 import 'package:MOOV/pages/home.dart';
+import 'package:MOOV/pages/other_profile.dart';
 import 'package:MOOV/services/database.dart';
 import 'package:MOOV/utils/themes_styles.dart';
 import 'package:MOOV/widgets/add_users_post.dart';
@@ -11,6 +13,7 @@ import 'package:MOOV/widgets/camera.dart';
 import 'package:MOOV/widgets/progress.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -267,11 +270,13 @@ class _GroupFormState extends State<GroupForm> {
                             _image != null
                                 ? Container(
                                     height: 200,
-                                    width: MediaQuery.of(context).size.width,
+                                    width: 200,
                                     child:
                                         Image.file(_image, fit: BoxFit.cover),
                                     margin: EdgeInsets.only(
+                                        left: 20,
                                         top: 0,
+                                        right: 20,
                                         bottom: 7.5),
                                     decoration: BoxDecoration(
                                       color: Colors.white,
@@ -469,14 +474,11 @@ class _GroupFormState extends State<GroupForm> {
                                             }),
                                       ),
                                     ])),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 80.0),
-                              child: CheckboxListTile(
-                                  title: new Text("We'll be lit."),
-                                  value: _termsChecked,
-                                  onChanged: (bool value) =>
-                                      setState(() => _termsChecked = value)),
-                            ),
+                            CheckboxListTile(
+                                title: new Text("We'll be lit."),
+                                value: _termsChecked,
+                                onChanged: (bool value) =>
+                                    setState(() => _termsChecked = value)),
                             SizedBox(
                               height: 10.0,
                             ),

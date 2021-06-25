@@ -24,6 +24,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  intl: ^0.16.1
   material_segmented_control: ^2.1.0
   cloud_firestore: ^0.14.0
   cloud_functions: ^0.7.0
@@ -113,16 +114,8 @@ dependencies:
   daylight: ^1.0.0
   avatar_glow: ^2.0.1
   flutter_spinkit: ^5.0.0
-  syncfusion_flutter_calendar: ^18.4.33
-  confetti: ^0.5.5
-  table_calendar: ^3.0.0
-  delayed_display: ^2.0.0
-
 
 dependency_overrides:
-  intl: ^0.16.1
-
-
 
 
 
@@ -215,7 +208,6 @@ flutter:
     - lib/assets/woman.jpg
     - lib/assets/chinese.png
     - lib/assets/studybutton1.png
-    - lib/assets/ghost.png
     - lib/assets/govbutton1.png
     - lib/assets/massbutton1.png
     - lib/assets/dorm1.png
@@ -272,7 +264,6 @@ flutter:
     - lib/assets/music1.png
     - lib/assets/mopass.png
     - lib/assets/bm1.png
-    - lib/assets/calendarBack.jpeg
     - lib/assets/virtual1.png
     - lib/assets/popularSpots.png
     - lib/assets/placeholderparty1.jpg

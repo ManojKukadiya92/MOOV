@@ -1,24 +1,29 @@
-import 'package:MOOV/friendGroups/group_detail.dart';
+import 'package:MOOV/helpers/size_config.dart';
 import 'package:MOOV/main.dart';
+import 'package:MOOV/models/user.dart';
+import 'package:MOOV/pages/NewSearch.dart';
 import 'package:MOOV/pages/create_group.dart';
+import 'package:MOOV/pages/group_detail.dart';
 import 'package:MOOV/pages/home.dart';
 import 'package:MOOV/pages/post_detail.dart';
 import 'package:MOOV/utils/themes_styles.dart';
+import 'package:MOOV/widgets/NextMOOV.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:intl/intl.dart';
 
 class GroupCarousel extends StatelessWidget {
-  final String userId;
-  GroupCarousel(this.userId);
+  String userId;
+  GroupCarousel({Key key}) : super(key: key);
 
-  // int i = 0;
+  int i = 0;
 
   @override
   Widget build(BuildContext context) {
     GoogleSignInAccount user = googleSignIn.currentUser;
-   final userId = user.id;
+    userId = user.id;
 
     bool isLargePhone = Screen.diagonal(context) > 766;
 
