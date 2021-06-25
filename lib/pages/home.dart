@@ -733,7 +733,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     final today = DateTime.now().day;
     int day = SPHelper.getInt("Day");
 
-    if (day != today) {
+    if (day != today && !currentUser.isBusiness) {
       //has not set Tonights Vibe
 
       return tonightsVibe(today);

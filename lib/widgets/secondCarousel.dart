@@ -1,5 +1,6 @@
 import 'package:MOOV/maps/Heatmap.dart';
 import 'package:MOOV/pages/friend_finder.dart';
+import 'package:MOOV/pages/home.dart';
 import 'package:flutter/material.dart';
 
 class SecondCarousel extends StatelessWidget {
@@ -20,45 +21,53 @@ class SecondCarousel extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: currentUser.isBusiness
+                ? MainAxisAlignment.center
+                : MainAxisAlignment.spaceEvenly,
             children: [
-              GestureDetector(
-                onTap: () => Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => FriendFinder())),
-                child: Stack(
-                  children: [
-                    AnimatedOpacity(
-                      duration: Duration(milliseconds: 250),
-                      opacity: 1 - notifier.value,
-                      child: Column(
+              currentUser.isBusiness
+                  ? Container()
+                  : GestureDetector(
+                      onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => FriendFinder())),
+                      child: Stack(
                         children: [
-                          Image.asset('lib/assets/friendsIcon.png', height: 60),
-                          SizedBox(height: 5),
-                          Text(
-                            "Find Friends",
-                            style: TextStyle(fontSize: 20),
+                          AnimatedOpacity(
+                            duration: Duration(milliseconds: 250),
+                            opacity: 1 - notifier.value,
+                            child: Column(
+                              children: [
+                                Image.asset('lib/assets/friendsIcon.png',
+                                    height: 60),
+                                SizedBox(height: 5),
+                                Text(
+                                  "Find Friends",
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                              ],
+                            ),
+                          ),
+                          AnimatedOpacity(
+                            duration: Duration(milliseconds: 250),
+                            opacity: notifier.value,
+                            child: Column(
+                              children: [
+                                Image.asset('lib/assets/friendsIconWhite.png',
+                                    height: 60),
+                                SizedBox(height: 5),
+                                Text(
+                                  "Find Friends",
+                                  style: TextStyle(
+                                      fontSize: 20, color: Colors.white),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
                     ),
-                    AnimatedOpacity(
-                      duration: Duration(milliseconds: 250),
-                      opacity: notifier.value,
-                      child: Column(
-                        children: [
-                          Image.asset('lib/assets/friendsIconWhite.png',
-                              height: 60),
-                          SizedBox(height: 5),
-                          Text(
-                            "Find Friends",
-                            style: TextStyle(fontSize: 20, color: Colors.white),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
               GestureDetector(
                 onTap: () => Navigator.push(context,
                     MaterialPageRoute(builder: (context) => Heatmap())),
