@@ -12,6 +12,7 @@ import 'package:MOOV/pages/CalendarPage.dart';
 import 'package:MOOV/widgets/google_map.dart';
 import 'package:MOOV/widgets/sundayWrapup.dart';
 import 'package:confetti/confetti.dart';
+import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -423,6 +424,8 @@ class _MoovMakerFormState extends State<MoovMakerForm>
   final startDateController = DatePicker().startDate1;
   final maxOccupancyController = TextEditingController();
   final paymentAmountController = TextEditingController();
+  final dealCostController = TextEditingController();
+  final dealLimitController = TextEditingController();
 
   final format = DateFormat("EEE, MMM d,' at' h:mm a");
   Map<String, int> invitees = {};
@@ -446,6 +449,10 @@ class _MoovMakerFormState extends State<MoovMakerForm>
   bool _weeklyRecurring = false;
   bool _biweeklyRecurring = false;
   bool _monthlyRecurring = false;
+  String dealCost;
+  int dealCostInt;
+  String dealLimit;
+  int dealLimitInt;
 
   bool _item1 = true;
   bool _item2 = true;
@@ -462,6 +469,8 @@ class _MoovMakerFormState extends State<MoovMakerForm>
 
   List coords = [];
   bool postANewMOOVPressed = false;
+  bool _isDeal = false;
+  List<String> tags = [];
 
   @override
   Widget build(BuildContext context) {
@@ -615,7 +624,7 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                     currentUser.isBusiness
                         ? Padding(
                             padding: const EdgeInsets.only(
-                                top: 0.0, left: 65, right: 40, bottom: 15),
+                                top: 0.0, left: 55, right: 67.5, bottom: 15),
                             child: Column(
                               children: <Widget>[
                                 Container(
@@ -626,6 +635,7 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(10))),
                                   child: ExpansionTile(
+                                    trailing: Container(width: 1),
                                     initiallyExpanded:
                                         widget.fromMaxOc || widget.fromMoovOver
                                             ? true
@@ -633,8 +643,8 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                                     title: Text(
                                       "Make this MOOV recurring?",
                                       style: TextStyle(
-                                          fontSize: 14.0,
-                                          fontWeight: FontWeight.bold),
+                                        fontSize: 14.0,
+                                      ),
                                     ),
                                     children: <Widget>[
                                       Row(
@@ -754,27 +764,129 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                           bottom: currentUser.isBusiness ? 5 : 15.0,
                           left: 15,
                           right: 15),
-                      child: TextFormField(
-                        controller: titleController,
-                        decoration: InputDecoration(
-                          icon: Icon(
-                            Icons.create,
-                            color: TextThemes.ndGold,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              controller: titleController,
+                              decoration: InputDecoration(
+                                icon: Icon(
+                                  Icons.create,
+                                  color: TextThemes.ndGold,
+                                ),
+                                labelText: "MOOV Title",
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                              ),
+                              // The validator receives the text that the user has entered.
+                              validator: (value) {
+                                if (value.isEmpty) {
+                                  return 'Title?';
+                                }
+                                return null;
+                              },
+                            ),
                           ),
-                          labelText: "MOOV Title",
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                        ),
-                        // The validator receives the text that the user has entered.
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return 'Title?';
-                          }
-                          return null;
-                        },
+                          currentUser.isBusiness
+                              ? Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: Column(
+                                    children: [
+                                      SizedBox(
+                                        height: 30,
+                                        child: Checkbox(
+                                            value: _isDeal,
+                                            onChanged: (bool value) => setState(
+                                                () => _isDeal = value)),
+                                      ),
+                                      Text(
+                                        "Is this\na deal?",
+                                        style:
+                                            TextStyle(height: 1, fontSize: 11),
+                                        textAlign: TextAlign.center,
+                                      )
+                                    ],
+                                  ),
+                                )
+                              : Container(),
+                        ],
                       ),
                     ),
+                    _isDeal
+                        ? Padding(
+                            padding: const EdgeInsets.only(left: 27.0),
+                            child: Container(
+                                width: MediaQuery.of(context).size.width,
+                                height: 50,
+                                child: DelayedDisplay(
+                                    delay: Duration(milliseconds: 200),
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(left: 8.0),
+                                      child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Expanded(
+                                              child: Row(
+                                                children: <Widget>[
+                                                  Text(
+                                                      'Cost to be paid\nin advance?'),
+                                                  SizedBox(
+                                                    width: 50,
+                                                    child: TextField(
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      inputFormatters: [
+                                                        CurrencyTextInputFormatter(
+                                                          decimalDigits: 0,
+                                                          symbol: '\$',
+                                                        )
+                                                      ],
+                                                      controller:
+                                                          dealCostController,
+                                                      keyboardType:
+                                                          TextInputType.number,
+                                                      onChanged: (value) =>
+                                                          setState(() =>
+                                                              dealCost = value),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            SizedBox(width: 10),
+                                            Expanded(
+                                              child: Row(children: <Widget>[
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 12.0,
+                                                          right: 12),
+                                                  child: Text('Person\nlimit?'),
+                                                ),
+                                                SizedBox(
+                                                    width: 50,
+                                                    child: TextField(
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      controller:
+                                                          dealLimitController,
+                                                      keyboardType:
+                                                          TextInputType.number,
+                                                      onChanged: (value) =>
+                                                          setState(() =>
+                                                              dealLimit =
+                                                                  value),
+
+                                                      // your TextField's Content
+                                                    ))
+                                              ]),
+                                            ),
+                                          ]),
+                                    ))),
+                          )
+                        : Container(),
                     currentUser.isBusiness
                         ? Container()
                         : Padding(
@@ -1096,8 +1208,8 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                     // ),
 
                     Padding(
-                      padding:
-                          const EdgeInsets.only(top: 5, left: 55, bottom: 10),
+                      padding: const EdgeInsets.only(
+                          top: 5, left: 55, bottom: 10, right: 15),
                       child: Row(
                         children: [
                           Expanded(
@@ -1173,27 +1285,27 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                               ),
                             ),
                           ),
-                          GestureDetector(
-                            onTap: coords.isEmpty
-                                ? () => Navigator.of(context)
-                                    .push(MaterialPageRoute(
-                                        builder: (context) => CalendarPage(
-                                            currentValue ?? DateTime.now())))
-                                    .then(onGoBack)
-                                : null,
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 12.0),
-                              child: Column(
-                                children: [
-                                  Icon(Icons.calendar_today,
-                                      color: TextThemes.ndGold, size: 30),
-                                  SizedBox(height: 5),
-                                  Text("Overlap?")
-                                ],
-                              ),
-                            ),
-                          )
+                          // GestureDetector(
+                          //   onTap: coords.isEmpty
+                          //       ? () => Navigator.of(context)
+                          //           .push(MaterialPageRoute(
+                          //               builder: (context) => CalendarPage(
+                          //                   currentValue ?? DateTime.now())))
+                          //           .then(onGoBack)
+                          //       : null,
+                          //   child: Padding(
+                          //     padding:
+                          //         const EdgeInsets.symmetric(horizontal: 12.0),
+                          //     child: Column(
+                          //       children: [
+                          //         Icon(Icons.calendar_today,
+                          //             color: TextThemes.ndGold, size: 30),
+                          //         SizedBox(height: 5),
+                          //         Text("Overlap?")
+                          //       ],
+                          //     ),
+                          //   ),
+                          // )
                         ],
                       ),
                     ),
@@ -1526,7 +1638,7 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                                                 Expanded(
                                                     flex: 4,
                                                     child:
-                                                        Text('Max Occupancy')),
+                                                        Text('Limit Capacity')),
                                                 Expanded(
                                                   flex: 1,
                                                   child: TextField(
@@ -1553,7 +1665,36 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                                         children: <Widget>[
                                           Expanded(
                                               flex: 4,
-                                              child: Text('Max Occupancy')),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  RichText(
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    text: TextSpan(
+                                                        style: TextStyle(
+                                                          color: Colors.black,
+                                                        ),
+                                                        children: [
+                                                          TextSpan(
+                                                            text:
+                                                                "Limit Capacity",
+                                                            style: TextStyle(),
+                                                          ),
+                                                          TextSpan(
+                                                              text:
+                                                                  '\nYour MOOV will show "full"',
+                                                              style: TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w300,
+                                                                fontSize: 10,
+                                                              )),
+                                                        ]),
+                                                  ),
+                                                ],
+                                              )),
                                           Expanded(
                                             flex: 1,
                                             child: TextField(
@@ -1576,7 +1717,33 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                                   children: <Widget>[
                                     Expanded(
                                         flex: 4,
-                                        child: Text('Cost Per Person')),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            RichText(
+                                              overflow: TextOverflow.ellipsis,
+                                              text: TextSpan(
+                                                  style: TextStyle(
+                                                    color: Colors.black,
+                                                  ),
+                                                  children: [
+                                                    TextSpan(
+                                                      text: "Cost per Person",
+                                                      style: TextStyle(),
+                                                    ),
+                                                    TextSpan(
+                                                        text:
+                                                            '\nex: Cover Charge/Ticket Cost',
+                                                        style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.w300,
+                                                          fontSize: 10,
+                                                        )),
+                                                  ]),
+                                            ),
+                                          ],
+                                        )),
                                     Expanded(
                                       flex: 1,
                                       child: TextField(
@@ -1610,7 +1777,6 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                         padding: const EdgeInsets.only(bottom: 5),
                         child: GestureDetector(
                           onTap: () {
-                            
                             Navigator.push(
                                     context,
                                     PageTransition(
@@ -1640,24 +1806,14 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                                           splashColor:
                                               Color.fromRGBO(220, 180, 57, 1.0),
                                           onPressed: () {
-
-                                            
-                            Navigator.push(
-                                    context,
-                                    PageTransition(
-                                        type: PageTransitionType.bottomToTop,
-                                        child:
-                                            CreateAccountNew()
-                                            ))
-                                .then(onGoBack);
-                                            // Navigator.push(
-                                            //         context,
-                                            //         PageTransition(
-                                            //             type: PageTransitionType
-                                            //                 .bottomToTop,
-                                            //             child: SearchUsersPost(
-                                            //                 inviteesNameList)))
-                                            //     .then(onGoBack);
+                                            Navigator.push(
+                                                    context,
+                                                    PageTransition(
+                                                        type: PageTransitionType
+                                                            .bottomToTop,
+                                                        child: SearchUsersPost(
+                                                            inviteesNameList)))
+                                                .then(onGoBack);
                                           },
                                         ),
                                         Text("Invite",
@@ -2188,6 +2344,15 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                                       paymentAmountController.text.substring(1);
                                   paymentAmountInt = int.parse(x);
                                 }
+                                if (dealLimitController.text.isNotEmpty) {
+                                  dealLimitInt =
+                                      int.parse(dealLimitController.text);
+                                }
+                                if (dealCostController.text.isNotEmpty) {
+                                  String x =
+                                      dealCostController.text.substring(1);
+                                  dealCostInt = int.parse(x);
+                                }
 
                                 String recurringType = "";
 
@@ -2233,6 +2398,9 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                                     await uploadTask;
                                 if (uploadTask.snapshot.state ==
                                     firebase_storage.TaskState.success) {
+                                  if (_isDeal) {
+                                    tags = ['deal'];
+                                  }
                                   print("added to Firebase Storage");
                                   final String postId =
                                       generateRandomString(20);
@@ -2249,20 +2417,20 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                                                   ? "Shows"
                                                   : "Recreation",
                                           privacy: "Public",
-                                          description: descriptionController
-                                              .text,
+                                          description:
+                                              descriptionController.text,
                                           address: currentUser.dorm,
                                           startDate: currentValue,
-                                          unix:
-                                              currentValue
-                                                  .millisecondsSinceEpoch,
+                                          unix: currentValue
+                                              .millisecondsSinceEpoch,
                                           startDateSimpleString:
-                                              DateFormat(
-                                                      'yMd')
+                                              DateFormat('yMd')
                                                   .format(currentValue),
                                           statuses: inviteesNameList,
                                           maxOccupancy: maxOccupancyInt,
                                           paymentAmount: paymentAmountInt,
+                                          dealCost: dealCostInt,
+                                          dealLimit: dealLimitInt,
                                           imageUrl: downloadUrl,
                                           userId: strUserId,
                                           postId: postId,
@@ -2271,37 +2439,35 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                                           push: push,
                                           moovOver: _moovOver,
                                           mobileOrderMenu: {
-                                              "item1": _item1,
-                                              "item2": _item2,
-                                              "item3": _item3
-                                            })
-                                      : Database()
-                                          .createPost(
-                                              title: titleController.text,
-                                              type: typeDropdownValue,
-                                              privacy: privacyDropdownValue,
-                                              description:
-                                                  descriptionController.text,
-                                              address: addressController.text,
-                                              startDate: currentValue,
-                                              startDateSimpleString:
-                                                  DateFormat('yMd')
-                                                      .format(currentValue),
-                                              clubId:
-                                                  clubNameMap[clubPostValue],
-                                              unix: currentValue
-                                                  .millisecondsSinceEpoch,
-                                              statuses: inviteesNameList,
-                                              maxOccupancy: maxOccupancyInt,
-                                              paymentAmount: paymentAmountInt,
-                                              imageUrl: downloadUrl,
-                                              userId: strUserId,
-                                              postId: postId,
-                                              posterName:
-                                                  currentUser.displayName,
-                                              push: push,
-                                              location: location,
-                                              moovOver: _moovOver);
+                                            "item1": _item1,
+                                            "item2": _item2,
+                                            "item3": _item3
+                                          },
+                                          tags: tags)
+                                      : Database().createPost(
+                                          title: titleController.text,
+                                          type: typeDropdownValue,
+                                          privacy: privacyDropdownValue,
+                                          description:
+                                              descriptionController.text,
+                                          address: addressController.text,
+                                          startDate: currentValue,
+                                          startDateSimpleString:
+                                              DateFormat('yMd')
+                                                  .format(currentValue),
+                                          clubId: clubNameMap[clubPostValue],
+                                          unix: currentValue
+                                              .millisecondsSinceEpoch,
+                                          statuses: inviteesNameList,
+                                          maxOccupancy: maxOccupancyInt,
+                                          paymentAmount: paymentAmountInt,
+                                          imageUrl: downloadUrl,
+                                          userId: strUserId,
+                                          postId: postId,
+                                          posterName: currentUser.displayName,
+                                          push: push,
+                                          location: location,
+                                          moovOver: _moovOver);
 
                                   nextSunday().then((value) {
                                     wrapupRef

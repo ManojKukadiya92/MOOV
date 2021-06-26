@@ -14,7 +14,10 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:maps_launcher/maps_launcher.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfilePage extends StatefulWidget {
   User user;
@@ -369,24 +372,26 @@ class _ProfilePageState extends State<ProfilePage>
                                     ),
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.only(
-                                        top: 5.0, bottom: 35),
-                                    child: Center(
-                                        child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 20.0),
-                                            child: userBio.isEmpty
-                                                ? Text("Create a bio",
-                                                    style:
-                                                        GoogleFonts.montserrat(
-                                                            color: Colors.white,
-                                                            fontSize: 17))
-                                                : Text("\"" + userBio + "\"",
-                                                   style:
-                                                        GoogleFonts.montserrat(
-                                                            color: Colors.white,
-                                                            fontSize: 17))))
-                                  ),
+                                      padding: const EdgeInsets.only(
+                                          top: 5.0, bottom: 35),
+                                      child: Center(
+                                          child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 20.0),
+                                              child: userBio.isEmpty
+                                                  ? Text("Create a bio",
+                                                      style: GoogleFonts
+                                                          .montserrat(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontSize: 17))
+                                                  : Text("\"" + userBio + "\"",
+                                                      style:
+                                                          GoogleFonts.montserrat(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontSize: 17))))),
                                 ],
                               ),
                             ),
@@ -751,17 +756,23 @@ class _ProfilePageState extends State<ProfilePage>
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.only(
-                                top: 12.0, bottom: 14.0, left: 50, right: 50),
-                            child: SizedBox(
-                              width: 200,
-                              child: Text(
-                                dorm,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 15),
-                              ),
-                            ),
-                          ),
+                              padding: const EdgeInsets.only(
+                                  top: 12.0, bottom: 14.0, left: 50, right: 50),
+                              child: SizedBox(
+                                  width: 200,
+                                  child: GestureDetector(
+                                    onTap: () => MapsLauncher.launchQuery(dorm),
+                                    child: Text(
+                                      dorm,
+                                      textAlign: TextAlign.center,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                          fontSize: 15,
+                                          color: Colors.blue[800],
+                                          decoration: TextDecoration.underline),
+                                    ),
+                                  ))),
                           Padding(
                             padding: const EdgeInsets.only(bottom: 8.0),
                             child: Row(
@@ -890,7 +901,7 @@ class _ProfilePageState extends State<ProfilePage>
                                                             color: Colors.white,
                                                             fontSize: 17))
                                                 : Text("\"" + userBio + "\"",
-                                                   style:
+                                                    style:
                                                         GoogleFonts.montserrat(
                                                             color: Colors.white,
                                                             fontSize: 17)))),

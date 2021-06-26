@@ -640,8 +640,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         final result = await Navigator.pushAndRemoveUntil(
           context,
           PageRouteBuilder(pageBuilder: (_, __, ___) => CreateAccountNew()),
-//ratedPG
-          // PageRouteBuilder(pageBuilder: (_, __, ___) => WelcomePage()),
           (Route<dynamic> route) => false,
         );
 

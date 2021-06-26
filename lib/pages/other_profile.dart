@@ -12,6 +12,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:MOOV/services/database.dart';
+import 'package:maps_launcher/maps_launcher.dart';
 
 import 'home.dart';
 
@@ -35,7 +36,10 @@ void toMessageDetail(String otherPersonId, String directMessageId, context) {
         context,
         MaterialPageRoute(
             builder: (context) => MessageDetail(
-                directMessageId:directMessageId, otherPerson: otherPersonId, members: [], sendingPost: {})));
+                directMessageId: directMessageId,
+                otherPerson: otherPersonId,
+                members: [],
+                sendingPost: {})));
   });
 }
 
@@ -1023,14 +1027,21 @@ class _OtherProfileState extends State<OtherProfile> {
                                   padding: const EdgeInsets.only(
                                       top: 2.0, bottom: 12.0),
                                   child: SizedBox(
-                                    width: 275,
-                                    child: Text(
-                                      snapshot.data['dorm'],
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(fontSize: 15),
-                                      maxLines: 2,
-                                    ),
-                                  ))
+                                      width: 275,
+                                      child: GestureDetector(
+                                        onTap: () => MapsLauncher.launchQuery(
+                                            snapshot.data['dorm']),
+                                        child: Text(
+                                          snapshot.data['dorm'],
+                                          textAlign: TextAlign.center,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                              color: Colors.blue[800],
+                                              decoration:
+                                                  TextDecoration.underline),
+                                        ),
+                                      )))
                             ],
                           ),
                           Row(

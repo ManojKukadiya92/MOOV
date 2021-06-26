@@ -1,3 +1,4 @@
+import 'package:MOOV/accountCreation/createAccountLanding.dart';
 import 'package:MOOV/pages/create_account.dart';
 import 'package:MOOV/utils/themes_styles.dart';
 import 'package:flutter/material.dart';
@@ -77,7 +78,7 @@ class _PasswordPageState extends State<PasswordPage> {
     if (titleController.text == "Unicorn22") {
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => CreateAccount()),
+        MaterialPageRoute(builder: (context) => CreateAccountNew()),
         (Route<dynamic> route) => false,
       );
     } else {

@@ -221,6 +221,8 @@ class Database {
       statuses,
       int maxOccupancy,
       int paymentAmount,
+      int dealCost,
+      int dealLimit,
       imageUrl,
       userId,
       postId,
@@ -230,7 +232,8 @@ class Database {
       int goingCount,
       bool moovOver,
       Map mobileOrderMenu,
-      bool noArchive = false}) {
+      bool noArchive = false,
+      List<String> tags}) {
     bool isPartyOrBar = false;
     if (type == "Parties" || type == "Bars & Restaurants") {
       isPartyOrBar = true;
@@ -252,6 +255,8 @@ class Database {
         'statuses': {for (var v in statuses) v: -1},
         'maxOccupancy': maxOccupancy,
         'paymentAmount': paymentAmount,
+        'dealCost': dealCost,
+        'dealLimit': dealLimit,
         'image': imageUrl,
         'userId': userId,
         "featured": false,
@@ -263,7 +268,7 @@ class Database {
         "isPartyOrBar": isPartyOrBar,
         "stats": {},
         "moovOver": moovOver,
-        "tags": [],
+        "tags": tags,
         "recurringType": recurringType,
         "mobileOrderMenu": mobileOrderMenu
       });
@@ -284,6 +289,8 @@ class Database {
       'statuses': {for (var v in statuses) v: -1},
       'maxOccupancy': maxOccupancy,
       'paymentAmount': paymentAmount,
+      'dealLimit': dealLimit,
+      'dealCost': dealCost,
       'image': imageUrl,
       'userId': userId,
       "featured": false,
@@ -297,7 +304,7 @@ class Database {
       "moovOver": moovOver,
       "recurringType": recurringType,
       "mobileOrderMenu": mobileOrderMenu,
-      "tags": []
+      "tags": tags
     }).then(inviteesNotification(postId, imageUrl, title, statuses));
 
     if (privacy == 'Public' || privacy == 'Friends Only') {
