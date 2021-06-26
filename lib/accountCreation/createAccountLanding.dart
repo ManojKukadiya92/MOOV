@@ -1027,7 +1027,7 @@ class __BusinessAccountOptionalsState extends State<_BusinessAccountOptionals> {
     if (_image != null) {
       firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
           .ref()
-          .child("images/" + user.id + "/businessPostPic");
+          .child("images/" + user.id + "/header");
       firebase_storage.UploadTask uploadTask;
 
       uploadTask = ref.putFile(_image);
@@ -1056,14 +1056,14 @@ class __BusinessAccountOptionalsState extends State<_BusinessAccountOptionals> {
       "photoUrl": user.photoUrl,
       "badges": {},
       "bio": description ?? "Create a bio here",
-      "header": "",
+      "header": downloadUrl,
       "timestamp": timestamp,
       "score": 0,
       "moovMoney": 0,
       "gender": "",
       "race": "",
       "year": "",
-      "businessPostPic": downloadUrl,
+      // "businessPostPic": downloadUrl,
       "dorm": address,
       "referral": "",
       "isBusiness": true,

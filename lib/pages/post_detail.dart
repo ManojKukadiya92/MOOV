@@ -27,6 +27,7 @@ import 'package:flutter_chat_bubble/bubble_type.dart';
 import 'package:flutter_chat_bubble/chat_bubble.dart';
 import 'package:flutter_chat_bubble/clippers/chat_bubble_clipper_5.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:MOOV/widgets/going_statuses.dart';
 import 'package:maps_launcher/maps_launcher.dart';
@@ -1008,17 +1009,21 @@ class PaySkipSendRow extends StatelessWidget {
                         for (int i = 0; i < value.docs.length; i++) {
                           if (value.docs.length != 0 &&
                               value.docs[i]['type'] == "MOOV Over Pass") {
-                           oneLivePass = value.docs[i].data();
+                            oneLivePass = value.docs[i].data();
                             haveAlready = true;
                           }
                         }
-                        
+
                         showBottomSheet(
                             context: context,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(15)),
                             builder: (context) => BuyMoovOverPassSheet(
-                                businessUserId: userId, postId:postId, haveAlready:haveAlready, livePasses:livePasses, oneLivePass: oneLivePass));
+                                businessUserId: userId,
+                                postId: postId,
+                                haveAlready: haveAlready,
+                                livePasses: livePasses,
+                                oneLivePass: oneLivePass));
                       });
                     },
                     child: GradientIcon(
@@ -2172,6 +2177,17 @@ class _RedeemDealBottomSheetState extends State<RedeemDealBottomSheet>
           ),
           SizedBox(
             height: 40,
+            child: Center(
+                child: Text("${widget.dealLimit} left!",
+                    style: GoogleFonts.montserrat(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ))),
+          ),
+          Container(
+            height: 2,
+            width: 100,
+            color: Colors.blue,
           ),
           Padding(
             padding: const EdgeInsets.all(30),
@@ -2337,8 +2353,8 @@ class PayNondealCostBottomSheet extends StatefulWidget {
   final bool haveAlready;
   final int nondealCost, dealLimit;
 
-  PayNondealCostBottomSheet(this.businessUserId, this.postId, this.livePasses, this.oneLivePass,
-      this.haveAlready, this.nondealCost, this.dealLimit);
+  PayNondealCostBottomSheet(this.businessUserId, this.postId, this.livePasses,
+      this.oneLivePass, this.haveAlready, this.nondealCost, this.dealLimit);
 
   @override
   _PayNondealCostBottomSheetState createState() =>
@@ -2445,8 +2461,8 @@ class _PayNondealCostBottomSheetState extends State<PayNondealCostBottomSheet>
                           backgroundColor: Colors.green,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(15)),
-                          builder: (context) =>
-                              LivePassesSheet(oneLivePassFromShowPass: widget.oneLivePass));
+                          builder: (context) => LivePassesSheet(
+                              oneLivePassFromShowPass: widget.oneLivePass));
                     }
                   },
                   child: Padding(

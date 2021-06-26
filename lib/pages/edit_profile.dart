@@ -1,13 +1,9 @@
 import 'dart:io';
-
 import 'package:MOOV/main.dart';
 import 'package:MOOV/pages/ProfilePageWithHeader.dart';
 import 'package:MOOV/widgets/camera.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:MOOV/helpers/themes.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:MOOV/pages/home.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
@@ -576,7 +572,7 @@ class _EditProfileState extends State<EditProfile> {
                           firebase_storage.Reference ref = firebase_storage
                               .FirebaseStorage.instance
                               .ref()
-                              .child("images/header" + currentUser.displayName);
+                              .child("images/" + currentUser.id + "/header");
 
                           // StorageReference firebaseStorageRef = FirebaseStorage
                           //     .instance
