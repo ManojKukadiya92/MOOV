@@ -4,7 +4,6 @@ import 'package:MOOV/widgets/sundayWrapup.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:intl/intl.dart';
 
 class Database {
   final dbRef = FirebaseFirestore.instance;

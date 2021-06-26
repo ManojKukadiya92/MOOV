@@ -924,7 +924,49 @@ class PaySkipSendRow extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           paymentAmount != null && paymentAmount != 0
-              ? Icon(Icons.attach_money, color: Colors.orange)
+              ? GestureDetector(
+                  onTap: () {
+                    HapticFeedback.lightImpact();
+
+                    bool haveAlready = false;
+
+                    List livePasses = [];
+                    Map oneLivePass =
+                        {}; //if user clicks on show pass, only show that pass
+
+                    usersRef
+                        .doc(currentUser.id)
+                        .collection("livePasses")
+                        .where("postId", isEqualTo: postId)
+                        .get()
+                        .then((value) {
+                      for (int i = 0; i < value.docs.length; i++) {
+                        if (value.docs.length != 0 &&
+                            value.docs[i]['type'] == 'nondealCost') {
+                          oneLivePass = value.docs[i].data();
+
+                          haveAlready = true;
+                        }
+                      }
+
+                      showBottomSheet(
+                          context: context,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15)),
+                          builder: (context) => PayNondealCostBottomSheet(
+                              userId,
+                              postId,
+                              livePasses,
+                              oneLivePass,
+                              haveAlready,
+                              paymentAmount,
+                              course['maxOccupancy']));
+                    });
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 3.0),
+                    child: Icon(Icons.attach_money, color: Colors.orange),
+                  ))
               : Container(),
           menu != null && (menu['item1'] || menu['item2'] || menu['item3'])
               ? Padding(
@@ -942,6 +984,7 @@ class PaySkipSendRow extends StatelessWidget {
               ? DealButton(
                   postId: postId,
                   businessUserId: course['userId'],
+                  businessName: course['posterName'],
                   dealCost: course['dealCost'],
                   dealLimit: course['dealLimit'],
                 )
@@ -953,6 +996,7 @@ class PaySkipSendRow extends StatelessWidget {
                     onTap: () {
                       //check to see if they have the pass already
                       List livePasses = [];
+                      Map oneLivePass = {}; //take to specific pass
                       usersRef
                           .doc(currentUser.id)
                           .collection("livePasses")
@@ -961,18 +1005,20 @@ class PaySkipSendRow extends StatelessWidget {
                           .then((value) {
                         bool haveAlready = false;
 
-                        if (value.docs.length != 0 &&
-                            value.docs[0]['type'] == "MOOV Over Pass") {
-                          livePasses = value.docs;
-                          haveAlready = true;
+                        for (int i = 0; i < value.docs.length; i++) {
+                          if (value.docs.length != 0 &&
+                              value.docs[i]['type'] == "MOOV Over Pass") {
+                           oneLivePass = value.docs[i].data();
+                            haveAlready = true;
+                          }
                         }
-
+                        
                         showBottomSheet(
                             context: context,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(15)),
                             builder: (context) => BuyMoovOverPassSheet(
-                                userId, postId, haveAlready, livePasses));
+                                businessUserId: userId, postId:postId, haveAlready:haveAlready, livePasses:livePasses, oneLivePass: oneLivePass));
                       });
                     },
                     child: GradientIcon(
@@ -1944,9 +1990,14 @@ class CommentPreviewOnPost extends StatelessWidget {
 }
 
 class DealButton extends StatefulWidget {
-  final String postId, businessUserId;
+  final String postId, businessUserId, businessName;
   final int dealCost, dealLimit;
-  DealButton({this.postId, this.businessUserId, this.dealCost, this.dealLimit});
+  DealButton(
+      {this.postId,
+      this.businessUserId,
+      this.businessName,
+      this.dealCost,
+      this.dealLimit});
 
   @override
   _DealButtonState createState() => _DealButtonState();
@@ -1974,19 +2025,23 @@ class _DealButtonState extends State<DealButton>
     return GestureDetector(
       onTap: () {
         List livePasses = [];
+        Map oneLivePass = {}; //if user clicks on show pass, only show that pass
+        bool haveAlready = false;
+
         usersRef
             .doc(currentUser.id)
             .collection("livePasses")
             .where("postId", isEqualTo: widget.postId)
             .get()
             .then((value) {
-          bool haveAlready = false;
-
-          if (value.docs.length != 0 &&
-              value.docs[0]['type'] == "MOOV Over Pass") {
-            livePasses = value.docs;
-            haveAlready = true;
+          for (int i = 0; i < value.docs.length; i++) {
+            if (value.docs.length != 0 && value.docs[i]['type'] == 'deal') {
+              oneLivePass = value.docs[i].data();
+              haveAlready = true;
+            }
           }
+          print(haveAlready);
+
           HapticFeedback.lightImpact();
 
           showBottomSheet(
@@ -1997,6 +2052,7 @@ class _DealButtonState extends State<DealButton>
                   widget.businessUserId,
                   widget.postId,
                   livePasses,
+                  oneLivePass,
                   haveAlready,
                   widget.dealCost,
                   widget.dealLimit));
@@ -2004,7 +2060,7 @@ class _DealButtonState extends State<DealButton>
       },
       child: Center(
           child: Padding(
-        padding: const EdgeInsets.all(2),
+        padding: const EdgeInsets.all(5),
         child: Container(
             width: 45,
             height: 45,
@@ -2043,11 +2099,12 @@ class _DealButtonState extends State<DealButton>
 class RedeemDealBottomSheet extends StatefulWidget {
   final String businessUserId, postId;
   final List livePasses;
+  final Map oneLivePass;
   final bool haveAlready;
   final int dealCost, dealLimit;
 
   RedeemDealBottomSheet(this.businessUserId, this.postId, this.livePasses,
-      this.haveAlready, this.dealCost, this.dealLimit);
+      this.oneLivePass, this.haveAlready, this.dealCost, this.dealLimit);
 
   @override
   _RedeemDealBottomSheetState createState() => _RedeemDealBottomSheetState();
@@ -2153,8 +2210,9 @@ class _RedeemDealBottomSheetState extends State<RedeemDealBottomSheet>
                           backgroundColor: Colors.green,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(15)),
-                          builder: (context) =>
-                              LivePassesSheet(livePasses: widget.livePasses));
+                          builder: (context) => LivePassesSheet(
+                                oneLivePassFromShowPass: widget.oneLivePass,
+                              ));
                     }
                   },
                   child: Padding(
@@ -2195,7 +2253,8 @@ class _RedeemDealBottomSheetState extends State<RedeemDealBottomSheet>
                                   setState(() {
                                     _isLoading = true;
                                   });
-                                  if (currentUser.moovMoney < 10) {
+                                  if (widget.dealCost != null &&
+                                      currentUser.moovMoney < widget.dealCost) {
                                     showBottomSheet(
                                         backgroundColor: Colors.white,
                                         context: context,
@@ -2207,22 +2266,27 @@ class _RedeemDealBottomSheetState extends State<RedeemDealBottomSheet>
                                   } else {
                                     String passId = generateRandomString(20);
 
-                                    usersRef.doc(currentUser.id).set({
-                                      "moovMoney": FieldValue.increment(-10)
-                                    }, SetOptions(merge: true));
-                                    usersRef.doc(widget.businessUserId).set(
-                                        {"moovMoney": FieldValue.increment(10)},
-                                        SetOptions(merge: true));
+                                    if (widget.dealCost != null &&
+                                        widget.dealCost > 0) {
+                                      usersRef.doc(currentUser.id).set({
+                                        "moovMoney": FieldValue.increment(
+                                            -1 * widget.dealCost)
+                                      }, SetOptions(merge: true));
+                                      usersRef.doc(widget.businessUserId).set({
+                                        "moovMoney": FieldValue.increment(
+                                            widget.dealCost)
+                                      }, SetOptions(merge: true));
+                                    }
 
                                     usersRef
                                         .doc(currentUser.id)
                                         .collection('livePasses')
                                         .doc(passId)
                                         .set({
-                                      "type": "MOOV Over Pass",
-                                      "name": "MOOV Over Pass",
-                                      "price": 10,
-                                      "photo": "widget.photo",
+                                      "type": "deal",
+                                      "name": "DEAL",
+                                      "price": widget.dealCost,
+                                      "photo": currentUser.photoUrl,
                                       "time": Timestamp.now(),
                                       "businessId": widget.businessUserId,
                                       "postId": widget.postId,
@@ -2252,6 +2316,231 @@ class _RedeemDealBottomSheetState extends State<RedeemDealBottomSheet>
                                             style:
                                                 TextStyle(color: Colors.white)),
                                       ))
+                  ],
+                ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+}
+
+class PayNondealCostBottomSheet extends StatefulWidget {
+  final String businessUserId, postId;
+  final List livePasses;
+  final Map oneLivePass;
+  final bool haveAlready;
+  final int nondealCost, dealLimit;
+
+  PayNondealCostBottomSheet(this.businessUserId, this.postId, this.livePasses, this.oneLivePass,
+      this.haveAlready, this.nondealCost, this.dealLimit);
+
+  @override
+  _PayNondealCostBottomSheetState createState() =>
+      _PayNondealCostBottomSheetState();
+}
+
+class _PayNondealCostBottomSheetState extends State<PayNondealCostBottomSheet>
+    with SingleTickerProviderStateMixin {
+  var top = FractionalOffset.topCenter;
+  var bottom = FractionalOffset.bottomCenter;
+  var list = [Colors.orange, Colors.deepOrange];
+  AnimationController _animationController;
+  bool _confirming = false;
+  bool _isLoading = false;
+  bool _success = false;
+
+  @override
+  void initState() {
+    _animationController =
+        AnimationController(vsync: this, duration: Duration(seconds: 2));
+    _animationController.repeat(reverse: true);
+
+    Tween(begin: 2.0, end: 15.0).animate(_animationController)
+      ..addListener(() {
+        setState(() {
+          top = FractionalOffset.bottomLeft;
+          bottom = FractionalOffset.topRight;
+          list = [Colors.orange, Colors.deepOrange];
+        });
+      });
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // if (){
+
+    // }
+    return AnimatedContainer(
+      height: 500,
+      width: MediaQuery.of(context).size.width,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10.0),
+          gradient: new LinearGradient(
+            begin: top,
+            end: bottom,
+            colors: list,
+            stops: [0.0, 1.0],
+          ),
+          color: Colors.lightGreen),
+      duration: Duration(seconds: 2),
+      child: Column(
+        children: [
+          SizedBox(
+            height: 40,
+          ),
+          Text(
+            "Pay In Advance",
+            style: TextStyle(
+                fontWeight: FontWeight.bold, fontSize: 25, color: Colors.white),
+          ),
+          Text(
+            "Only on MOOV.",
+            style: TextStyle(
+                fontStyle: FontStyle.italic, fontSize: 14, color: Colors.white),
+          ),
+          SizedBox(
+            height: 40,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(30),
+            child: Container(
+              decoration: BoxDecoration(
+                  color: Color.fromRGBO(143, 143, 143, 0.5),
+                  borderRadius: BorderRadius.circular(15)),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Text(
+                  "Buy this pass and show it at your venue!\n\n\nIt's that easy.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500),
+                ),
+              ),
+            ),
+          ),
+          !_confirming
+              ? ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.blue,
+                    elevation: 5.0,
+                  ),
+                  onPressed: () {
+                    HapticFeedback.lightImpact();
+                    if (!widget.haveAlready) {
+                      setState(() {
+                        _confirming = true;
+                      });
+                    } else {
+                      showBottomSheet(
+                          context: context,
+                          backgroundColor: Colors.green,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15)),
+                          builder: (context) =>
+                              LivePassesSheet(oneLivePassFromShowPass: widget.oneLivePass));
+                    }
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: widget.haveAlready
+                        ? Text('Show Pass',
+                            style: TextStyle(color: Colors.white))
+                        : widget.nondealCost == null || widget.nondealCost == 0
+                            ? Text('Buy', style: TextStyle(color: Colors.white))
+                            : Text('\$${widget.nondealCost}',
+                                style: TextStyle(color: Colors.white)),
+                  ))
+              : Column(
+                  children: [
+                    widget.nondealCost == null
+                        ? Text('\n\nConfirm:\n1x Payment     —     \$0',
+                            style: TextStyle(color: Colors.white))
+                        : Text(
+                            '\n\nConfirm:\n1x Payment     —     \$${widget.nondealCost}',
+                            style: TextStyle(color: Colors.white)),
+                    SizedBox(height: 5),
+                    (_isLoading)
+                        ? linearProgress()
+                        : (_success)
+                            ? Icon(
+                                Icons.check,
+                                size: 20,
+                                color: Colors.white,
+                              )
+                            : ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  primary: Colors.blue,
+                                  elevation: 5.0,
+                                ),
+                                onPressed: () {
+                                  HapticFeedback.lightImpact();
+                                  setState(() {
+                                    _isLoading = true;
+                                  });
+                                  if (widget.nondealCost != null &&
+                                      currentUser.moovMoney <
+                                          widget.nondealCost) {
+                                    showBottomSheet(
+                                        backgroundColor: Colors.white,
+                                        context: context,
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(15)),
+                                        builder: (context) =>
+                                            BottomSheetDeposit());
+                                  } else {
+                                    String passId = generateRandomString(20);
+
+                                    if (widget.nondealCost != null &&
+                                        widget.nondealCost > 0) {
+                                      usersRef.doc(currentUser.id).set({
+                                        "moovMoney": FieldValue.increment(
+                                            -1 * widget.nondealCost)
+                                      }, SetOptions(merge: true));
+                                      usersRef.doc(widget.businessUserId).set({
+                                        "moovMoney": FieldValue.increment(
+                                            widget.nondealCost)
+                                      }, SetOptions(merge: true));
+                                    }
+
+                                    usersRef
+                                        .doc(currentUser.id)
+                                        .collection('livePasses')
+                                        .doc(passId)
+                                        .set({
+                                      "type": "nondealCost",
+                                      "name": "PAID — \$${widget.nondealCost}",
+                                      "price": widget.nondealCost,
+                                      "photo": currentUser.photoUrl,
+                                      "time": Timestamp.now(),
+                                      "businessId": widget.businessUserId,
+                                      "postId": widget.postId,
+                                      "passId": passId,
+                                      "tip": 0
+                                    }, SetOptions(merge: true)).then(
+                                            (value) => setState(() {
+                                                  _isLoading = false;
+                                                  _success = true;
+                                                }));
+                                    Future.delayed(Duration(seconds: 2), () {
+                                      Navigator.pop(context);
+                                    });
+                                  }
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text('Buy',
+                                      style: TextStyle(color: Colors.white)),
+                                ))
                   ],
                 ),
         ],

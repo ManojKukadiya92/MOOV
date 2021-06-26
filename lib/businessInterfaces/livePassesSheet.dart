@@ -12,7 +12,11 @@ import 'package:numberpicker/numberpicker.dart';
 
 class LivePassesSheet extends StatefulWidget {
   final List livePasses;
-  LivePassesSheet({this.livePasses});
+
+  final Map oneLivePassFromShowPass;
+  //if a user taps on 'show pass' from a post, theyll only see that specific pass
+
+  LivePassesSheet({this.livePasses, this.oneLivePassFromShowPass});
 
   @override
   _LivePassesSheetState createState() => _LivePassesSheetState();
@@ -39,199 +43,386 @@ class _LivePassesSheetState extends State<LivePassesSheet> {
               ])
             : Stack(
                 children: [
-                  PageView.builder(
-                    controller: _controller,
-                    itemCount: widget.livePasses.length,
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (context, index) {
-                      Color _sheetColor = Colors.green;
-                      if (widget.livePasses[index]['tip'] > 0) {
-                        _sheetColor = Colors.pink;
-                      }
+                  (widget.oneLivePassFromShowPass != null)
+                      ? Container(
+                          decoration: BoxDecoration(
+                              color: widget.oneLivePassFromShowPass['tip'] > 0
+                                  ? Colors.pink
+                                  : Colors.green,
+                              borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(15),
+                                  topRight: Radius.circular(15))),
+                          height: 550,
+                          child: StreamBuilder(
+                              stream: postsRef
+                                  .doc(widget.oneLivePassFromShowPass['postId'])
+                                  .snapshots(),
+                              builder: (context, snapshot) {
+                                if (!snapshot.hasData) {
+                                  return Container();
+                                }
+                                String businessName =
+                                    snapshot.data['posterName'];
+                                Timestamp startTime =
+                                    snapshot.data['startDate'];
 
-                      return Container(
-                        decoration: BoxDecoration(
-                            color: _sheetColor,
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(15),
-                                topRight: Radius.circular(15))),
-                        height: 550,
-                        child: StreamBuilder(
-                            stream: postsRef
-                                .doc(widget.livePasses[index]['postId'])
-                                .snapshots(),
-                            builder: (context, snapshot) {
-                              if (!snapshot.hasData) {
-                                return Container();
-                              }
-                              String businessName = snapshot.data['posterName'];
-                              Timestamp startTime = snapshot.data['startDate'];
-
-                              return Stack(
-                                children: [
-                                  Container(
-                                      margin: const EdgeInsets.only(
-                                          left: 15, right: 15, bottom: 10),
-                                      width: MediaQuery.of(context).size.width *
-                                          .95,
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                top: 20, bottom: 5),
-                                            child: CircleAvatar(
-                                              radius: 90,
-                                              backgroundColor: Colors.blue[50],
+                                return Stack(
+                                  children: [
+                                    Container(
+                                        margin: const EdgeInsets.only(
+                                            left: 15, right: 15, bottom: 10),
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                .95,
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 20, bottom: 5),
                                               child: CircleAvatar(
-                                                backgroundColor: Colors.green,
-                                                radius: 85,
-                                                child: widget.livePasses[index]
-                                                            ['type'] ==
-                                                        "MOOV Over Pass"
-                                                    ? GradientIcon(
-                                                        Icons
-                                                            .confirmation_num_outlined,
-                                                        100.0,
-                                                        LinearGradient(
-                                                          colors: <Color>[
-                                                            Colors.red,
-                                                            Colors.yellow,
-                                                            Colors.blue,
-                                                          ],
-                                                          begin:
-                                                              Alignment.topLeft,
-                                                          end: Alignment
-                                                              .bottomRight,
-                                                        ))
-                                                    : null,
-                                                backgroundImage: widget
-                                                                .livePasses[
-                                                            index]['type'] ==
-                                                        "MOOV Over Pass"
-                                                    ? null
-                                                    : NetworkImage(
-                                                        widget.livePasses[index]
-                                                            ['photo']),
+                                                radius: 90,
+                                                backgroundColor:
+                                                    Colors.blue[50],
+                                                child: CircleAvatar(
+                                                  backgroundColor: Colors.green,
+                                                  radius: 85,
+                                                  child: widget.oneLivePassFromShowPass[
+                                                              'type'] ==
+                                                          "MOOV Over Pass"
+                                                      ? GradientIcon(
+                                                          Icons
+                                                              .confirmation_num_outlined,
+                                                          100.0,
+                                                          LinearGradient(
+                                                            colors: <Color>[
+                                                              Colors.red,
+                                                              Colors.yellow,
+                                                              Colors.blue,
+                                                            ],
+                                                            begin: Alignment
+                                                                .topLeft,
+                                                            end: Alignment
+                                                                .bottomRight,
+                                                          ))
+                                                      : null,
+                                                  backgroundImage:
+                                                      widget.oneLivePassFromShowPass[
+                                                                  'type'] ==
+                                                              "MOOV Over Pass"
+                                                          ? null
+                                                          : NetworkImage(widget
+                                                                  .oneLivePassFromShowPass[
+                                                              'photo']),
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                          SizedBox(
-                                            width: 300,
-                                            child: Text(
-                                              widget.livePasses[index]['name'],
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                  fontSize: 25,
-                                                  fontWeight: FontWeight.w700,
-                                                  color: Colors.white),
-                                              maxLines: 1,
-                                              overflow: TextOverflow.fade,
-                                            ),
-                                          ),
-                                          SizedBox(height: 15),
-                                          Text(businessName,
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 20)),
-                                          Text(
-                                              DateFormat('EEE')
-                                                  .add_jm()
-                                                  .format(startTime.toDate()),
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 20)),
-                                          SizedBox(height: 35),
-                                          PulsatingCircleIconButton(widget
-                                              .livePasses[index]['passId']),
-                                          SizedBox(height: 20),
-                                          widget.livePasses.length > 1
-                                              ? Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Container(
-                                                      width: 14.0,
-                                                      height: 14.0,
-                                                      decoration: BoxDecoration(
-                                                        color: Colors.white,
-                                                        shape: BoxShape.circle,
-                                                      ),
-                                                    ),
-                                                    SizedBox(width: 5),
-                                                    Container(
-                                                      width: 14.0,
-                                                      height: 14.0,
-                                                      decoration: BoxDecoration(
-                                                        color: Colors.white,
-                                                        shape: BoxShape.circle,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                )
-                                              : Container(),
-                                        ],
-                                      )),
-                                  widget.livePasses[index]['type'] !=
-                                          "MOOV Over Pass"
-                                      ? Positioned(
-                                          top: 5,
-                                          right: 5,
-                                          child: Column(
-                                            children: [
-                                              ElevatedButton(
-                                                  style:
-                                                      ElevatedButton.styleFrom(
-                                                    primary: Colors.pink,
-                                                    elevation: 5.0,
-                                                  ),
-                                                  onPressed: () {
-                                                    HapticFeedback
-                                                        .lightImpact();
-                                                    showDialog(
-                                                        context: context,
-                                                        builder: (BuildContext
-                                                            context) {
-                                                          return TipDialog(
-                                                              passId:
-                                                                  widget.livePasses[
-                                                                          index]
-                                                                      [
-                                                                      'passId']);
-                                                        });
-                                                  },
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            8.0),
-                                                    child: Text('TIP',
-                                                        style: TextStyle(
-                                                            color:
-                                                                Colors.white)),
-                                                  )),
-                                              Text(
-                                                "(Tips turn your\npass Pink!)",
+                                            SizedBox(
+                                              width: 300,
+                                              child: Text(
+                                                widget.oneLivePassFromShowPass[
+                                                    'name'],
                                                 textAlign: TextAlign.center,
                                                 style: TextStyle(
-                                                    color: Colors.pink,
-                                                    fontSize: 8),
-                                              )
-                                            ],
-                                          ))
-                                      : Container(),
-                                      Positioned(
-                                          top: 5,
-                                          left: 5,
-                                          child: GestureDetector(
+                                                    fontSize: 25,
+                                                    fontWeight: FontWeight.w700,
+                                                    color: Colors.white),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.fade,
+                                              ),
+                                            ),
+                                            SizedBox(height: 15),
+                                            Text(businessName,
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 20)),
+                                            Text(
+                                                DateFormat('EEE')
+                                                    .add_jm()
+                                                    .format(startTime.toDate()),
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 20)),
+                                            SizedBox(height: 35),
+                                            PulsatingCircleIconButton(
+                                                widget.oneLivePassFromShowPass[
+                                                    'passId']),
+                                            SizedBox(height: 20),
+                                          ],
+                                        )),
+                                    widget.oneLivePassFromShowPass['type'] !=
+                                            "MOOV Over Pass"
+                                        ? Positioned(
+                                            top: 5,
+                                            right: 5,
+                                            child: Column(
+                                              children: [
+                                                ElevatedButton(
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      primary: Colors.pink,
+                                                      elevation: 5.0,
+                                                    ),
+                                                    onPressed: () {
+                                                      HapticFeedback
+                                                          .lightImpact();
+                                                      showDialog(
+                                                          context: context,
+                                                          builder: (BuildContext
+                                                              context) {
+                                                            return TipDialog(
+                                                                passId: widget
+                                                                        .oneLivePassFromShowPass[
+                                                                    'passId']);
+                                                          });
+                                                    },
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8.0),
+                                                      child: Text('TIP',
+                                                          style: TextStyle(
+                                                              color: Colors
+                                                                  .white)),
+                                                    )),
+                                                Text(
+                                                  "(Tips turn your\npass Pink!)",
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                      color: Colors.pink,
+                                                      fontSize: 8),
+                                                )
+                                              ],
+                                            ))
+                                        : Container(),
+                                    Positioned(
+                                        top: 5,
+                                        left: 5,
+                                        child: GestureDetector(
                                             onTap: () => Navigator.pop(context),
                                             child: Icon(Icons.cancel)))
-                                ],
-                              );
-                            }),
-                      );
-                    },
-                  ),
+                                  ],
+                                );
+                              }),
+                        )
+                      : PageView.builder(
+                          controller: _controller,
+                          itemCount: widget.livePasses.length,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (context, index) {
+                            Color _sheetColor = Colors.green;
+                            if (widget.livePasses[index]['tip'] > 0) {
+                              _sheetColor = Colors.pink;
+                            }
+
+                            return Container(
+                              decoration: BoxDecoration(
+                                  color: _sheetColor,
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(15),
+                                      topRight: Radius.circular(15))),
+                              height: 550,
+                              child: StreamBuilder(
+                                  stream: postsRef
+                                      .doc(widget.livePasses[index]['postId'])
+                                      .snapshots(),
+                                  builder: (context, snapshot) {
+                                    if (!snapshot.hasData) {
+                                      return Container();
+                                    }
+                                    String businessName =
+                                        snapshot.data['posterName'];
+                                    Timestamp startTime =
+                                        snapshot.data['startDate'];
+
+                                    return Stack(
+                                      children: [
+                                        Container(
+                                            margin: const EdgeInsets.only(
+                                                left: 15,
+                                                right: 15,
+                                                bottom: 10),
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                .95,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          top: 20, bottom: 5),
+                                                  child: CircleAvatar(
+                                                    radius: 90,
+                                                    backgroundColor:
+                                                        Colors.blue[50],
+                                                    child: CircleAvatar(
+                                                      backgroundColor:
+                                                          Colors.green,
+                                                      radius: 85,
+                                                      child: widget.livePasses[
+                                                                      index]
+                                                                  ['type'] ==
+                                                              "MOOV Over Pass"
+                                                          ? GradientIcon(
+                                                              Icons
+                                                                  .confirmation_num_outlined,
+                                                              100.0,
+                                                              LinearGradient(
+                                                                colors: <Color>[
+                                                                  Colors.red,
+                                                                  Colors.yellow,
+                                                                  Colors.blue,
+                                                                ],
+                                                                begin: Alignment
+                                                                    .topLeft,
+                                                                end: Alignment
+                                                                    .bottomRight,
+                                                              ))
+                                                          : null,
+                                                      backgroundImage: widget
+                                                                          .livePasses[
+                                                                      index]
+                                                                  ['type'] ==
+                                                              "MOOV Over Pass"
+                                                          ? null
+                                                          : NetworkImage(widget
+                                                                  .livePasses[
+                                                              index]['photo']),
+                                                    ),
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  width: 300,
+                                                  child: Text(
+                                                    widget.livePasses[index]
+                                                        ['name'],
+                                                    textAlign: TextAlign.center,
+                                                    style: TextStyle(
+                                                        fontSize: 25,
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                        color: Colors.white),
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.fade,
+                                                  ),
+                                                ),
+                                                SizedBox(height: 15),
+                                                Text(businessName,
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 20)),
+                                                Text(
+                                                    DateFormat('EEE')
+                                                        .add_jm()
+                                                        .format(
+                                                            startTime.toDate()),
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 20)),
+                                                SizedBox(height: 35),
+                                                PulsatingCircleIconButton(
+                                                    widget.livePasses[index]
+                                                        ['passId']),
+                                                SizedBox(height: 20),
+                                                widget.livePasses.length > 1
+                                                    ? Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          Container(
+                                                            width: 14.0,
+                                                            height: 14.0,
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color:
+                                                                  Colors.white,
+                                                              shape: BoxShape
+                                                                  .circle,
+                                                            ),
+                                                          ),
+                                                          SizedBox(width: 5),
+                                                          Container(
+                                                            width: 14.0,
+                                                            height: 14.0,
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color:
+                                                                  Colors.white,
+                                                              shape: BoxShape
+                                                                  .circle,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      )
+                                                    : Container(),
+                                              ],
+                                            )),
+                                        widget.livePasses[index]['type'] !=
+                                                "MOOV Over Pass"
+                                            ? Positioned(
+                                                top: 5,
+                                                right: 5,
+                                                child: Column(
+                                                  children: [
+                                                    ElevatedButton(
+                                                        style: ElevatedButton
+                                                            .styleFrom(
+                                                          primary: Colors.pink,
+                                                          elevation: 5.0,
+                                                        ),
+                                                        onPressed: () {
+                                                          HapticFeedback
+                                                              .lightImpact();
+                                                          showDialog(
+                                                              context: context,
+                                                              builder:
+                                                                  (BuildContext
+                                                                      context) {
+                                                                return TipDialog(
+                                                                    passId: widget
+                                                                            .livePasses[index]
+                                                                        [
+                                                                        'passId']);
+                                                              });
+                                                        },
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(8.0),
+                                                          child: Text('TIP',
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .white)),
+                                                        )),
+                                                    Text(
+                                                      "(Tips turn your\npass Pink!)",
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style: TextStyle(
+                                                          color: Colors.pink,
+                                                          fontSize: 8),
+                                                    )
+                                                  ],
+                                                ))
+                                            : Container(),
+                                        Positioned(
+                                            top: 5,
+                                            left: 5,
+                                            child: GestureDetector(
+                                                onTap: () =>
+                                                    Navigator.pop(context),
+                                                child: Icon(Icons.cancel)))
+                                      ],
+                                    );
+                                  }),
+                            );
+                          },
+                        ),
                 ],
               );
   }
@@ -347,9 +538,10 @@ class BuyMoovOverPassSheet extends StatefulWidget {
   final String businessUserId, postId;
   final bool haveAlready;
   final List livePasses;
+  final Map oneLivePass;
 
   BuyMoovOverPassSheet(
-      this.businessUserId, this.postId, this.haveAlready, this.livePasses);
+      {this.businessUserId, this.postId, this.haveAlready, this.livePasses, this.oneLivePass});
 
   @override
   _BuyMoovOverPassSheetState createState() => _BuyMoovOverPassSheetState();
@@ -458,8 +650,8 @@ class _BuyMoovOverPassSheetState extends State<BuyMoovOverPassSheet>
                           backgroundColor: Colors.green,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(15)),
-                          builder: (context) =>
-                              LivePassesSheet(livePasses: widget.livePasses));
+                          builder: (context) => LivePassesSheet(
+                              oneLivePassFromShowPass: widget.oneLivePass));
                     }
                   },
                   child: Padding(
@@ -654,6 +846,9 @@ class _TipDialogState extends State<TipDialog> {
               ),
               TextButton(
                   onPressed: () {
+                    if (_tipAmount == 0) {
+                      return null;
+                    }
                     //  isLoading = true;
 
                     usersRef.doc(currentUser.id).get().then((value) {
@@ -661,6 +856,7 @@ class _TipDialogState extends State<TipDialog> {
                         showDialog(
                             barrierColor: Colors.blue[100],
                             context: context,
+
                             // backgroundColor: Colors.white,
                             // context: context,
                             // shape: RoundedRectangleBorder(
@@ -697,8 +893,7 @@ class _TipDialogState extends State<TipDialog> {
                     });
                   },
                   style: TextButton.styleFrom(
-                      side: BorderSide(color: Colors.green),
-                      primary: Colors.purple),
+                      side: BorderSide(color: Colors.green)),
                   child: Text(
                     "Add",
                     style: TextStyle(fontSize: 18, color: Colors.green),
