@@ -1279,157 +1279,179 @@ class LivePassesWalletSheet extends StatelessWidget {
 
                     ListView.builder(
                       itemBuilder: (context, index) {
-                        return Stack(
-                          children: [
-                            Padding(
-                              padding:
-                                  const EdgeInsets.only(top: 18.0, right: 3),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Container(
-                                      width: 40,
-                                      height: 3,
-                                      color: TextThemes.ndGold),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                        return 
+                        FutureBuilder(
+                            future:
+                                postsRef.doc(livePasses[index]['postId']).get(),
+                            builder: (context, snapshot) {
+                              if (!snapshot.hasData) {
+                                return Container();
+                              }
+                            return Stack(
+                              children: [
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.only(top: 18.0, right: 3),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
-                                      RichText(
-                                        textAlign: TextAlign.center,
-                                        overflow: TextOverflow.ellipsis,
-                                        text: TextSpan(
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                            ),
-                                            children: [
-                                              TextSpan(
-                                                text: "Swipe\nto",
-                                                style: TextStyle(),
-                                              ),
-                                              TextSpan(
-                                                  text: '\nGIFT',
-                                                  style: TextStyle(
-                                                    color: TextThemes.ndGold,
-                                                    fontWeight: FontWeight.w700,
-                                                    fontSize: 14,
-                                                  )),
-                                            ]),
-                                      ),
-                                    ],
-                                  ),
-                                  Expanded(
-                                    child: Container(
-                                        height: 3, color: TextThemes.ndGold),
-                                  ),
-                                  Transform.rotate(
-                                      angle: 90 * 3.14 / 180,
-                                      child: Icon(
-                                        Icons.change_history,
-                                        color: TextThemes.ndGold,
-                                      ))
-                                ],
-                              ),
-                            ),
-                            Dismissible(
-                              direction: DismissDirection.startToEnd,
-                              // Each Dismissible must contain a Key. Keys allow Flutter to
-                              // uniquely identify widgets.
-                              key: Key(''),
-                              // Provide a function that tells the app
-                              // what to do after an item has been swiped away.
-                              onDismissed: (direction) {
-                                Navigator.pop(context);
-                              },
-                              //   if (feedItems.contains(docId)) {
-                              //     //_personList is list of person shown in ListView
-                              //     setState(() {
-                              //       feedItems.remove(docId);
-                              //     });
-                              //   }
-
-                              //   // Remove the item from the data source.
-
-                              //   // Then show a snackbar.
-                              //   Scaffold.of(context).showSnackBar(SnackBar(
-                              //       duration: Duration(milliseconds: 1500),
-                              //       backgroundColor: TextThemes.ndBlue,
-                              //       content: Padding(
-                              //         padding: const EdgeInsets.all(2.0),
-                              //         child: Text("See ya notification."),
-                              //       )));
-                              // },
-
-                              child: Container(
-                                margin: EdgeInsets.symmetric(horizontal: 32),
-                                padding: EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(20))),
-                                child: Row(
-                                  children: <Widget>[
-                                    Container(
-                                      decoration: BoxDecoration(
-                                          color: Colors.grey[100],
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(18))),
-                                      child: Icon(
-                                        Icons.local_offer,
-                                        color: Colors.lightBlue[900],
-                                      ),
-                                      padding: EdgeInsets.all(12),
-                                    ),
-                                    SizedBox(
-                                      width: 16,
-                                    ),
-                                    Expanded(
-                                      child: Column(
+                                      Container(
+                                          width: 40,
+                                          height: 3,
+                                          color: TextThemes.ndGold),
+                                      Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Text(
-                                            livePasses[index]['name'],
-                                            style: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w700,
-                                                color: Colors.grey[900]),
+                                        children: [
+                                          RichText(
+                                            textAlign: TextAlign.center,
+                                            overflow: TextOverflow.ellipsis,
+                                            text: TextSpan(
+                                                style: TextStyle(
+                                                  color: Colors.black,
+                                                ),
+                                                children: [
+                                                  TextSpan(
+                                                    text: "Swipe\nto",
+                                                    style: TextStyle(),
+                                                  ),
+                                                  TextSpan(
+                                                      text: '\nGIFT',
+                                                      style: TextStyle(
+                                                        color: TextThemes.ndGold,
+                                                        fontWeight: FontWeight.w700,
+                                                        fontSize: 14,
+                                                      )),
+                                                ]),
                                           ),
-                                          Text(
-                                            "BusinessName",
-                                            style: TextStyle(
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w700,
-                                                color: Colors.grey[500]),
+                                        ],
+                                      ),
+                                      Expanded(
+                                        child: Container(
+                                            height: 3, color: TextThemes.ndGold),
+                                      ),
+                                      Transform.rotate(
+                                          angle: 90 * 3.14 / 180,
+                                          child: Icon(
+                                            Icons.change_history,
+                                            color: TextThemes.ndGold,
+                                          ))
+                                    ],
+                                  ),
+                                ),
+                                Dismissible(
+                                  direction: DismissDirection.startToEnd,
+                                  // Each Dismissible must contain a Key. Keys allow Flutter to
+                                  // uniquely identify widgets.
+                                  key: Key(''),
+                                  // Provide a function that tells the app
+                                  // what to do after an item has been swiped away.
+                                  onDismissed: (direction) {
+                                    Navigator.pop(context);
+                                  },
+                                  //   if (feedItems.contains(docId)) {
+                                  //     //_personList is list of person shown in ListView
+                                  //     setState(() {
+                                  //       feedItems.remove(docId);
+                                  //     });
+                                  //   }
+
+                                  //   // Remove the item from the data source.
+
+                                  //   // Then show a snackbar.
+                                  //   Scaffold.of(context).showSnackBar(SnackBar(
+                                  //       duration: Duration(milliseconds: 1500),
+                                  //       backgroundColor: TextThemes.ndBlue,
+                                  //       content: Padding(
+                                  //         padding: const EdgeInsets.all(2.0),
+                                  //         child: Text("See ya notification."),
+                                  //       )));
+                                  // },
+
+                                  child: GestureDetector(
+                                    onTap: () =>   showBottomSheet(
+                          context: context,
+                          backgroundColor: Colors.green,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15)),
+                          builder: (context) => LivePassesSheet(
+                                oneLivePassFromShowPass: livePasses[index].data(),
+                              )),
+                                                                      child: Container(
+                                      margin: EdgeInsets.symmetric(horizontal: 32),
+                                      padding: EdgeInsets.all(16),
+                                      decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.all(Radius.circular(20))),
+                                      child: Row(
+                                        children: <Widget>[
+                                          Container(
+                                            decoration: BoxDecoration(
+                                                color: Colors.grey[100],
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(18))),
+                                            child: Icon(
+                                              Icons.local_offer,
+                                              color: Colors.lightBlue[900],
+                                            ),
+                                            padding: EdgeInsets.all(12),
+                                          ),
+                                          SizedBox(
+                                            width: 16,
+                                          ),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: <Widget>[
+                                                Text(
+                                                  livePasses[index]['name'],
+                                                  style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight: FontWeight.w700,
+                                                      color: Colors.grey[900]),
+                                                ),
+                                                Text(
+                                                  snapshot.data['posterName'],
+                                                  style: TextStyle(
+                                                      fontSize: 15,
+                                                      fontWeight: FontWeight.w700,
+                                                      color: Colors.grey[500]),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.end,
+                                            children: <Widget>[
+                                              Text("\$"+
+                                                snapshot.data['dealCost'].toString(),
+                                                style: TextStyle(
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.w700,
+                                                    color: Colors.lightGreen),
+                                              ),
+                                                Text(
+                                               DateFormat('MMMMd')
+                                                          // .add_jm()
+                                                          .format(snapshot.data['startDate'].toDate()),
+                                                style: TextStyle(
+                                                    fontSize: 15,
+                                                    fontWeight: FontWeight.w700,
+                                                    color: Colors.grey[500]),
+                                              ),
+                                            ],
                                           ),
                                         ],
                                       ),
                                     ),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.end,
-                                      children: <Widget>[
-                                        Text(
-                                          "\$cost",
-                                          style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w700,
-                                              color: Colors.lightGreen),
-                                        ),
-                                        Text(
-                                          "26 Jan",
-                                          style: TextStyle(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.w700,
-                                              color: Colors.grey[500]),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
+                                  ),
                                 ),
-                              ),
-                            ),
-                          ],
+                              ],
+                            );
+                          }
                         );
                       },
                       shrinkWrap: true,
@@ -1460,72 +1482,82 @@ class LivePassesWalletSheet extends StatelessWidget {
 
                     ListView.builder(
                       itemBuilder: (context, index) {
-                        return Container(
-                          margin: EdgeInsets.symmetric(horizontal: 32),
-                          padding: EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(20))),
-                          child: Row(
-                            children: <Widget>[
-                              Container(
+                        return FutureBuilder(
+                            future:
+                                postsRef.doc(livePasses[index]['postId']).get(),
+                            builder: (context, snapshot) {
+                              if (!snapshot.hasData) {
+                                return Container();
+                              }
+                              return Container(
+                                margin: EdgeInsets.symmetric(horizontal: 32),
+                                padding: EdgeInsets.all(16),
                                 decoration: BoxDecoration(
-                                    color: Colors.grey[100],
+                                    color: Colors.white,
                                     borderRadius:
-                                        BorderRadius.all(Radius.circular(18))),
-                                child: Icon(
-                                  Icons.directions_car,
-                                  color: Colors.lightBlue[900],
-                                ),
-                                padding: EdgeInsets.all(12),
-                              ),
-                              SizedBox(
-                                width: 16,
-                              ),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                        BorderRadius.all(Radius.circular(20))),
+                                child: Row(
                                   children: <Widget>[
-                                    Text(
-                                      "Biz",
-                                      style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w700,
-                                          color: Colors.grey[900]),
+                                    Container(
+                                      decoration: BoxDecoration(
+                                          color: Colors.grey[100],
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(18))),
+                                      child: Icon(
+                                        Icons.directions_car,
+                                        color: Colors.lightBlue[900],
+                                      ),
+                                      padding: EdgeInsets.all(12),
                                     ),
-                                    Text(
-                                      "descr",
-                                      style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w700,
-                                          color: Colors.grey[500]),
+                                    SizedBox(
+                                      width: 16,
+                                    ),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text(
+                                           livePasses[index]['name'],
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w700,
+                                                color: Colors.grey[900]),
+                                          ),
+                                          Text(
+                                            snapshot.data['posterName'],
+                                            style: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w700,
+                                                color: Colors.grey[500]),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      children: <Widget>[
+                                        Text(
+                                          "\$gift",
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w700,
+                                              color: Colors.orange),
+                                        ),
+                                        Text(
+                                          "26 Jan",
+                                          style: TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w700,
+                                              color: Colors.grey[500]),
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: <Widget>[
-                                  Text(
-                                    "\$gift",
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w700,
-                                        color: Colors.orange),
-                                  ),
-                                  Text(
-                                    "26 Jan",
-                                    style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w700,
-                                        color: Colors.grey[500]),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        );
+                              );
+                            });
                       },
                       shrinkWrap: true,
                       itemCount: 2,
