@@ -396,7 +396,7 @@ class _ProfilePageState extends State<ProfilePage>
                               ),
                             ),
                           ),
-                          PopularityBadges(currentUser.id),
+                          // PopularityBadges(currentUser.id),
 
                           StreamBuilder(
                               stream: postsRef
