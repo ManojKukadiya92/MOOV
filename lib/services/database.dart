@@ -934,6 +934,30 @@ class Database {
         });
   }
 
+  giftedPassNotification(
+      String giftReceiverId, String postId, String previewImg) {
+    var title;
+    postsRef.doc(postId).get().then((snap) => {
+          title = snap.data()['title'],
+          notificationFeedRef
+              .doc(giftReceiverId)
+              .collection("feedItems")
+              .doc(currentUser.id + Timestamp.now().toString())
+              .set({
+            "type": "gift",
+            "username": currentUser.displayName,
+            "userId": currentUser.id,
+            "title": title,
+            "userEmail": currentUser.email,
+            "userProfilePic": currentUser.photoUrl,
+            "timestamp": Timestamp.now(),
+            "previewImg": previewImg,
+            "postId": postId,
+            "push": true
+          })
+        });
+  }
+
   friendCreatedNotification(String postId, String title, String previewImg,
       List<dynamic> friendArray) {
     for (var i = 0; i < friendArray.length; i++) {

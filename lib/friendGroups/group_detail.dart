@@ -212,11 +212,11 @@ class _GroupDetailState extends State<GroupDetail> {
                                             type:
                                                 PageTransitionType.bottomToTop,
                                             child: SearchUsersGroup(
-                                                groupName,
-                                                gid,
-                                                groupPic,
-                                                nextMOOV,
-                                                members)));
+                                                gname:groupName,
+                                                gid:gid,
+                                                pic: groupPic,
+                                                moov: nextMOOV,
+                                                members: members)));
                                   }),
 
                               FocusedMenuItem(

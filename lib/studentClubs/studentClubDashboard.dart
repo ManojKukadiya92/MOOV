@@ -941,7 +941,7 @@ class _ClubMakerState extends State<ClubMaker> {
                                     "userType": {
                                       "clubExecutive": [clubId]
                                     }
-                                  });
+                                  },SetOptions(merge: true));
                                   clubsRef
                                       .doc(clubId)
                                       .set({

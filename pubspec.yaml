@@ -119,9 +119,11 @@ dependencies:
   delayed_display: ^2.0.0
   optimized_cached_image: ^1.0.0
   flutter_slidable: ^0.6.0
+  swipeable: ^1.1.0
 
 dependency_overrides:
   intl: ^0.16.1
+
 
 
 

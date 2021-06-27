@@ -789,7 +789,7 @@ class _EditArchiveState extends State<EditArchive> {
                                                       type: PageTransitionType
                                                           .bottomToTop,
                                                       child: SearchUsersPost(
-                                                          invitees)))
+                                                          invitees:invitees)))
                                               .then(onGoBack);
                                         },
                                       ),
