@@ -12,6 +12,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 
@@ -157,7 +158,10 @@ class _GroupCalendarState extends State<GroupCalendar> {
           children: [
             TableCalendar<Event>(
               headerStyle: HeaderStyle(
-                titleTextStyle: GoogleFonts.montserrat(color: TextThemes.ndBlue, fontWeight: FontWeight.w500, fontSize: 20),
+                titleTextStyle: GoogleFonts.montserrat(
+                    color: TextThemes.ndBlue,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 20),
                 titleTextFormatter: (date, locale) {
                   return DateFormat("LLLL").format(date);
                 },
@@ -189,7 +193,6 @@ class _GroupCalendarState extends State<GroupCalendar> {
                 _focusedDay = focusedDay;
               },
             ),
-           
           ],
         ),
         const SizedBox(height: 8.0),
@@ -430,7 +433,7 @@ class CalendarMOOV extends StatelessWidget {
                             widthFactor: 1,
                             child: Container(
                               child: Container(
-                                child: CachedNetworkImage(
+                                child: OptimizedCacheImage(
                                   imageUrl: event.pic,
                                   fit: BoxFit.cover,
                                 ),

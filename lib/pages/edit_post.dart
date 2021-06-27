@@ -27,6 +27,7 @@ import 'package:MOOV/services/database.dart';
 import 'package:intl/intl.dart';
 import 'package:page_transition/page_transition.dart';
 import 'home.dart';
+import 'package:optimized_cached_image/optimized_cached_image.dart';
 
 class EditPost extends StatefulWidget {
   final String postId;
@@ -744,7 +745,8 @@ class _EditPostState extends State<EditPost> {
                                               icon: Text("Payment\nAmount"),
                                               labelStyle: TextThemes.mediumbody,
                                               labelText:
-                                                  paymentAmount.toString() == "null"
+                                                  paymentAmount.toString() ==
+                                                          "null"
                                                       ? "0"
                                                       : "\$$paymentAmount",
                                               enabledBorder: OutlineInputBorder(
@@ -995,7 +997,7 @@ class _EditPostState extends State<EditPost> {
                                                                         borderRadius:
                                                                             BorderRadius.circular(10),
                                                                         child:
-                                                                            CachedNetworkImage(
+                                                                            OptimizedCacheImage(
                                                                           imageUrl:
                                                                               groupPic,
                                                                           fit: BoxFit
@@ -1207,8 +1209,10 @@ class _EditPostState extends State<EditPost> {
                                               "maxOccupancy": maxOccupancyInt,
                                             });
                                           }
-                                          if (paymentAmountController.text != "") {
-                                            String x = paymentAmountController.text
+                                          if (paymentAmountController.text !=
+                                              "") {
+                                            String x = paymentAmountController
+                                                .text
                                                 .substring(1);
                                             paymentAmountInt = int.parse(x);
                                             postsRef.doc(postId).update({
@@ -1431,7 +1435,7 @@ class _EditPostState extends State<EditPost> {
                                                       ['MOTNRel'])
                                                 }, SetOptions(merge: true));
                                               }),
-                                              FocusedMenuItem(
+                                          FocusedMenuItem(
                                               title: Text("MOTD All"),
                                               trailingIcon: Icon(Icons.edit),
                                               onPressed: () {
@@ -1445,7 +1449,7 @@ class _EditPostState extends State<EditPost> {
                                                       ['MOTDAll'])
                                                 }, SetOptions(merge: true));
                                               }),
-                                              FocusedMenuItem(
+                                          FocusedMenuItem(
                                               backgroundColor: Colors.blue,
                                               title: Text("MOTN All"),
                                               trailingIcon: Icon(Icons.edit),
@@ -1585,7 +1589,7 @@ class _BannerImage extends StatelessWidget {
               ),
             ],
           ),
-          child: CachedNetworkImage(
+          child: OptimizedCacheImage(
             imageUrl: bannerImage,
             fit: BoxFit.fitWidth,
             height: 200,
@@ -2002,7 +2006,7 @@ void showAlertDialog2(
 //                         child: Container(
 //                           child: (currentUser.photoUrl == null)
 //                               ? AssetImage('images/user-avatar.png')
-//                               : CachedNetworkImage(imageUrl: photoUrl),
+//                               : OptimizedCacheImage(imageUrl: photoUrl),
 //                           // backgroundImage: NetworkImage(currentUser.photoUrl),
 //                         ),
 //                       ),

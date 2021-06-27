@@ -15,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../pages/ProfilePageWithHeader.dart';
 import '../pages/other_profile.dart';
+import 'package:optimized_cached_image/optimized_cached_image.dart';
 
 class SearchUsersPost extends StatefulWidget {
   final List<String> invitees;
@@ -996,18 +997,18 @@ class _SearchUsersGroupState extends State<SearchUsersGroup> {
                             delegate: SliverChildBuilderDelegate(
                               (context, index) {
                                 return UserGroupResultAdd(
-                                      snapshot0.data.docs[index]
-                                          ["displayName"],
-                                      snapshot0.data.docs[index]["email"],
-                                      snapshot0.data.docs[index]["photoUrl"],
-                                      snapshot0.data.docs[index]["id"],
-                                      snapshot0.data.docs[index]["verifiedStatus"],
-                                      snapshot0.data.docs[index]["friendGroups"],
-                                      gname,
-                                      gid,
-                                      pic,
-                                      moov,
-                                      members);
+                                    snapshot0.data.docs[index]["displayName"],
+                                    snapshot0.data.docs[index]["email"],
+                                    snapshot0.data.docs[index]["photoUrl"],
+                                    snapshot0.data.docs[index]["id"],
+                                    snapshot0.data.docs[index]
+                                        ["verifiedStatus"],
+                                    snapshot0.data.docs[index]["friendGroups"],
+                                    gname,
+                                    gid,
+                                    pic,
+                                    moov,
+                                    members);
                               },
                               childCount: snapshot0.data.docs.length ?? 0,
                             ),
@@ -1200,7 +1201,8 @@ class _UserGroupResultAddState extends State<UserGroupResultAdd> {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(3.0))),
                     onPressed: () {
-                      Database().addUserToGroup(userId, gname, gid, displayName);
+                      Database()
+                          .addUserToGroup(userId, gname, gid, displayName);
                       Database().addedToGroup(userId, gname, gid, pic);
                       setState(() {
                         status = true;
@@ -1277,7 +1279,7 @@ class _InviteGroupState extends State<InviteGroup> {
                     child: Container(
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
-                        child: CachedNetworkImage(
+                        child: OptimizedCacheImage(
                           imageUrl: pic,
                           fit: BoxFit.cover,
                         ),

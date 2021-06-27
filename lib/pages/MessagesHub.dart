@@ -18,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
@@ -346,7 +347,7 @@ class MessagesHub extends StatelessWidget {
                                                                         borderRadius:
                                                                             BorderRadius.all(Radius.circular(15)),
                                                                         child:
-                                                                            CachedNetworkImage(
+                                                                            OptimizedCacheImage(
                                                                           imageUrl:
                                                                               course4['groupPic'],
                                                                           fit: BoxFit
@@ -835,7 +836,7 @@ class MessageList extends StatelessWidget {
                                           child: ClipRRect(
                                             borderRadius:
                                                 BorderRadius.circular(10),
-                                            child: CachedNetworkImage(
+                                            child: OptimizedCacheImage(
                                               imageUrl:
                                                   snapshot.data['groupPic'],
                                               fit: BoxFit.cover,
@@ -1006,7 +1007,8 @@ class _MessageDetailState extends State<MessageDetail> {
                               builder: (context) =>
                                   OtherProfile(widget.otherPerson)));
                         },
-                  child: (widget.isGroupChat == false && widget.isClubChat == false)
+                  child: (widget.isGroupChat == false &&
+                          widget.isClubChat == false)
                       ? StreamBuilder(
                           stream: usersRef.doc(widget.otherPerson).snapshots(),
                           builder: (context, snapshot) {
@@ -1033,96 +1035,99 @@ class _MessageDetailState extends State<MessageDetail> {
                                 ],
                               ),
                             );
-                          }) :
-                          (widget.isClubChat) //club chats
-                      ? StreamBuilder(
-                          stream: clubsRef.doc(widget.gid).snapshots(),
-                          builder: (context, snapshot) {
-                            if (!snapshot.hasData || snapshot.data == null) {
-                              return circularProgress();
-                            }
+                          })
+                      : (widget.isClubChat) //club chats
+                          ? StreamBuilder(
+                              stream: clubsRef.doc(widget.gid).snapshots(),
+                              builder: (context, snapshot) {
+                                if (!snapshot.hasData ||
+                                    snapshot.data == null) {
+                                  return circularProgress();
+                                }
 
-                            return Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                children: [
-                                  // Container(
-                                  //   child: ClipRRect(
-                                  //     borderRadius:
-                                  //         BorderRadius.all(Radius.circular(15)),
-                                  //     child: CachedNetworkImage(
-                                  //       imageUrl: snapshot.data['groupPic'],
-                                  //       fit: BoxFit.cover,
-                                  //       height: isLargePhone
-                                  //           ? MediaQuery.of(context)
-                                  //                   .size
-                                  //                   .height *
-                                  //               0.04
-                                  //           : MediaQuery.of(context)
-                                  //                   .size
-                                  //                   .height *
-                                  //               0.06,
-                                  //       width:
-                                  //           MediaQuery.of(context).size.width *
-                                  //               0.15,
-                                  //     ),
-                                  //   ),
-                                  // ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      snapshot.data['clubName'],
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            );
-                          }):
-                          StreamBuilder(
-                          stream: groupsRef.doc(widget.gid).snapshots(),
-                          builder: (context, snapshot) {
-                            if (!snapshot.hasData || snapshot.data == null) {
-                              return circularProgress();
-                            }
-
-                            return Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    child: ClipRRect(
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(15)),
-                                      child: CachedNetworkImage(
-                                        imageUrl: snapshot.data['groupPic'],
-                                        fit: BoxFit.cover,
-                                        height: isLargePhone
-                                            ? MediaQuery.of(context)
-                                                    .size
-                                                    .height *
-                                                0.04
-                                            : MediaQuery.of(context)
-                                                    .size
-                                                    .height *
-                                                0.06,
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.15,
-                                      ),
-                                    ),
+                                return Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    children: [
+                                      // Container(
+                                      //   child: ClipRRect(
+                                      //     borderRadius:
+                                      //         BorderRadius.all(Radius.circular(15)),
+                                      //     child: OptimizedCacheImage(
+                                      //       imageUrl: snapshot.data['groupPic'],
+                                      //       fit: BoxFit.cover,
+                                      //       height: isLargePhone
+                                      //           ? MediaQuery.of(context)
+                                      //                   .size
+                                      //                   .height *
+                                      //               0.04
+                                      //           : MediaQuery.of(context)
+                                      //                   .size
+                                      //                   .height *
+                                      //               0.06,
+                                      //       width:
+                                      //           MediaQuery.of(context).size.width *
+                                      //               0.15,
+                                      //     ),
+                                      //   ),
+                                      // ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                          snapshot.data['clubName'],
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                      )
+                                    ],
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      snapshot.data['groupName'],
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            );
-                          })),
+                                );
+                              })
+                          : StreamBuilder(
+                              stream: groupsRef.doc(widget.gid).snapshots(),
+                              builder: (context, snapshot) {
+                                if (!snapshot.hasData ||
+                                    snapshot.data == null) {
+                                  return circularProgress();
+                                }
+
+                                return Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        child: ClipRRect(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(15)),
+                                          child: OptimizedCacheImage(
+                                            imageUrl: snapshot.data['groupPic'],
+                                            fit: BoxFit.cover,
+                                            height: isLargePhone
+                                                ? MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.04
+                                                : MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.06,
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.15,
+                                          ),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                          snapshot.data['groupName'],
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                );
+                              })),
             ],
           ),
         ),

@@ -9,6 +9,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:optimized_cached_image/optimized_cached_image.dart';
 
 Future<Position> determinePosition() async {
   bool serviceEnabled;
@@ -320,7 +321,7 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
             child: Stack(alignment: Alignment.center, children: [
               ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(15)),
-                child: CachedNetworkImage(
+                child: OptimizedCacheImage(
                   imageUrl: widget.image,
                   fit: BoxFit.cover,
                   height: MediaQuery.of(context).size.height * 0.15,

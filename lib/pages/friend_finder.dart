@@ -20,7 +20,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
-
+import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'ProfilePageWithHeader.dart';
 import 'other_profile.dart';
 
@@ -727,7 +727,7 @@ class UserResult extends StatelessWidget {
                                                             BorderRadius
                                                                 .circular(10),
                                                         child:
-                                                            CachedNetworkImage(
+                                                            OptimizedCacheImage(
                                                           imageUrl:
                                                               course['image'],
                                                           fit: BoxFit.cover,

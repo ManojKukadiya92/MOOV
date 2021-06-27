@@ -25,6 +25,7 @@ import 'package:MOOV/services/database.dart';
 import 'package:intl/intl.dart';
 import 'package:page_transition/page_transition.dart';
 import 'home.dart';
+import 'package:optimized_cached_image/optimized_cached_image.dart';
 
 class EditArchive extends StatefulWidget {
   final String postId;
@@ -746,7 +747,8 @@ class _EditArchiveState extends State<EditArchive> {
                                               icon: Text("Cost"),
                                               labelStyle: TextThemes.mediumbody,
                                               labelText:
-                                                  paymentAmount.toString() == "null"
+                                                  paymentAmount.toString() ==
+                                                          "null"
                                                       ? "0"
                                                       : "\$$paymentAmount",
                                               enabledBorder: OutlineInputBorder(
@@ -997,7 +999,7 @@ class _EditArchiveState extends State<EditArchive> {
                                                                         borderRadius:
                                                                             BorderRadius.circular(10),
                                                                         child:
-                                                                            CachedNetworkImage(
+                                                                            OptimizedCacheImage(
                                                                           imageUrl:
                                                                               groupPic,
                                                                           fit: BoxFit
@@ -1210,8 +1212,10 @@ class _EditArchiveState extends State<EditArchive> {
                                               "maxOccupancy": maxOccupancyInt,
                                             });
                                           }
-                                          if (paymentAmountController.text != "") {
-                                            String x = paymentAmountController.text
+                                          if (paymentAmountController.text !=
+                                              "") {
+                                            String x = paymentAmountController
+                                                .text
                                                 .substring(1);
                                             paymentAmountInt = int.parse(x);
                                             archiveRef.doc(postId).update({
@@ -1447,7 +1451,7 @@ class _BannerImage extends StatelessWidget {
               ),
             ],
           ),
-          child: CachedNetworkImage(
+          child: OptimizedCacheImage(
             imageUrl: bannerImage,
             fit: BoxFit.fitWidth,
             height: 200,
@@ -1468,9 +1472,9 @@ void showAlertDialog2(
     });
   }
 
- showDialog(
-      context: context,
-      builder: (context) => CupertinoAlertDialog(
+  showDialog(
+    context: context,
+    builder: (context) => CupertinoAlertDialog(
       title: Text("Delete?",
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
       content: Text("\nRemove this post from the feed?"),

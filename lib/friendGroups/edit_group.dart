@@ -13,6 +13,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:MOOV/services/database.dart';
+import 'package:optimized_cached_image/optimized_cached_image.dart';
 import '../pages/home.dart';
 
 class EditGroup extends StatefulWidget {
@@ -402,7 +403,7 @@ class _EditGroupState extends State<EditGroup> {
                           child: Container(
                             child: (currentUser.photoUrl == null)
                                 ? AssetImage('images/user-avatar.png')
-                                : CachedNetworkImage(imageUrl: photoUrl),
+                                : OptimizedCacheImage(imageUrl: photoUrl),
                             // backgroundImage: NetworkImage(currentUser.photoUrl),
                           ),
                         ),

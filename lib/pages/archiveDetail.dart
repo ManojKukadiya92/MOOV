@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:optimized_cached_image/optimized_cached_image.dart';
 
 class ArchiveDetail extends StatefulWidget {
   final String postId;
@@ -199,7 +200,7 @@ class _BannerImage extends StatelessWidget {
               ),
             ],
           ),
-          child: CachedNetworkImage(
+          child: OptimizedCacheImage(
             imageUrl: bannerImage,
             fit: BoxFit.cover,
             height: 200,
@@ -311,8 +312,7 @@ class _NonImageContents extends StatelessWidget {
         children: <Widget>[
           _Title(title),
           _Description(description),
-          PostTimeAndPlace(
-              startDate, address, course['userId']),
+          PostTimeAndPlace(startDate, address, course['userId']),
           _AuthorContent(userId, course),
           GestureDetector(
             onTap: () {
@@ -540,7 +540,6 @@ class PostTimeAndPlace extends StatelessWidget {
             )
           ],
         ),
-       
       ]),
     );
   }

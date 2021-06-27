@@ -10,6 +10,7 @@ import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:MOOV/pages/home.dart';
+import 'package:optimized_cached_image/optimized_cached_image.dart';
 
 class TrendingSegment extends StatefulWidget {
   @override
@@ -392,7 +393,7 @@ class PostOnTrending extends StatelessWidget {
                       child: Stack(alignment: Alignment.center, children: [
                         Container(
                           height: 500,
-                          child: CachedNetworkImage(
+                          child: OptimizedCacheImage(
                             imageUrl: course['image'],
                             fit: BoxFit.cover,
                             width: isLargePhone

@@ -20,6 +20,7 @@ import 'package:flutter_chat_bubble/bubble_type.dart';
 import 'package:flutter_chat_bubble/chat_bubble.dart';
 import 'package:flutter_chat_bubble/clippers/chat_bubble_clipper_5.dart';
 import 'package:intl/intl.dart';
+import 'package:optimized_cached_image/optimized_cached_image.dart';
 
 class Chat extends StatefulWidget {
   final String gid, directMessageId, otherPerson;
@@ -308,7 +309,7 @@ class ChatState extends State<Chat> {
                 .collection("pullUpTimeForPosts")
                 .doc(value['postId'])
                 .set({
-               "voters": {"0": 6},
+                "voters": {"0": 6},
                 "choice1": DateFormat.jm()
                         .format(value['startDate']
                             .toDate()
@@ -1145,7 +1146,10 @@ class _CommentState extends State<Comment> {
                                                                   .width *
                                                               0.7,
                                                         ),
-                                                        child: Text(comment, style: TextStyle(color: Colors.white)))),
+                                                        child: Text(comment,
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .white)))),
                                                 Positioned(
                                                     right: comment.length < 25
                                                         ? comment.length
@@ -1269,7 +1273,7 @@ class ChatMOOV extends StatelessWidget {
                             child: Container(
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(10),
-                                child: CachedNetworkImage(
+                                child: OptimizedCacheImage(
                                   imageUrl: pic,
                                   fit: BoxFit.cover,
                                 ),
@@ -1342,7 +1346,7 @@ class ChatMOOV extends StatelessWidget {
                             child: Container(
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(10),
-                                child: CachedNetworkImage(
+                                child: OptimizedCacheImage(
                                   imageUrl: pic,
                                   fit: BoxFit.cover,
                                 ),
@@ -1407,37 +1411,40 @@ class ChatMOOV extends StatelessWidget {
                     ),
             ),
             hasButtons ? Buttons(postId) : Container(),
-            hasButtons ?  Container(
-              width: MediaQuery.of(context).size.width * .75,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: ExpandablePanel(
-                        collapsed: null,
-                        // controller: _expandableController,
-                        theme: const ExpandableThemeData(
-                          useInkWell: false,
-                          hasIcon: false,
-                          tapHeaderToExpand: true,
-                          headerAlignment:
-                              ExpandablePanelHeaderAlignment.center,
-                          tapBodyToCollapse: true,
-                        ),
-                        header: Center(
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 0.0, bottom: 3),
-                            child: Text(
-                              "Vote on pull-up time",
-                              style:
-                                  TextStyle(color: Colors.blue, fontSize: 12),
-                            ),
-                          ),
-                        ),
-                        expanded: PullUpPoll(messageId, postId)),
+            hasButtons
+                ? Container(
+                    width: MediaQuery.of(context).size.width * .75,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: ExpandablePanel(
+                              collapsed: null,
+                              // controller: _expandableController,
+                              theme: const ExpandableThemeData(
+                                useInkWell: false,
+                                hasIcon: false,
+                                tapHeaderToExpand: true,
+                                headerAlignment:
+                                    ExpandablePanelHeaderAlignment.center,
+                                tapBodyToCollapse: true,
+                              ),
+                              header: Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 0.0, bottom: 3),
+                                  child: Text(
+                                    "Vote on pull-up time",
+                                    style: TextStyle(
+                                        color: Colors.blue, fontSize: 12),
+                                  ),
+                                ),
+                              ),
+                              expanded: PullUpPoll(messageId, postId)),
+                        )
+                      ],
+                    ),
                   )
-                ],
-              ),
-            ) : Container()
+                : Container()
           ],
         ),
       ),

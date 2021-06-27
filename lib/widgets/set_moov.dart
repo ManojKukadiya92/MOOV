@@ -11,6 +11,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:optimized_cached_image/optimized_cached_image.dart';
 
 class SearchSetMOOV extends StatefulWidget {
   final String groupId, groupName;
@@ -248,7 +249,7 @@ class _SetMOOVResultState extends State<SetMOOVResult> {
                   child: Container(
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(10),
-                      child: CachedNetworkImage(
+                      child: OptimizedCacheImage(
                         imageUrl: widget.image,
                         fit: BoxFit.cover,
                       ),
@@ -454,7 +455,7 @@ class _PickMOOVState extends State<PickMOOV> {
                   child: Container(
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(10),
-                      child: CachedNetworkImage(
+                      child: OptimizedCacheImage(
                         imageUrl: pic,
                         fit: BoxFit.cover,
                       ),

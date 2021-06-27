@@ -20,6 +20,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:optimized_cached_image/optimized_cached_image.dart';
+
 
 class AlgoliaApplication {
   static final Algolia algolia = Algolia.init(
@@ -64,7 +66,6 @@ class _SearchBarState extends State<SearchBar>
       //   textFieldFocusNode.unfocus();
       // }
     } else {
-
       // dismissKeyboard = false;
       setState(() {
         showTabs = false;
@@ -420,7 +421,11 @@ class _SearchBarState extends State<SearchBar>
                                                                   SliverToBoxAdapter(
                                                                 child:
                                                                     Container(
-                                                                  height: currSearchStuffCommunityGroup.length != 0 ? 140 : 0,
+                                                                  height:
+                                                                      currSearchStuffCommunityGroup.length !=
+                                                                              0
+                                                                          ? 140
+                                                                          : 0,
                                                                   child: ListView
                                                                       .builder(
                                                                     scrollDirection:
@@ -434,10 +439,9 @@ class _SearchBarState extends State<SearchBar>
                                                                       return (_searchTerm !=
                                                                               null)
                                                                           ? Padding(
-                                                                            padding: const EdgeInsets.all(4.0),
-                                                                            child: DisplayCommunityGroupResult(
-                                                                                groupId: currSearchStuffCommunityGroup[index].data["groupId"]),
-                                                                          )
+                                                                              padding: const EdgeInsets.all(4.0),
+                                                                              child: DisplayCommunityGroupResult(groupId: currSearchStuffCommunityGroup[index].data["groupId"]),
+                                                                            )
                                                                           : Container();
                                                                     },
                                                                   ),
@@ -449,7 +453,6 @@ class _SearchBarState extends State<SearchBar>
                                                                   SliverChildBuilderDelegate(
                                                                 (context,
                                                                     index) {
-                                                                 
                                                                   String
                                                                       privacy =
                                                                       currSearchStuff2[index]
@@ -543,46 +546,44 @@ class _SearchBarState extends State<SearchBar>
                                                           shrinkWrap: true,
                                                           slivers: <Widget>[
                                                             SliverList(
-                                                              delegate:
-                                                                  SliverChildBuilderDelegate(
-                                                                (context,
-                                                                    index) {
-                                                                  return _searchTerm !=
-                                                                              null &&
-                                                                          _currentIndex ==
-                                                                              2
-                                                                      ? DisplayGroupResult(
-                                                                          groupName:
-                                                                              currSearchStuff0[index].data["groupName"],
-                                                                          groupId:
-                                                                              currSearchStuff0[index].data["groupId"],
-                                                                          groupPic:
-                                                                              currSearchStuff0[index].data["groupPic"],
-                                                                          members:
-                                                                              currSearchStuff0[index].data["members"],
-                                                                          sendMOOV:
-                                                                              false,
-                                                                        )
-                                                                      : DisplayMOOVResult(
-                                                                          title:
-                                                                              currSearchStuff2[index].data["title"],
-                                                                          description:
-                                                                              currSearchStuff2[index].data["description"],
-                                                                          type:
-                                                                              currSearchStuff2[index].data["type"],
-                                                                          image:
-                                                                              currSearchStuff2[index].data["image"],
-                                                                          userId:
-                                                                              currSearchStuff2[index].data["userId"],
-                                                                          postId:
-                                                                              currSearchStuff2[index].data["postId"],
-                                                                        );
-                                                                },
-                                                                childCount:
-                                                                    currSearchStuff0
-                                                                            .length ??
-                                                                        currSearchStuff2.length
-                                                              ),
+                                                              delegate: SliverChildBuilderDelegate(
+                                                                  (context,
+                                                                      index) {
+                                                                return _searchTerm !=
+                                                                            null &&
+                                                                        _currentIndex ==
+                                                                            2
+                                                                    ? DisplayGroupResult(
+                                                                        groupName:
+                                                                            currSearchStuff0[index].data["groupName"],
+                                                                        groupId:
+                                                                            currSearchStuff0[index].data["groupId"],
+                                                                        groupPic:
+                                                                            currSearchStuff0[index].data["groupPic"],
+                                                                        members:
+                                                                            currSearchStuff0[index].data["members"],
+                                                                        sendMOOV:
+                                                                            false,
+                                                                      )
+                                                                    : DisplayMOOVResult(
+                                                                        title: currSearchStuff2[index]
+                                                                            .data["title"],
+                                                                        description:
+                                                                            currSearchStuff2[index].data["description"],
+                                                                        type: currSearchStuff2[index]
+                                                                            .data["type"],
+                                                                        image: currSearchStuff2[index]
+                                                                            .data["image"],
+                                                                        userId:
+                                                                            currSearchStuff2[index].data["userId"],
+                                                                        postId:
+                                                                            currSearchStuff2[index].data["postId"],
+                                                                      );
+                                                              },
+                                                                  childCount: currSearchStuff0
+                                                                          .length ??
+                                                                      currSearchStuff2
+                                                                          .length),
                                                             ),
                                                           ],
                                                         ),
@@ -740,7 +741,7 @@ class DisplayMOOVResult extends StatelessWidget {
                       : MediaQuery.of(context).size.height * 0.17,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
-                    child: CachedNetworkImage(
+                    child: OptimizedCacheImage(
                       imageUrl: image,
                       fit: BoxFit.cover,
                     ),
@@ -936,7 +937,7 @@ class DisplayGroupResult extends StatelessWidget {
                     closedBuilder: (context, _) => Container(
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
-                        child: CachedNetworkImage(
+                        child: OptimizedCacheImage(
                           imageUrl: groupPic,
                           fit: BoxFit.cover,
                         ),

@@ -18,6 +18,7 @@ import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
 import 'package:intl/intl.dart';
 import 'package:MOOV/pages/home.dart';
+import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:page_transition/page_transition.dart';
 
 class PostOnFeedNew extends StatefulWidget {
@@ -103,7 +104,7 @@ class _PostOnFeedNewState extends State<PostOnFeedNew> {
                       child: Container(
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(10),
-                          child: CachedNetworkImage(
+                          child: OptimizedCacheImage(
                             imageUrl: widget.course['image'],
                             fit: BoxFit.cover,
                           ),

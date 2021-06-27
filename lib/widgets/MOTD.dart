@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_device_type/flutter_device_type.dart';
+import 'package:optimized_cached_image/optimized_cached_image.dart';
 
 class MOTD extends StatefulWidget {
   final String type, vibeType;
@@ -88,7 +89,10 @@ class MOTDUI extends StatelessWidget {
                 course['paymentAmount'] != 0) {
               type = "pay";
             }
-            if (course.data()['mobileOrderMenu'] != null && (course.data()['mobileOrderMenu']['item1'] || course.data()['mobileOrderMenu']['item2'] || course.data()['mobileOrderMenu']['item3'])) {
+            if (course.data()['mobileOrderMenu'] != null &&
+                (course.data()['mobileOrderMenu']['item1'] ||
+                    course.data()['mobileOrderMenu']['item2'] ||
+                    course.data()['mobileOrderMenu']['item3'])) {
               type = "order";
             }
 
@@ -120,7 +124,7 @@ class MOTDUI extends StatelessWidget {
                               widthFactor: 1,
                               child: Container(
                                 child: Container(
-                                  child: CachedNetworkImage(
+                                  child: OptimizedCacheImage(
                                     imageUrl: pic,
                                     fit: BoxFit.cover,
                                   ),
@@ -304,7 +308,7 @@ class BiteSizePostUI extends StatelessWidget {
                       widthFactor: 1,
                       child: Container(
                         child: Container(
-                          child: CachedNetworkImage(
+                          child: OptimizedCacheImage(
                             imageUrl: pic,
                             fit: BoxFit.cover,
                           ),

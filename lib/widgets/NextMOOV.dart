@@ -10,6 +10,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:optimized_cached_image/optimized_cached_image.dart';
 
 class NextMOOV extends StatefulWidget {
   final String selected;
@@ -101,7 +102,7 @@ class _NextMOOVState extends State<NextMOOV> {
                                 child: Container(
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(10),
-                                    child: CachedNetworkImage(
+                                    child: OptimizedCacheImage(
                                       imageUrl: pic,
                                       fit: BoxFit.cover,
                                     ),
@@ -287,8 +288,7 @@ class _NextMOOVState extends State<NextMOOV> {
   void showAlertDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) =>
-       CupertinoAlertDialog(
+      builder: (context) => CupertinoAlertDialog(
         title: Text("Unsuggest?",
             style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
         content: Text("\nRemove this suggestion?"),

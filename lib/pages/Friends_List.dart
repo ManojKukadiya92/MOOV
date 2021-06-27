@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:MOOV/helpers/themes.dart';
 import 'package:MOOV/pages/ProfilePageWithHeader.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:optimized_cached_image/optimized_cached_image.dart';
 
 class FriendsList extends StatefulWidget {
   final id;
@@ -546,7 +547,7 @@ class GroupsListState extends State<GroupsList> {
                                                 child: ClipRRect(
                                                   borderRadius:
                                                       BorderRadius.circular(10),
-                                                  child: CachedNetworkImage(
+                                                  child: OptimizedCacheImage(
                                                     imageUrl: groupPic,
                                                     fit: BoxFit.cover,
                                                   ),

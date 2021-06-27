@@ -1,6 +1,7 @@
 import 'package:MOOV/utils/themes_styles.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:optimized_cached_image/optimized_cached_image.dart';
 
 class DealDetail extends StatelessWidget {
   final String title, pic, description, day;
@@ -24,8 +25,7 @@ class DealDetail extends StatelessWidget {
         backgroundColor: TextThemes.ndBlue,
         flexibleSpace: FlexibleSpaceBar(
           titlePadding: EdgeInsets.all(15),
-          title:Text("DEAL", style: TextStyle(color: Colors.white)
-          ),
+          title: Text("DEAL", style: TextStyle(color: Colors.white)),
         ),
       ),
       body: Column(
@@ -45,7 +45,7 @@ class DealDetail extends StatelessWidget {
                   ),
                 ],
               ),
-              child: CachedNetworkImage(
+              child: OptimizedCacheImage(
                 imageUrl: pic,
                 fit: BoxFit.cover,
                 height: 200,
@@ -57,20 +57,30 @@ class DealDetail extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: Text(title, style: TextThemes.headline1),
           ),
-           Padding(
-                padding: const EdgeInsets.only(top: 20.0, left: 20),
-             child: Row(
-               children: [
-                 Align(
-                   alignment: Alignment.centerLeft,
-                   child: Text("the deets  ", style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20))),
-          Expanded(child: Divider(thickness: 1, height: 1,color: Colors.black,))
-               ],
-             ),
-           ),
-           Padding(
+          Padding(
+            padding: const EdgeInsets.only(top: 20.0, left: 20),
+            child: Row(
+              children: [
+                Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text("the deets  ",
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600, fontSize: 20))),
+                Expanded(
+                    child: Divider(
+                  thickness: 1,
+                  height: 1,
+                  color: Colors.black,
+                ))
+              ],
+            ),
+          ),
+          Padding(
             padding: const EdgeInsets.all(15.0),
-            child: Text(description, style: TextStyle(fontWeight: FontWeight.w500),),
+            child: Text(
+              description,
+              style: TextStyle(fontWeight: FontWeight.w500),
+            ),
           )
         ],
       ),

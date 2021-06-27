@@ -6,6 +6,7 @@ import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:optimized_cached_image/optimized_cached_image.dart';
 
 class MOOVMemories extends StatelessWidget {
   const MOOVMemories({Key key}) : super(key: key);
@@ -32,7 +33,7 @@ class MOOVMemories extends StatelessWidget {
             padding: EdgeInsets.all(10),
             child: GradientText(
               "MOOV Memories",
-                16.5,
+              16.5,
               gradient: LinearGradient(colors: [
                 Colors.blue.shade400,
                 Colors.blue.shade900,
@@ -145,7 +146,7 @@ class MOOVMemories extends StatelessWidget {
                                               child: ClipRRect(
                                                 borderRadius:
                                                     BorderRadius.circular(10),
-                                                child: CachedNetworkImage(
+                                                child: OptimizedCacheImage(
                                                   imageUrl: course['image'],
                                                   fit: BoxFit.cover,
                                                 ),

@@ -12,6 +12,7 @@ import 'package:MOOV/helpers/themes.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:shimmer/shimmer.dart';
 
 class FriendGroupsPage extends StatefulWidget {
@@ -355,12 +356,10 @@ class _FriendGroupsState extends State<FriendGroupsPage> {
                       onItemSelected: (index) {
                         HapticFeedback.lightImpact();
 
-                     
-
                         setState(() {
                           selectedIndex = index;
                         });
-                           if (selectedIndex == 0) {
+                        if (selectedIndex == 0) {
                           setState(() {
                             _showCommunities = true;
                           });
@@ -453,7 +452,7 @@ class _FriendGroupsState extends State<FriendGroupsPage> {
                                                         BorderRadius.all(
                                                             Radius.circular(
                                                                 15)),
-                                                    child: CachedNetworkImage(
+                                                    child: OptimizedCacheImage(
                                                       placeholder:
                                                           (context, url) {
                                                         return Container(

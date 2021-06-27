@@ -8,6 +8,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:optimized_cached_image/optimized_cached_image.dart';
 
 class GroupCarousel extends StatelessWidget {
   final String userId;
@@ -18,7 +19,7 @@ class GroupCarousel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     GoogleSignInAccount user = googleSignIn.currentUser;
-   final userId = user.id;
+    final userId = user.id;
 
     bool isLargePhone = Screen.diagonal(context) > 766;
 
@@ -130,7 +131,7 @@ class GroupCarousel extends StatelessWidget {
                                                         BorderRadius.all(
                                                             Radius.circular(
                                                                 15)),
-                                                    child: CachedNetworkImage(
+                                                    child: OptimizedCacheImage(
                                                       imageUrl:
                                                           course['groupPic'],
                                                       fit: BoxFit.cover,
@@ -348,7 +349,7 @@ class GroupCarousel extends StatelessWidget {
                                                                           .circular(
                                                                               10),
                                                                   child:
-                                                                      CachedNetworkImage(
+                                                                      OptimizedCacheImage(
                                                                     imageUrl: snapshot3
                                                                             .data[
                                                                         'image'],

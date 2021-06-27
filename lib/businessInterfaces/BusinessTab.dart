@@ -14,6 +14,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:worm_indicator/indicator.dart';
 import 'package:worm_indicator/shape.dart';
 
@@ -84,7 +85,7 @@ class _BizState extends State<Biz> {
                                 child: Container(
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(10),
-                                    child: CachedNetworkImage(
+                                    child: OptimizedCacheImage(
                                       imageUrl: course[pos]['image'],
                                       fit: BoxFit.cover,
                                     ),
@@ -230,12 +231,13 @@ class _BizState extends State<Biz> {
                               keyboardType: TextInputType.datetime,
                               decoration: InputDecoration(
                                   suffixIcon: IconButton(
-                                    icon:Icon(
-                                    Icons.calendar_today,
-                                    color: needDate
-                                        ? Colors.red
-                                        : TextThemes.ndGold,),
-                                        onPressed: () => null,
+                                    icon: Icon(
+                                      Icons.calendar_today,
+                                      color: needDate
+                                          ? Colors.red
+                                          : TextThemes.ndGold,
+                                    ),
+                                    onPressed: () => null,
                                   ),
                                   labelText: 'Enter Start Time',
                                   enabledBorder: OutlineInputBorder(
@@ -472,7 +474,7 @@ class _QuickPostState extends State<QuickPost> {
                                   child: Container(
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(10),
-                                      child: CachedNetworkImage(
+                                      child: OptimizedCacheImage(
                                         imageUrl: course['image'],
                                         fit: BoxFit.cover,
                                       ),

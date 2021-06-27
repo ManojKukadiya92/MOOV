@@ -32,7 +32,7 @@ import 'package:intl/intl.dart';
 import 'package:MOOV/widgets/going_statuses.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:page_transition/page_transition.dart';
-// import 'package:stripe_payment/stripe_payment.dart';
+import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PostDetail extends StatefulWidget {
@@ -288,7 +288,7 @@ class _BannerImage extends StatelessWidget {
               ),
             ],
           ),
-          child: CachedNetworkImage(
+          child: OptimizedCacheImage(
             imageUrl: bannerImage,
             fit: BoxFit.cover,
             height: 200,

@@ -8,6 +8,7 @@ import 'package:MOOV/widgets/progress.dart';
 import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:optimized_cached_image/optimized_cached_image.dart';
 
 ///Map import
 // ignore: import_of_legacy_library_into_null_safe
@@ -271,7 +272,7 @@ class _TileLayerSampleState extends SampleViewState {
                                 child: Container(
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(10),
-                                    child: CachedNetworkImage(
+                                    child: OptimizedCacheImage(
                                       imageUrl: item.tooltipImagePath,
                                       fit: BoxFit.cover,
                                     ),

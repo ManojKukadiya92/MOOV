@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 // import 'package:stripe_payment/stripe_payment.dart';
+import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:MOOV/helpers/SPHelper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:MOOV/pages/home.dart';
@@ -66,7 +67,9 @@ class MOOV extends StatelessWidget {
             scaffoldBackgroundColor: CupertinoColors.lightBackgroundGray,
             dialogBackgroundColor: Color.fromRGBO(2, 43, 91, 1.0),
             primarySwatch: Colors.blue,
-            dialogTheme: DialogTheme(contentTextStyle: TextStyle(color: Colors.white), titleTextStyle: TextStyle(color: Colors.white)),
+            dialogTheme: DialogTheme(
+                contentTextStyle: TextStyle(color: Colors.white),
+                titleTextStyle: TextStyle(color: Colors.white)),
             cardColor: Colors.white70,
             accentColor: Color.fromRGBO(220, 180, 57, 1.0),
             textTheme: TextTheme(
