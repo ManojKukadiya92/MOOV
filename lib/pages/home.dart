@@ -1312,6 +1312,10 @@ class _FabRowState extends State<FabRow> {
                         // for (int i = 0; i < widget.livePasses.length; i++) {
                         //   if (widget.livePasses[i]['tip'] > 0)
                         // }
+                        //     Navigator.push(
+                        // context,
+                        // MaterialPageRoute(
+                        //     builder: (context) => LivePassesWalletSheet()));
                         HapticFeedback.lightImpact();
 
                         var bottomSheetController = showBottomSheet(
@@ -1319,7 +1323,7 @@ class _FabRowState extends State<FabRow> {
                             // backgroundColor: Colors.green,
 
                             builder: (context) =>
-                                LivePassesSheet(livePasses: widget.livePasses));
+                                LivePassesWalletSheet(widget.livePasses));
                         showFoatingActionButton(false);
                         bottomSheetController.closed.then((value) {
                           showFoatingActionButton(true);
