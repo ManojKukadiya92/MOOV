@@ -1,4 +1,3 @@
-import 'package:MOOV/accountCreation/createAccountLanding.dart';
 import 'package:MOOV/pages/NewSearch.dart';
 import 'package:MOOV/pages/create_account.dart';
 import 'package:MOOV/pages/home.dart';
@@ -11,7 +10,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_place_picker/google_maps_place_picker.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 
 typedef void Callback(String val);
 

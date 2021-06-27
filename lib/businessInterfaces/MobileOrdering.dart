@@ -94,6 +94,8 @@ class MobileOrdering extends StatelessWidget {
                           snapshotPost.data['mobileOrderMenu']['item2'];
                       bool offeringItem3 =
                           snapshotPost.data['mobileOrderMenu']['item3'];
+                      String businessName = snapshotPost.data['posterName'];
+                      Timestamp startDate = snapshotPost.data['startDate'];
 
                       if (offeringItem1) {
                         itemsOffered++;
@@ -245,6 +247,8 @@ class MobileOrdering extends StatelessWidget {
                               mobileOrderMenu: mobileOrderMenu,
                               userId: userId,
                               postId: postId,
+                              businessName: businessName,
+                              startDate: startDate,
                               offeringItem1: offeringItem1,
                               offeringItem2: offeringItem2,
                               offeringItem3: offeringItem3,
@@ -383,7 +387,8 @@ class MobileOrdering extends StatelessWidget {
 class MobileOrderPageView extends StatefulWidget {
   final Map mobileOrderMenu;
   final PageController controller;
-  final String userId, postId;
+  final String userId, postId, businessName;
+  final Timestamp startDate;
   final bool offeringItem1, offeringItem2, offeringItem3;
   final int itemsOffered;
 
@@ -392,6 +397,8 @@ class MobileOrderPageView extends StatefulWidget {
       this.mobileOrderMenu,
       this.userId,
       this.postId,
+      this.startDate,
+      this.businessName,
       this.offeringItem1,
       this.offeringItem2,
       this.offeringItem3,
@@ -425,22 +432,25 @@ class _MobileOrderPageViewState extends State<MobileOrderPageView> {
               shape: DotShape.Rectangle),
         ),
         Expanded(
-            child: 
-            PageView(
+            child: PageView(
           controller: widget.controller,
           children: [
             widget.offeringItem1 == false
                 ? Container()
                 : MobileItemOne(widget.mobileOrderMenu['item1'], widget.userId,
-                    widget.postId),
+                    widget.postId, widget.startDate, widget.businessName),
             widget.offeringItem2 == false
                 ? Container()
                 : MobileItemTwo(widget.mobileOrderMenu['item2'], widget.userId,
-                    widget.postId),
+                    widget.postId, widget.businessName, widget.startDate),
             widget.offeringItem3 == false
                 ? Container()
-                : MobileItemThree(widget.mobileOrderMenu['item3'],
-                    widget.userId, widget.postId),
+                : MobileItemThree(
+                    widget.mobileOrderMenu['item3'],
+                    widget.userId,
+                    widget.postId,
+                    widget.businessName,
+                    widget.startDate),
           ],
         )),
       ],
@@ -450,8 +460,10 @@ class _MobileOrderPageViewState extends State<MobileOrderPageView> {
 
 class MobileItemOne extends StatelessWidget {
   final Map item1;
-  final String userId, postId;
-  MobileItemOne(this.item1, this.userId, this.postId);
+  final String userId, postId, businessName;
+  final Timestamp startDate;
+  MobileItemOne(
+      this.item1, this.userId, this.postId, this.startDate, this.businessName);
 
   @override
   Widget build(BuildContext context) {
@@ -570,7 +582,9 @@ class MobileItemOne extends StatelessWidget {
                                           item1['name'],
                                           item1['photo'],
                                           userId,
-                                          postId));
+                                          postId,
+                                          businessName,
+                                          startDate));
                             },
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
@@ -608,8 +622,10 @@ class MobileItemOne extends StatelessWidget {
 
 class MobileItemTwo extends StatelessWidget {
   final Map item2;
-  final String userId, postId;
-  MobileItemTwo(this.item2, this.userId, this.postId);
+  final String userId, postId, businessName;
+  final Timestamp startDate;
+  MobileItemTwo(
+      this.item2, this.userId, this.postId, this.businessName, this.startDate);
 
   @override
   Widget build(BuildContext context) {
@@ -726,7 +742,9 @@ class MobileItemTwo extends StatelessWidget {
                                           item2['name'],
                                           item2['photo'],
                                           userId,
-                                          postId));
+                                          postId,
+                                          businessName,
+                                          startDate));
                             },
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
@@ -763,8 +781,10 @@ class MobileItemTwo extends StatelessWidget {
 
 class MobileItemThree extends StatelessWidget {
   final Map item3;
-  final String userId, postId;
-  MobileItemThree(this.item3, this.userId, this.postId);
+  final String userId, postId, businessName;
+  final Timestamp startDate;
+  MobileItemThree(
+      this.item3, this.userId, this.postId, this.businessName, this.startDate);
 
   @override
   Widget build(BuildContext context) {
@@ -881,7 +901,9 @@ class MobileItemThree extends StatelessWidget {
                                           item3['name'],
                                           item3['photo'],
                                           userId,
-                                          postId));
+                                          postId,
+                                          businessName,
+                                          startDate));
                             },
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
@@ -1317,9 +1339,10 @@ class _DecoratedTextFieldState extends State<DecoratedTextField> {
 
 class BottomSheetBuy extends StatefulWidget {
   final int itemNumber, price;
-  final String name, photo, businessUserId, postId;
+  final String name, photo, businessUserId, businessName, postId;
+  final Timestamp startDate;
   BottomSheetBuy(this.itemNumber, this.price, this.name, this.photo,
-      this.businessUserId, this.postId);
+      this.businessUserId, this.postId, this.businessName, this.startDate);
 
   @override
   _BottomSheetBuyState createState() => _BottomSheetBuyState();
@@ -1434,6 +1457,8 @@ class _BottomSheetBuyState extends State<BottomSheetBuy> {
                                   .set({
                                 "name": widget.name,
                                 "type": "item",
+                                "businessName": widget.businessName,
+                                "startDate": widget.startDate,
                                 "price": widget.price,
                                 "photo": widget.photo,
                                 "time": Timestamp.now(),

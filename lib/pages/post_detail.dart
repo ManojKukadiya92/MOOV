@@ -956,6 +956,8 @@ class PaySkipSendRow extends StatelessWidget {
                               borderRadius: BorderRadius.circular(15)),
                           builder: (context) => PayNondealCostBottomSheet(
                               userId,
+                              course['posterName'],
+                              course['startDate'],
                               postId,
                               livePasses,
                               oneLivePass,
@@ -986,6 +988,7 @@ class PaySkipSendRow extends StatelessWidget {
                   postId: postId,
                   businessUserId: course['userId'],
                   businessName: course['posterName'],
+                  startDate: course['startDate'],
                   dealCost: course['dealCost'],
                   dealLimit: course['dealLimit'],
                 )
@@ -1020,6 +1023,8 @@ class PaySkipSendRow extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(15)),
                             builder: (context) => BuyMoovOverPassSheet(
                                 businessUserId: userId,
+                                businessName: course['posterName'],
+                                startDate: course['startDate'],
                                 postId: postId,
                                 haveAlready: haveAlready,
                                 livePasses: livePasses,
@@ -1997,10 +2002,13 @@ class CommentPreviewOnPost extends StatelessWidget {
 class DealButton extends StatefulWidget {
   final String postId, businessUserId, businessName;
   final int dealCost, dealLimit;
+  final Timestamp startDate;
+
   DealButton(
       {this.postId,
       this.businessUserId,
       this.businessName,
+      this.startDate,
       this.dealCost,
       this.dealLimit});
 
@@ -2055,6 +2063,8 @@ class _DealButtonState extends State<DealButton>
                   borderRadius: BorderRadius.circular(15)),
               builder: (context) => RedeemDealBottomSheet(
                   widget.businessUserId,
+                  widget.businessName,
+                  widget.startDate,
                   widget.postId,
                   livePasses,
                   oneLivePass,
@@ -2102,14 +2112,23 @@ class _DealButtonState extends State<DealButton>
 }
 
 class RedeemDealBottomSheet extends StatefulWidget {
-  final String businessUserId, postId;
+  final String businessUserId, businessName, postId;
   final List livePasses;
   final Map oneLivePass;
   final bool haveAlready;
+  final Timestamp startDate;
   final int dealCost, dealLimit;
 
-  RedeemDealBottomSheet(this.businessUserId, this.postId, this.livePasses,
-      this.oneLivePass, this.haveAlready, this.dealCost, this.dealLimit);
+  RedeemDealBottomSheet(
+      this.businessUserId,
+      this.businessName,
+      this.startDate,
+      this.postId,
+      this.livePasses,
+      this.oneLivePass,
+      this.haveAlready,
+      this.dealCost,
+      this.dealLimit);
 
   @override
   _RedeemDealBottomSheetState createState() => _RedeemDealBottomSheetState();
@@ -2301,6 +2320,8 @@ class _RedeemDealBottomSheetState extends State<RedeemDealBottomSheet>
                                         .set({
                                       "type": "deal",
                                       "name": "DEAL",
+                                      "businessName": widget.businessName,
+                                      "startDate": widget.startDate,
                                       "price": widget.dealCost,
                                       "photo": currentUser.photoUrl,
                                       "time": Timestamp.now(),
@@ -2347,13 +2368,14 @@ class _RedeemDealBottomSheetState extends State<RedeemDealBottomSheet>
 }
 
 class PayNondealCostBottomSheet extends StatefulWidget {
-  final String businessUserId, postId;
+  final String businessUserId, businessName, postId;
   final List livePasses;
+  final Timestamp startDate;
   final Map oneLivePass;
   final bool haveAlready;
   final int nondealCost, dealLimit;
 
-  PayNondealCostBottomSheet(this.businessUserId, this.postId, this.livePasses,
+  PayNondealCostBottomSheet(this.businessUserId, this.businessName, this.startDate, this.postId, this.livePasses,
       this.oneLivePass, this.haveAlready, this.nondealCost, this.dealLimit);
 
   @override
@@ -2539,6 +2561,8 @@ class _PayNondealCostBottomSheetState extends State<PayNondealCostBottomSheet>
                                       "photo": currentUser.photoUrl,
                                       "time": Timestamp.now(),
                                       "businessId": widget.businessUserId,
+                                      "businessName": widget.businessName,
+                                      "startDate": widget.startDate,
                                       "postId": widget.postId,
                                       "passId": passId,
                                       "tip": 0

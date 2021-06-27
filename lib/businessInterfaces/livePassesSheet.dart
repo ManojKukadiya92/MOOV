@@ -4,6 +4,7 @@ import 'package:MOOV/businessInterfaces/MobileOrdering.dart';
 import 'package:MOOV/pages/MoovMaker.dart';
 import 'package:MOOV/pages/home.dart';
 import 'package:MOOV/utils/themes_styles.dart';
+import 'package:MOOV/widgets/google_map.dart';
 import 'package:MOOV/widgets/progress.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -201,7 +202,10 @@ class _LivePassesSheetState extends State<LivePassesSheet> {
                                         top: 5,
                                         left: 5,
                                         child: GestureDetector(
-                                            onTap: () => Navigator.pop(context),
+                                            onTap: () {
+                                              Navigator.pop(context);
+                                              setState(() {});
+                                            },
                                             child: Icon(Icons.cancel)))
                                   ],
                                 );
@@ -536,13 +540,16 @@ class _PulsatingCircleIconButtonState extends State<PulsatingCircleIconButton>
 }
 
 class BuyMoovOverPassSheet extends StatefulWidget {
-  final String businessUserId, postId;
+  final String businessUserId, businessName, postId;
   final bool haveAlready;
+  final Timestamp startDate;
   final List livePasses;
   final Map oneLivePass;
 
   BuyMoovOverPassSheet(
       {this.businessUserId,
+      this.businessName,
+      this.startDate,
       this.postId,
       this.haveAlready,
       this.livePasses,
@@ -708,6 +715,16 @@ class _BuyMoovOverPassSheetState extends State<BuyMoovOverPassSheet>
                                         {"moovMoney": FieldValue.increment(10)},
                                         SetOptions(merge: true));
 
+                                    businessDashboardRef
+                                        .doc(widget.businessUserId)
+                                        .collection('dashboard')
+                                        .doc(widget.postId)
+                                        .set({
+                                      "earnings": FieldValue.increment(10),
+                                      "moovOverPasses": FieldValue.arrayUnion(
+                                          [currentUser.id])
+                                    }, SetOptions(merge: true));
+
                                     usersRef
                                         .doc(currentUser.id)
                                         .collection('livePasses')
@@ -715,6 +732,8 @@ class _BuyMoovOverPassSheetState extends State<BuyMoovOverPassSheet>
                                         .set({
                                       "type": "MOOV Over Pass",
                                       "name": "MOOV Over Pass",
+                                      "startDate": widget.startDate,
+                                      "businessName": widget.businessName,
                                       "price": 10,
                                       "photo": "widget.photo",
                                       "time": Timestamp.now(),
@@ -1110,11 +1129,32 @@ class _ParallaxState extends State<Parallax> {
 }
 
 class LivePassesWalletSheet extends StatelessWidget {
+  // final Callback callback;
+
   final List livePasses;
   const LivePassesWalletSheet(this.livePasses);
 
   @override
   Widget build(BuildContext context) {
+    final List livePassesToday = [];
+    livePassesToday.addAll(livePasses);
+
+    livePassesToday.removeWhere((element) =>
+        DateTime(
+            element['startDate'].toDate().year,
+            element['startDate'].toDate().month,
+            element['startDate'].toDate().day) !=
+        DateTime(
+            DateTime.now().year, DateTime.now().month, DateTime.now().day));
+
+    livePasses.removeWhere((element) =>
+        DateTime(
+            element['startDate'].toDate().year,
+            element['startDate'].toDate().month,
+            element['startDate'].toDate().day) ==
+        DateTime(
+            DateTime.now().year, DateTime.now().month, DateTime.now().day));
+
     return Container(
         decoration: BoxDecoration(
             color: Colors.green[50],
@@ -1262,200 +1302,254 @@ class LivePassesWalletSheet extends StatelessWidget {
                       height: 16,
                     ),
 
-                    Container(
-                      child: Text(
-                        "TODAY",
-                        style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.grey[500]),
-                      ),
-                      padding: EdgeInsets.symmetric(horizontal: 32),
-                    ),
-
-                    SizedBox(
-                      height: 16,
-                    ),
-
                     ListView.builder(
                       itemBuilder: (context, index) {
-                        return 
-                        FutureBuilder(
-                            future:
-                                postsRef.doc(livePasses[index]['postId']).get(),
-                            builder: (context, snapshot) {
-                              if (!snapshot.hasData) {
-                                return Container();
-                              }
-                            return Stack(
-                              children: [
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.only(top: 18.0, right: 3),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Container(
-                                          width: 40,
-                                          height: 3,
-                                          color: TextThemes.ndGold),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          RichText(
-                                            textAlign: TextAlign.center,
-                                            overflow: TextOverflow.ellipsis,
-                                            text: TextSpan(
-                                                style: TextStyle(
-                                                  color: Colors.black,
-                                                ),
-                                                children: [
-                                                  TextSpan(
-                                                    text: "Swipe\nto",
-                                                    style: TextStyle(),
-                                                  ),
-                                                  TextSpan(
-                                                      text: '\nGIFT',
-                                                      style: TextStyle(
-                                                        color: TextThemes.ndGold,
-                                                        fontWeight: FontWeight.w700,
-                                                        fontSize: 14,
-                                                      )),
-                                                ]),
-                                          ),
-                                        ],
-                                      ),
-                                      Expanded(
-                                        child: Container(
-                                            height: 3, color: TextThemes.ndGold),
-                                      ),
-                                      Transform.rotate(
-                                          angle: 90 * 3.14 / 180,
-                                          child: Icon(
-                                            Icons.change_history,
-                                            color: TextThemes.ndGold,
-                                          ))
-                                    ],
+                        return (index == 0)
+                            ? Padding(
+                                padding: const EdgeInsets.only(bottom: 16),
+                                child: Container(
+                                  child: Text(
+                                    "TODAY",
+                                    style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.grey[500]),
                                   ),
+                                  padding: EdgeInsets.symmetric(horizontal: 32),
                                 ),
-                                Dismissible(
-                                  direction: DismissDirection.startToEnd,
-                                  // Each Dismissible must contain a Key. Keys allow Flutter to
-                                  // uniquely identify widgets.
-                                  key: Key(''),
-                                  // Provide a function that tells the app
-                                  // what to do after an item has been swiped away.
-                                  onDismissed: (direction) {
-                                    Navigator.pop(context);
-                                  },
-                                  //   if (feedItems.contains(docId)) {
-                                  //     //_personList is list of person shown in ListView
-                                  //     setState(() {
-                                  //       feedItems.remove(docId);
-                                  //     });
-                                  //   }
-
-                                  //   // Remove the item from the data source.
-
-                                  //   // Then show a snackbar.
-                                  //   Scaffold.of(context).showSnackBar(SnackBar(
-                                  //       duration: Duration(milliseconds: 1500),
-                                  //       backgroundColor: TextThemes.ndBlue,
-                                  //       content: Padding(
-                                  //         padding: const EdgeInsets.all(2.0),
-                                  //         child: Text("See ya notification."),
-                                  //       )));
-                                  // },
-
-                                  child: GestureDetector(
-                                    onTap: () =>   showBottomSheet(
-                          context: context,
-                          backgroundColor: Colors.green,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15)),
-                          builder: (context) => LivePassesSheet(
-                                oneLivePassFromShowPass: livePasses[index].data(),
-                              )),
-                                                                      child: Container(
-                                      margin: EdgeInsets.symmetric(horizontal: 32),
-                                      padding: EdgeInsets.all(16),
-                                      decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.all(Radius.circular(20))),
-                                      child: Row(
-                                        children: <Widget>[
-                                          Container(
-                                            decoration: BoxDecoration(
-                                                color: Colors.grey[100],
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(18))),
-                                            child: Icon(
-                                              Icons.local_offer,
-                                              color: Colors.lightBlue[900],
+                              )
+                            : Stack(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 18.0, right: 3),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        Container(
+                                            width: 40,
+                                            height: 3,
+                                            color: TextThemes.ndGold),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            RichText(
+                                              textAlign: TextAlign.center,
+                                              overflow: TextOverflow.ellipsis,
+                                              text: TextSpan(
+                                                  style: TextStyle(
+                                                    color: Colors.black,
+                                                  ),
+                                                  children: [
+                                                    TextSpan(
+                                                      text: "Swipe\nto",
+                                                      style: TextStyle(),
+                                                    ),
+                                                    TextSpan(
+                                                        text: '\nGIFT',
+                                                        style: TextStyle(
+                                                          color:
+                                                              TextThemes.ndGold,
+                                                          fontWeight:
+                                                              FontWeight.w700,
+                                                          fontSize: 14,
+                                                        )),
+                                                  ]),
                                             ),
-                                            padding: EdgeInsets.all(12),
-                                          ),
-                                          SizedBox(
-                                            width: 16,
-                                          ),
-                                          Expanded(
-                                            child: Column(
+                                          ],
+                                        ),
+                                        Expanded(
+                                          child: Container(
+                                              height: 3,
+                                              color: TextThemes.ndGold),
+                                        ),
+                                        Transform.rotate(
+                                            angle: 90 * 3.14 / 180,
+                                            child: Icon(
+                                              Icons.change_history,
+                                              color: TextThemes.ndGold,
+                                            ))
+                                      ],
+                                    ),
+                                  ),
+                                  Dismissible(
+                                    direction: DismissDirection.startToEnd,
+                                    // Each Dismissible must contain a Key. Keys allow Flutter to
+                                    // uniquely identify widgets.
+                                    key: Key(''),
+                                    // Provide a function that tells the app
+                                    // what to do after an item has been swiped away.
+                                    onDismissed: (direction) {
+                                      Navigator.pop(context);
+                                    },
+                                    //   if (feedItems.contains(docId)) {
+                                    //     //_personList is list of person shown in ListView
+                                    //     setState(() {
+                                    //       feedItems.remove(docId);
+                                    //     });
+                                    //   }
+
+                                    //   // Remove the item from the data source.
+
+                                    //   // Then show a snackbar.
+                                    //   Scaffold.of(context).showSnackBar(SnackBar(
+                                    //       duration: Duration(milliseconds: 1500),
+                                    //       backgroundColor: TextThemes.ndBlue,
+                                    //       content: Padding(
+                                    //         padding: const EdgeInsets.all(2.0),
+                                    //         child: Text("See ya notification."),
+                                    //       )));
+                                    // },
+
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        var bottomSheetController =
+                                            showBottomSheet(
+                                                context: context,
+                                                backgroundColor: Colors.green,
+                                                shape:
+                                                    RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(15)),
+                                                builder: (context) =>
+                                                    LivePassesSheet(
+                                                        oneLivePassFromShowPass:
+                                                            livePassesToday[
+                                                                    index]
+                                                                .data()));
+                                        // showFoatingActionButton(false);
+                                        // bottomSheetController.closed
+                                        //     .then((value) {
+                                        //   showFoatingActionButton(true);
+                                        // });
+                                      },
+                                      child: Container(
+                                        margin: EdgeInsets.symmetric(
+                                            horizontal: 32),
+                                        padding: EdgeInsets.all(16),
+                                        decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(20))),
+                                        child: Row(
+                                          children: <Widget>[
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                  color: Colors.grey[100],
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(18))),
+                                              child: livePassesToday[index - 1]
+                                                          ['type'] ==
+                                                      'deal'
+                                                  ? Icon(
+                                                      Icons.local_offer,
+                                                      color:
+                                                          Colors.lightBlue[900],
+                                                    )
+                                                  : livePassesToday[index - 1]
+                                                              ['type'] ==
+                                                          'nondealCost'
+                                                      ? Icon(
+                                                          Icons.attach_money,
+                                                          color: Colors
+                                                              .orange,
+                                                        )
+                                                      : GradientIcon(
+                                                          Icons
+                                                              .confirmation_num_outlined,
+                                                          30.0,
+                                                          LinearGradient(
+                                                            colors: <Color>[
+                                                              Colors.red,
+                                                              Colors.yellow,
+                                                              Colors.blue,
+                                                            ],
+                                                            begin: Alignment
+                                                                .topLeft,
+                                                            end: Alignment
+                                                                .bottomRight,
+                                                          )),
+                                              padding:
+                                                  livePassesToday[index - 1]
+                                                              ['type'] ==
+                                                          'MOOV Over Pass'
+                                                      ? EdgeInsets.all(5)
+                                                      : EdgeInsets.all(12),
+                                            ),
+                                            SizedBox(
+                                              width: 16,
+                                            ),
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: <Widget>[
+                                                  Text(
+                                                    livePassesToday[index - 1]
+                                                        ['name'],
+                                                    style: TextStyle(
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                        color:
+                                                            Colors.grey[900]),
+                                                  ),
+                                                  Text(
+                                                    livePassesToday[index - 1]
+                                                        ['businessName'],
+                                                    style: TextStyle(
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                        color:
+                                                            Colors.grey[500]),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            Column(
                                               crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
+                                                  CrossAxisAlignment.end,
                                               children: <Widget>[
                                                 Text(
-                                                  livePasses[index]['name'],
+                                                  "\$" +
+                                                      livePassesToday[index - 1]
+                                                              ['price']
+                                                          .toString(),
                                                   style: TextStyle(
-                                                      fontSize: 16,
-                                                      fontWeight: FontWeight.w700,
-                                                      color: Colors.grey[900]),
+                                                      fontSize: 18,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      color: Colors.lightGreen),
                                                 ),
                                                 Text(
-                                                  snapshot.data['posterName'],
+                                                  DateFormat('MMMMd')
+                                                      // .add_jm()
+                                                      .format(livePassesToday[
+                                                                  index - 1]
+                                                              ['startDate']
+                                                          .toDate()),
                                                   style: TextStyle(
                                                       fontSize: 15,
-                                                      fontWeight: FontWeight.w700,
+                                                      fontWeight:
+                                                          FontWeight.w700,
                                                       color: Colors.grey[500]),
                                                 ),
                                               ],
                                             ),
-                                          ),
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.end,
-                                            children: <Widget>[
-                                              Text("\$"+
-                                                snapshot.data['dealCost'].toString(),
-                                                style: TextStyle(
-                                                    fontSize: 18,
-                                                    fontWeight: FontWeight.w700,
-                                                    color: Colors.lightGreen),
-                                              ),
-                                                Text(
-                                               DateFormat('MMMMd')
-                                                          // .add_jm()
-                                                          .format(snapshot.data['startDate'].toDate()),
-                                                style: TextStyle(
-                                                    fontSize: 15,
-                                                    fontWeight: FontWeight.w700,
-                                                    color: Colors.grey[500]),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ],
-                            );
-                          }
-                        );
+                                ],
+                              );
                       },
                       shrinkWrap: true,
-                      itemCount: 2,
+                      itemCount: livePassesToday.length + 1,
                       padding: EdgeInsets.all(0),
                       controller: ScrollController(keepScrollOffset: false),
                     ),
@@ -1465,102 +1559,254 @@ class LivePassesWalletSheet extends StatelessWidget {
                       height: 16,
                     ),
 
-                    Container(
-                      child: Text(
-                        "YESTERDAY",
-                        style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.grey[500]),
-                      ),
-                      padding: EdgeInsets.symmetric(horizontal: 32),
-                    ),
-
-                    SizedBox(
-                      height: 16,
-                    ),
-
                     ListView.builder(
                       itemBuilder: (context, index) {
-                        return FutureBuilder(
-                            future:
-                                postsRef.doc(livePasses[index]['postId']).get(),
-                            builder: (context, snapshot) {
-                              if (!snapshot.hasData) {
-                                return Container();
-                              }
-                              return Container(
-                                margin: EdgeInsets.symmetric(horizontal: 32),
-                                padding: EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(20))),
-                                child: Row(
-                                  children: <Widget>[
-                                    Container(
-                                      decoration: BoxDecoration(
-                                          color: Colors.grey[100],
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(18))),
-                                      child: Icon(
-                                        Icons.directions_car,
-                                        color: Colors.lightBlue[900],
-                                      ),
-                                      padding: EdgeInsets.all(12),
-                                    ),
-                                    SizedBox(
-                                      width: 16,
-                                    ),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Text(
-                                           livePasses[index]['name'],
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w700,
-                                                color: Colors.grey[900]),
-                                          ),
-                                          Text(
-                                            snapshot.data['posterName'],
-                                            style: TextStyle(
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w700,
-                                                color: Colors.grey[500]),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.end,
-                                      children: <Widget>[
-                                        Text(
-                                          "\$gift",
-                                          style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w700,
-                                              color: Colors.orange),
+                        return (index == 0)
+                            ? Padding(
+                                padding: const EdgeInsets.only(bottom: 16),
+                                child: Container(
+                                  child: Text(
+                                    "UPCOMING",
+                                    style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.grey[500]),
+                                  ),
+                                  padding: EdgeInsets.symmetric(horizontal: 32),
+                                ),
+                              )
+                            : Stack(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 18.0, right: 3),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        Container(
+                                            width: 40,
+                                            height: 3,
+                                            color: TextThemes.ndGold),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            RichText(
+                                              textAlign: TextAlign.center,
+                                              overflow: TextOverflow.ellipsis,
+                                              text: TextSpan(
+                                                  style: TextStyle(
+                                                    color: Colors.black,
+                                                  ),
+                                                  children: [
+                                                    TextSpan(
+                                                      text: "Swipe\nto",
+                                                      style: TextStyle(),
+                                                    ),
+                                                    TextSpan(
+                                                        text: '\nGIFT',
+                                                        style: TextStyle(
+                                                          color:
+                                                              TextThemes.ndGold,
+                                                          fontWeight:
+                                                              FontWeight.w700,
+                                                          fontSize: 14,
+                                                        )),
+                                                  ]),
+                                            ),
+                                          ],
                                         ),
-                                        Text(
-                                          "26 Jan",
-                                          style: TextStyle(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.w700,
-                                              color: Colors.grey[500]),
+                                        Expanded(
+                                          child: Container(
+                                              height: 3,
+                                              color: TextThemes.ndGold),
                                         ),
+                                        Transform.rotate(
+                                            angle: 90 * 3.14 / 180,
+                                            child: Icon(
+                                              Icons.change_history,
+                                              color: TextThemes.ndGold,
+                                            ))
                                       ],
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                  Dismissible(
+                                    direction: DismissDirection.startToEnd,
+                                    // Each Dismissible must contain a Key. Keys allow Flutter to
+                                    // uniquely identify widgets.
+                                    key: Key(''),
+                                    // Provide a function that tells the app
+                                    // what to do after an item has been swiped away.
+                                    onDismissed: (direction) {
+                                      Navigator.pop(context);
+                                    },
+                                    //   if (feedItems.contains(docId)) {
+                                    //     //_personList is list of person shown in ListView
+                                    //     setState(() {
+                                    //       feedItems.remove(docId);
+                                    //     });
+                                    //   }
+
+                                    //   // Remove the item from the data source.
+
+                                    //   // Then show a snackbar.
+                                    //   Scaffold.of(context).showSnackBar(SnackBar(
+                                    //       duration: Duration(milliseconds: 1500),
+                                    //       backgroundColor: TextThemes.ndBlue,
+                                    //       content: Padding(
+                                    //         padding: const EdgeInsets.all(2.0),
+                                    //         child: Text("See ya notification."),
+                                    //       )));
+                                    // },
+
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        var bottomSheetController =
+                                            showBottomSheet(
+                                                context: context,
+                                                backgroundColor: Colors.green,
+                                                shape:
+                                                    RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(15)),
+                                                builder: (context) =>
+                                                    LivePassesSheet(
+                                                        oneLivePassFromShowPass:
+                                                            livePasses[
+                                                                    index]
+                                                                .data()));
+                                        // showFoatingActionButton(false);
+                                        // bottomSheetController.closed
+                                        //     .then((value) {
+                                        //   showFoatingActionButton(true);
+                                        // });
+                                      },
+                                      child: Container(
+                                        margin: EdgeInsets.symmetric(
+                                            horizontal: 32),
+                                        padding: EdgeInsets.all(16),
+                                        decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(20))),
+                                        child: Row(
+                                          children: <Widget>[
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                  color: Colors.grey[100],
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(18))),
+                                              child: livePasses[index - 1]
+                                                          ['type'] ==
+                                                      'deal'
+                                                  ? Icon(
+                                                      Icons.local_offer,
+                                                      color:
+                                                          Colors.lightBlue[900],
+                                                    )
+                                                  : livePasses[index - 1]
+                                                              ['type'] ==
+                                                          'nondealCost'
+                                                      ? Icon(
+                                                          Icons.attach_money,
+                                                          color: Colors
+                                                              .orange,
+                                                        )
+                                                      : GradientIcon(
+                                                          Icons
+                                                              .confirmation_num_outlined,
+                                                          30.0,
+                                                          LinearGradient(
+                                                            colors: <Color>[
+                                                              Colors.red,
+                                                              Colors.yellow,
+                                                              Colors.blue,
+                                                            ],
+                                                            begin: Alignment
+                                                                .topLeft,
+                                                            end: Alignment
+                                                                .bottomRight,
+                                                          )),
+                                              padding:
+                                                  livePasses[index - 1]
+                                                              ['type'] ==
+                                                          'MOOV Over Pass'
+                                                      ? EdgeInsets.all(5)
+                                                      : EdgeInsets.all(12),
+                                            ),
+                                            SizedBox(
+                                              width: 16,
+                                            ),
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: <Widget>[
+                                                  Text(
+                                                    livePasses[index - 1]
+                                                        ['name'],
+                                                    style: TextStyle(
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                        color:
+                                                            Colors.grey[900]),
+                                                  ),
+                                                  Text(
+                                                    livePasses[index - 1]
+                                                        ['businessName'],
+                                                    style: TextStyle(
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                        color:
+                                                            Colors.grey[500]),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.end,
+                                              children: <Widget>[
+                                                Text(
+                                                  "\$" +
+                                                      livePasses[index - 1]
+                                                              ['price']
+                                                          .toString(),
+                                                  style: TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      color: Colors.lightGreen),
+                                                ),
+                                                Text(
+                                                  DateFormat('MMMMd')
+                                                      // .add_jm()
+                                                      .format(livePasses[
+                                                                  index - 1]
+                                                              ['startDate']
+                                                          .toDate()),
+                                                  style: TextStyle(
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      color: Colors.grey[500]),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               );
-                            });
                       },
                       shrinkWrap: true,
-                      itemCount: 2,
+                      itemCount: livePasses.length + 1,
                       padding: EdgeInsets.all(0),
                       controller: ScrollController(keepScrollOffset: false),
                     ),
