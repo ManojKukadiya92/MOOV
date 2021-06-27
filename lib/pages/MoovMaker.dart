@@ -831,7 +831,7 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                                               child: Row(
                                                 children: <Widget>[
                                                   Text(
-                                                      'Cost to be paid\nin advance?'),
+                                                      'Deal cost?'),
                                                   SizedBox(
                                                     width: 50,
                                                     child: TextField(

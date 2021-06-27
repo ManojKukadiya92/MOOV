@@ -117,7 +117,7 @@ dependencies:
   confetti: ^0.5.5
   table_calendar: ^3.0.0
   delayed_display: ^2.0.0
-
+  flutter_slidable: ^0.6.0
 
 dependency_overrides:
   intl: ^0.16.1
