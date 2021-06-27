@@ -6,31 +6,109 @@ const braintree = require("braintree");
 admin.initializeApp(functions.config().firebase);
 
 exports.businessPosted = functions.database.instance("moov4-4d3c4").ref("/businessPost/{postedItem}")
-    .onCreate((snapshot, context) => {
+    .onCreate( async (snapshot, context) => {
       // Grab the current value of what was written to the Realtime Database.
-      // const businesses = {}
       const data = snapshot.val();
       // const businessId = data.businessId;
       const postedItem = context.params.postedItem;
-      const details = data.details;
-      const startTime = data.startTime;
-      const maxOccupancy = data.maxOccupancy;
-      const cost = data.cost;
-      admin.firestore().collection("notreDame").doc("data").collection("food").doc(`${postedItem}`).set({
-        businessPost: true,
-        moovOver: true,
-        privacy: "Public",
-        type: "Food/Drink",
-        title: "SAMPLE EVENT",
-        userId: "29848444443",
-        address: "Brothers",
-        description: details,
-        startDate: startTime,
-        maxOccupancy: maxOccupancy,
-        paymentAmount: cost,
-        image: "https://firebasestorage.googleapis.com/v0/b/moov4-4d3c4.appspot.com/o/images?alt=media&token=b7bee8a5-34e6-4617-b4e4-7a6dfd741c73",
-      }, {merge: true});
+      console.log("here: ", data["businessId"]);
+      const details = data["details"];
+      const businessCode = data["businessId"];
+      const moovTitle = data["title"];
+      const moovOver = data["moovOver"];
+      console.log("time: ", data["startTime"]);
+      const startTime = admin.firestore.Timestamp.fromMillis(data["startTime"]);
+      const unix = data["startTime"];
+      const maxOccupancy = data["maxOccupancy"];
+      const cost = data["cost"];
+      // retrieve business info
+      const db = admin.database();
+      const ref = db.ref("users");
+      // Attach an asynchronous callback to read the data at our posts reference
+      ref.on("value", async (snapshot) => {
+        // console.log("We did it! ", snapshot.val());
+        const businessProfile = snapshot.val()[`${businessCode}`]["user"];
+        const businessType = businessProfile["businessType"];
+        console.log("latitude/longitude: ", businessProfile["businessLocation"]);
+        const location = new admin.firestore.GeoPoint(businessProfile["businessLocation"]["_latitude"], businessProfile["businessLocation"]["_longitude"]);
+        const businessLocation = location;
+        const displayName = businessProfile["displayName"];
+        const businessId = businessProfile["id"];
+        const dorm = businessProfile["dorm"];
+        const userRef = admin.firestore().collection("notreDame").doc("data").collection("users").doc(`${businessId}`);
+        const doc = await userRef.get();
+        const image = doc.data().header;
+        // post that shit
+        console.log("posting now!");
+        admin.firestore().collection("notreDame").doc("data").collection("food").doc(`${postedItem}`).set({
+          businessPost: true,
+          moovOver: moovOver,
+          privacy: "Public",
+          push: "true",
+          type: businessType,
+          location: location,
+          title: moovTitle,
+          userId: businessId,
+          address: dorm,
+          description: details,
+          startDate: startTime,
+          unix: unix,
+          maxOccupancy: maxOccupancy,
+          paymentAmount: cost,
+          image: image,
+          statuses: {},
+          stats: {},
+          going: [],
+          menu: {},
+          goingCount: 0,
+          checkInMap: {},
+          tags: [],
+          featured: false,
+          isPartyOrBar: true,
+          businessLocation: businessLocation,
+          posterName: displayName,
+          postId: postedItem,
+        }, {merge: true});
+      }, (errorObject) => {
+        console.log("The read failed: " + errorObject.name);
+      });
       return null;
+    });
+
+exports.sendUserDataToRealTimeDB = functions.firestore
+    .document("{college}/data/users/{userId}")
+    .onCreate( async (snap, context) => {
+      const userId = context.params.userId;
+      const college = context.params.college;
+      const userRef = admin.firestore().collection(`${college}`).doc("data").collection("users").doc(`${userId}`);
+      const doc = await userRef.get();
+      // fields
+      const isBusiness = doc.data().isBusiness;
+      const businessType = doc.data().businessType;
+      const displayName = doc.data().displayName;
+      const email = doc.data().email;
+      const photoUrl = doc.data().photoUrl;
+      const businessCode = doc.data().businessCode;
+      const dorm = doc.data().dorm;
+      const id = doc.data().id;
+      const businessLocation = doc.data().businessLocation;
+      // realtime db
+      const db = admin.database();
+      const ref = db.ref("users");
+      const usersRef = ref.child(businessCode);
+      usersRef.set({
+        user: {
+          isBusiness: isBusiness,
+          id: id,
+          businessType: businessType,
+          displayName: displayName,
+          email: email,
+          photoUrl: photoUrl,
+          businessCode: businessCode,
+          businessLocation: businessLocation,
+          dorm: dorm,
+        },
+      });
     });
 
 exports.brainTree = functions.firestore
@@ -738,52 +816,3 @@ exports.scheduledFunction = functions.pubsub.schedule("* * * * *")
             console.log("Error Alvin: ", error);
           });
     });
-
-// exports.StripePI = functions.https.onRequest(async (req, res) => {
-//       // go thru standard account tutorial
-//       const stripeVendorAccount = "acct_s3r09_SAMPLE";
-//       const fee = (req.query.amount/100) | 0;
-//       // clone payment methods
-//       stripe.paymentMethods.create(
-//           {
-//             payment_method: req.query.paym,
-//           }, {
-//             stripeAccount: stripeVendorAccount,
-//           },
-//           function(err, clonedPaymentMethod) {
-//             if (err !== null) {
-//               console.log("Error clone: ", err);
-//               res.send("Error");
-//             } else {
-//               console.log("clonedPaymentMethod: ", clonedPaymentMethod);
-//               // create payment intent on the cloned payment method
-//               stripe.paymentIntents.create(
-//                   {
-//                     amount: req.query.amount,
-//                     currency: req.query.currency,
-//                     payment_method: clonedPaymentMethod.id,
-//                     confirmation_method: "automatic",
-//                     confirm: true,
-//                     application_fee_amount: fee,
-//                     description: req.query.description,
-//                   }, {
-//                     stripeAccount: stripeVendorAccount,
-//                   },
-//                   function(err, paymentIntent) {
-//                   // asynchronously called
-//                   // const paymentIntentReference = paymentIntent;
-//                     // return payment intent or error
-//                     if (err !== null) {
-//                       console.log("Error payment Intent: ", err);
-//                       res.send("Error");
-//                     } else {
-//                       console.log("Created paymentintent: ", paymentIntent);
-//                       res.json({
-//                         paymentIntent: paymentIntent,
-//                         stripeAccount: stripeVendorAccount});
-//                     }
-//                   }
-//               );
-//             }
-//           });
-//     });
