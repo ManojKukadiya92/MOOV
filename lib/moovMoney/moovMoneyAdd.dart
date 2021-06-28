@@ -364,8 +364,8 @@ class _MoneyAmountState extends State<MoneyAmount> {
                         }, SetOptions(merge: true));
                         usersRef
                             .doc(currentUser.id)
-                            .update(
-                                {"moovMoney": FieldValue.increment(amountInt)})
+                            .set(
+                                {"moovMoney": FieldValue.increment(amountInt)}, SetOptions(merge: true))
                             .then((value) => setState(() {
                                   isUploading = false;
                                   successCheck = true;

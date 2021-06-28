@@ -177,6 +177,9 @@ class _LivePassesSheetState extends State<LivePassesSheet> {
                                                           builder: (BuildContext
                                                               context) {
                                                             return TipDialog(
+                                                                postId: widget
+                                                                        .oneLivePassFromShowPass[
+                                                                    'postId'],
                                                                 passId: widget
                                                                         .oneLivePassFromShowPass[
                                                                     'passId']);
@@ -392,6 +395,10 @@ class _LivePassesSheetState extends State<LivePassesSheet> {
                                                                   (BuildContext
                                                                       context) {
                                                                 return TipDialog(
+                                                                    postId: widget
+                                                                            .livePasses[index]
+                                                                        [
+                                                                        'postId'],
                                                                     passId: widget
                                                                             .livePasses[index]
                                                                         [
@@ -718,15 +725,18 @@ class _BuyMoovOverPassSheetState extends State<BuyMoovOverPassSheet>
                                         {"moovMoney": FieldValue.increment(10)},
                                         SetOptions(merge: true));
 
+                                    //setting dashboard for biz's
                                     businessDashboardRef
                                         .doc(widget.businessUserId)
                                         .collection('dashboard')
                                         .doc(widget.postId)
-                                        .set({
-                                      "earnings": FieldValue.increment(10),
+                                        .update({
+                                      "totalEarnings": FieldValue.increment(10),
+                                      "earningsFromMOOVOver":
+                                          FieldValue.increment(10),
                                       "moovOverPasses": FieldValue.arrayUnion(
                                           [currentUser.id])
-                                    }, SetOptions(merge: true));
+                                    });
 
                                     usersRef
                                         .doc(currentUser.id)
@@ -776,11 +786,15 @@ class _BuyMoovOverPassSheetState extends State<BuyMoovOverPassSheet>
 class TipDialog extends StatefulWidget {
   final int moovMoneyBalance;
   final int tip;
-  final String passId;
+  final String passId, postId;
   final String businessId;
 
   const TipDialog(
-      {this.moovMoneyBalance, this.tip, this.passId, this.businessId});
+      {this.moovMoneyBalance,
+      this.tip,
+      this.passId,
+      this.postId,
+      this.businessId});
 
   @override
   _TipDialogState createState() => _TipDialogState();
@@ -905,6 +919,17 @@ class _TipDialogState extends State<TipDialog> {
                         usersRef.doc(widget.businessId).set(
                             {"moovMoney": FieldValue.increment(_tipAmount)},
                             SetOptions(merge: true));
+
+                        //setting the dashboard for biz's
+                        businessDashboardRef
+                            .doc(widget.businessId)
+                            .collection('dashboard')
+                            .doc(widget.postId)
+                            .update({
+                          "earningsFromTips": FieldValue.increment(_tipAmount),
+                          "totalEarnings": FieldValue.increment(_tipAmount),
+                          "distinctTips": FieldValue.increment(1)
+                        });
 
                         setState(() {
                           isChecking = true;

@@ -984,6 +984,7 @@ class _SearchUsersGroupState extends State<SearchUsersGroup> {
                       if (!snapshot0.hasData) {
                         return Container();
                       }
+
                       return CustomScrollView(
                         shrinkWrap: true,
                         slivers: <Widget>[
@@ -1148,16 +1149,13 @@ class _UserGroupResultAddState extends State<UserGroupResultAdd> {
                   child: TextButton(
                       onPressed: () {
                         //  isLoading = true;
-      showBottomSheet(
-                                        backgroundColor: Colors.pink[100],
-                                        context: context,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(15)),
-                                        builder: (context) =>
-                                            GiftBottomSheet(widget.livePass, widget.userId));
-                                    
-                      
+                        showBottomSheet(
+                            backgroundColor: Colors.pink[100],
+                            context: context,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15)),
+                            builder: (context) => GiftBottomSheet(
+                                widget.livePass, widget.userId));
                       },
                       //  else {
                       //   usersRef

@@ -511,6 +511,10 @@ exports.onCreateGroupFeedItem = functions.firestore
             title = `${activityFeedItem.groupName}`;
             body = `${activityFeedItem.username} requested to join`;
             break;
+          case "gift":
+            title = `${activityFeedItem.title}`;
+            body = `${activityFeedItem.username} gifted you a MOOV Pass™!`;
+            break;
           case "chat":
             title = `${activityFeedItem.groupName}`;
             body = `${activityFeedItem.username}: ${activityFeedItem.title}`;

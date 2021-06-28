@@ -1044,12 +1044,13 @@ class NotificationFeedItem extends StatelessWidget {
             onTap: userProfilePic == 'badge'
                 ? () => null
                 : () => showProfile(context),
-            child: CircleAvatar(
+            child: type == "gift" ? 
+            CircleAvatar(child:
+                  Icon(Icons.local_offer)):
+ CircleAvatar(
               backgroundImage: userProfilePic == 'badge'
                   ? AssetImage("lib/assets/trophy2.png")
-                  : type == "gift" ? 
-                  Icon(Icons.local_offer)
-                  :
+                                  :
                   userProfilePic != null
                       ? CachedNetworkImageProvider(userProfilePic)
                       : AssetImage("lib/assets/otherbutton1.png"),

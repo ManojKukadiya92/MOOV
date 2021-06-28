@@ -2313,6 +2313,18 @@ class _RedeemDealBottomSheetState extends State<RedeemDealBottomSheet>
                                       }, SetOptions(merge: true));
                                     }
 
+                                    //setting the dashboard for biz's
+                                    businessDashboardRef
+                                        .doc(widget.businessUserId)
+                                        .collection('dashboard')
+                                        .doc(widget.postId)
+                                        .update({
+                                      "earnings":
+                                          FieldValue.increment(widget.dealCost),
+                                      "deals": FieldValue.arrayUnion(
+                                          [currentUser.id])
+                                    });
+
                                     usersRef
                                         .doc(currentUser.id)
                                         .collection('livePasses')
@@ -2375,8 +2387,16 @@ class PayNondealCostBottomSheet extends StatefulWidget {
   final bool haveAlready;
   final int nondealCost, dealLimit;
 
-  PayNondealCostBottomSheet(this.businessUserId, this.businessName, this.startDate, this.postId, this.livePasses,
-      this.oneLivePass, this.haveAlready, this.nondealCost, this.dealLimit);
+  PayNondealCostBottomSheet(
+      this.businessUserId,
+      this.businessName,
+      this.startDate,
+      this.postId,
+      this.livePasses,
+      this.oneLivePass,
+      this.haveAlready,
+      this.nondealCost,
+      this.dealLimit);
 
   @override
   _PayNondealCostBottomSheetState createState() =>
@@ -2549,6 +2569,18 @@ class _PayNondealCostBottomSheetState extends State<PayNondealCostBottomSheet>
                                             widget.nondealCost)
                                       }, SetOptions(merge: true));
                                     }
+
+                                    //adding to biz dashboard
+                                    businessDashboardRef
+                                        .doc(widget.businessUserId)
+                                        .collection('dashboard')
+                                        .doc(widget.postId)
+                                        .update({
+                                      "nondealPayments": FieldValue.increment(
+                                          widget.nondealCost),
+                                      "nondealUserList": FieldValue.arrayUnion(
+                                          [currentUser.id])
+                                    });
 
                                     usersRef
                                         .doc(currentUser.id)
