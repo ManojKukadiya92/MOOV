@@ -787,7 +787,7 @@ class _EditPostState extends State<EditPost> {
                                                       type: PageTransitionType
                                                           .bottomToTop,
                                                       child: SearchUsersPost(
-                                                          invitees:invitees)))
+                                                          invitees: invitees)))
                                               .then(onGoBack);
                                         },
                                       ),
@@ -997,7 +997,11 @@ class _EditPostState extends State<EditPost> {
                                                                         borderRadius:
                                                                             BorderRadius.circular(10),
                                                                         child:
-                                                                            OptimizedCacheImage(
+                                                                            CachedNetworkImage(
+                                                                          memCacheHeight:
+                                                                              100,
+                                                                          memCacheWidth:
+                                                                              100,
                                                                           imageUrl:
                                                                               groupPic,
                                                                           fit: BoxFit
@@ -1589,7 +1593,9 @@ class _BannerImage extends StatelessWidget {
               ),
             ],
           ),
-          child: OptimizedCacheImage(
+          child: CachedNetworkImage(
+            memCacheHeight: 100,
+            memCacheWidth: 100,
             imageUrl: bannerImage,
             fit: BoxFit.fitWidth,
             height: 200,
@@ -2006,7 +2012,9 @@ void showAlertDialog2(
 //                         child: Container(
 //                           child: (currentUser.photoUrl == null)
 //                               ? AssetImage('images/user-avatar.png')
-//                               : OptimizedCacheImage(imageUrl: photoUrl),
+//                               : CachedNetworkImage(
+                                      // memCacheHeight: 100,
+                                      // memCacheWidth: 100,imageUrl: photoUrl),
 //                           // backgroundImage: NetworkImage(currentUser.photoUrl),
 //                         ),
 //                       ),

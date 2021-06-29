@@ -85,7 +85,9 @@ class _BizState extends State<Biz> {
                                 child: Container(
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(10),
-                                    child: OptimizedCacheImage(
+                                    child: CachedNetworkImage(
+                                      memCacheHeight: 100,
+                                      memCacheWidth: 100,
                                       imageUrl: course[pos]['image'],
                                       fit: BoxFit.cover,
                                     ),
@@ -383,7 +385,8 @@ class _BizState extends State<Biz> {
                     left: 50,
                     top: 12,
                     child: Container(
-                      padding: EdgeInsets.only(bottom: isLargePhone?  2 : 10, left: 10, right: 10),
+                      padding: EdgeInsets.only(
+                          bottom: isLargePhone ? 2 : 10, left: 10, right: 10),
                       color: Colors.white,
                       child: Text(
                         'Or post again!',
@@ -474,7 +477,9 @@ class _QuickPostState extends State<QuickPost> {
                                   child: Container(
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(10),
-                                      child: OptimizedCacheImage(
+                                      child: CachedNetworkImage(
+                                        memCacheHeight: 100,
+                                        memCacheWidth: 100,
                                         imageUrl: course['image'],
                                         fit: BoxFit.cover,
                                       ),
