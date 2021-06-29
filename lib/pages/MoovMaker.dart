@@ -11,6 +11,7 @@ import 'package:MOOV/businessInterfaces/BusinessTab.dart';
 import 'package:MOOV/pages/CalendarPage.dart';
 import 'package:MOOV/widgets/google_map.dart';
 import 'package:MOOV/widgets/sundayWrapup.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:confetti/confetti.dart';
 import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/cupertino.dart';
@@ -2021,7 +2022,11 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                                                                     .circular(
                                                                         10),
                                                             child:
-                                                                OptimizedCacheImage(
+                                                                CachedNetworkImage(
+                                                              memCacheHeight:
+                                                                  100,
+                                                              memCacheWidth:
+                                                                  100,
                                                               imageUrl: userPic,
                                                               fit: BoxFit.cover,
                                                             ),
@@ -2402,7 +2407,7 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                                   final String downloadUrl =
                                       await taskSnapshot.ref.getDownloadURL();
 
-                                      if (_isDeal) {
+                                  if (_isDeal) {
                                     tags = ['deal'];
                                     businessDashboardRef
                                         .doc(currentUser.id)
@@ -2413,7 +2418,7 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                                       "dealLimit": dealLimitInt,
                                     });
                                   }
-                                  
+
                                   currentUser.isBusiness
                                       ? Database().createBusinessPost(
                                           title: titleController.text,
@@ -2476,8 +2481,6 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                                           push: push,
                                           location: location,
                                           moovOver: _moovOver);
-
-                                  
 
                                   nextSunday().then((value) {
                                     wrapupRef
