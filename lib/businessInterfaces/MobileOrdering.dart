@@ -1450,6 +1450,43 @@ class _BottomSheetBuyState extends State<BottomSheetBuy> {
                                 "moovMoney": FieldValue.increment(widget.price)
                               }, SetOptions(merge: true));
 
+                              //biz dashboard
+                              businessDashboardRef
+                                  .doc(widget.businessUserId)
+                                  .collection('dashboard')
+                                  .doc(widget.postId)
+                                  .get()
+                                  .then((value) {
+                                if (!value.exists) {
+                                  businessDashboardRef
+                                      .doc(widget.businessUserId)
+                                      .collection('dashboard')
+                                      .doc(widget.postId)
+                                      .set({
+                                    "earningsFromMobileOrders":
+                                        FieldValue.increment(widget.price),
+                                    "totalEarnings":
+                                        FieldValue.increment(widget.price),
+                                    "distinctMobileOrders":
+                                        FieldValue.increment(1)
+                                  });
+                                } else
+                                {
+                                  businessDashboardRef
+                                      .doc(widget.businessUserId)
+                                      .collection('dashboard')
+                                      .doc(widget.postId)
+                                      .update({
+                                    "earningsFromMobileOrders":
+                                        FieldValue.increment(widget.price),
+                                    "totalEarnings":
+                                        FieldValue.increment(widget.price),
+                                    "distinctMobileOrders":
+                                        FieldValue.increment(1)
+                                  });
+                                }
+                              });
+
                               usersRef
                                   .doc(currentUser.id)
                                   .collection("livePasses")

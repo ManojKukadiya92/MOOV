@@ -383,7 +383,7 @@ class _BizState extends State<Biz> {
                     left: 50,
                     top: 12,
                     child: Container(
-                      padding: EdgeInsets.only(bottom: 10, left: 10, right: 10),
+                      padding: EdgeInsets.only(bottom: isLargePhone?  2 : 10, left: 10, right: 10),
                       color: Colors.white,
                       child: Text(
                         'Or post again!',

@@ -1410,7 +1410,7 @@ class ChatMOOV extends StatelessWidget {
                       ]),
                     ),
             ),
-            hasButtons ? Buttons(postId) : Container(),
+            hasButtons ? Buttons(moovId: postId) : Container(),
             hasButtons
                 ? Container(
                     width: MediaQuery.of(context).size.width * .75,

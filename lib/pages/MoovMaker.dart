@@ -828,8 +828,7 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                                             Expanded(
                                               child: Row(
                                                 children: <Widget>[
-                                                  Text(
-                                                      'Deal cost?'),
+                                                  Text('Deal cost?'),
                                                   SizedBox(
                                                     width: 50,
                                                     child: TextField(
@@ -1779,8 +1778,8 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                                     context,
                                     PageTransition(
                                         type: PageTransitionType.bottomToTop,
-                                        child:
-                                            SearchUsersPost(invitees: inviteesNameList)))
+                                        child: SearchUsersPost(
+                                            invitees: inviteesNameList)))
                                 .then(onGoBack);
                           },
                           child: Padding(
@@ -1810,7 +1809,8 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                                                         type: PageTransitionType
                                                             .bottomToTop,
                                                         child: SearchUsersPost(
-                                                            invitees:inviteesNameList)))
+                                                            invitees:
+                                                                inviteesNameList)))
                                                 .then(onGoBack);
                                           },
                                         ),
@@ -2396,14 +2396,24 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                                     await uploadTask;
                                 if (uploadTask.snapshot.state ==
                                     firebase_storage.TaskState.success) {
-                                  if (_isDeal) {
-                                    tags = ['deal'];
-                                  }
                                   print("added to Firebase Storage");
                                   final String postId =
                                       generateRandomString(20);
                                   final String downloadUrl =
                                       await taskSnapshot.ref.getDownloadURL();
+
+                                      if (_isDeal) {
+                                    tags = ['deal'];
+                                    businessDashboardRef
+                                        .doc(currentUser.id)
+                                        .collection('dashboard')
+                                        .doc(postId)
+                                        .set({
+                                      "dealCost": dealCostInt,
+                                      "dealLimit": dealLimitInt,
+                                    });
+                                  }
+                                  
                                   currentUser.isBusiness
                                       ? Database().createBusinessPost(
                                           title: titleController.text,
@@ -2466,6 +2476,8 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                                           push: push,
                                           location: location,
                                           moovOver: _moovOver);
+
+                                  
 
                                   nextSunday().then((value) {
                                     wrapupRef

@@ -416,8 +416,13 @@ class _NonImageContents extends StatelessWidget {
       this.commentCount,
       this.paymentAmount);
 
+  double height = 0;
+
   @override
   Widget build(BuildContext context) {
+    if (course['statuses'].containsKey(currentUser.id)) {
+      height = 30;
+    }
     Map mobileOrderMenu;
     if (course.data()['mobileOrderMenu'] != null) {
       mobileOrderMenu = course['mobileOrderMenu'];
@@ -442,6 +447,7 @@ class _NonImageContents extends StatelessWidget {
               course),
           CommentPreviewOnPost(
               postId: course['postId'], postOwnerId: course['userId']),
+          NeedARideButton(height),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 1.0),
             child: Container(
@@ -450,7 +456,7 @@ class _NonImageContents extends StatelessWidget {
               color: Colors.grey[700],
             ),
           ),
-          Buttons(moovId),
+          Buttons(moovId: moovId),
           Padding(
             padding: EdgeInsets.only(bottom: 10),
             child: Container(
@@ -983,7 +989,7 @@ class PaySkipSendRow extends StatelessWidget {
                       child: Icon(Icons.menu_book, color: Colors.purple)),
                 )
               : Container(),
-          tags.contains('deal')
+          tags.contains('deal') && course['dealLimit'] > 0
               ? DealButton(
                   postId: postId,
                   businessUserId: course['userId'],
@@ -1079,7 +1085,7 @@ class Buttons extends StatefulWidget {
   final dynamic moovId;
   final String text = 'https://www.whatsthemoov.com';
 
-  Buttons(this.moovId);
+  Buttons({Key key, this.moovId});
   @override
   _ButtonsState createState() => _ButtonsState(this.moovId);
 }
@@ -1092,6 +1098,7 @@ class _ButtonsState extends State<Buttons> {
   bool positivePointAnimationNotGoing = false;
   bool negativePointAnimationNotGoing = false;
   dynamic moovId;
+  double height = 40;
 
   changeScore(String postOwnerId, bool increment) {
     increment //for status responder
@@ -1452,6 +1459,11 @@ class _ButtonsState extends State<Buttons> {
                             if (status != 1 && status != 2) {
                               changeScore(postOwnerId, true);
                             }
+                            //ask about RideShare
+                            // setState(() {
+                            //   widget.needRideHeight = 40;
+                            // });
+
                             status = 3;
                             print(status);
                           } else if (statuses != null && status == 3) {
@@ -2313,16 +2325,44 @@ class _RedeemDealBottomSheetState extends State<RedeemDealBottomSheet>
                                       }, SetOptions(merge: true));
                                     }
 
+                                    postsRef.doc(widget.postId).update({
+                                      "dealLimit": FieldValue.increment(-1)
+                                    });
+
                                     //setting the dashboard for biz's
                                     businessDashboardRef
                                         .doc(widget.businessUserId)
                                         .collection('dashboard')
                                         .doc(widget.postId)
-                                        .update({
-                                      "earnings":
-                                          FieldValue.increment(widget.dealCost),
-                                      "deals": FieldValue.arrayUnion(
-                                          [currentUser.id])
+                                        .get()
+                                        .then((value) {
+                                      if (!value.exists) {
+                                        businessDashboardRef
+                                            .doc(widget.businessUserId)
+                                            .collection('dashboard')
+                                            .doc(widget.postId)
+                                            .set({
+                                          "totalEarnings": FieldValue.increment(
+                                              widget.dealCost),
+                                          "dealsRedeemed":
+                                              FieldValue.increment(1),
+                                          "dealRevenue": FieldValue.increment(
+                                              widget.dealCost)
+                                        }, SetOptions(merge: true));
+                                      } else {
+                                        businessDashboardRef
+                                            .doc(widget.businessUserId)
+                                            .collection('dashboard')
+                                            .doc(widget.postId)
+                                            .update({
+                                          "totalEarnings": FieldValue.increment(
+                                              widget.dealCost),
+                                          "dealsRedeemed":
+                                              FieldValue.increment(1),
+                                          "dealRevenue": FieldValue.increment(
+                                              widget.dealCost)
+                                        });
+                                      }
                                     });
 
                                     usersRef
@@ -2571,15 +2611,42 @@ class _PayNondealCostBottomSheetState extends State<PayNondealCostBottomSheet>
                                     }
 
                                     //adding to biz dashboard
+
                                     businessDashboardRef
                                         .doc(widget.businessUserId)
                                         .collection('dashboard')
                                         .doc(widget.postId)
-                                        .update({
-                                      "nondealPayments": FieldValue.increment(
-                                          widget.nondealCost),
-                                      "nondealUserList": FieldValue.arrayUnion(
-                                          [currentUser.id])
+                                        .get()
+                                        .then((value) {
+                                      if (!value.exists) {
+                                        businessDashboardRef
+                                            .doc(widget.businessUserId)
+                                            .collection('dashboard')
+                                            .doc(widget.postId)
+                                            .set({
+                                          "totalEarnings": FieldValue.increment(
+                                              widget.nondealCost),
+                                          "nondealPaymentRevenue":
+                                              FieldValue.increment(
+                                                  widget.nondealCost),
+                                          "distinctNondealPayments":
+                                              FieldValue.increment(1)
+                                        });
+                                      } else {
+                                        businessDashboardRef
+                                            .doc(widget.businessUserId)
+                                            .collection('dashboard')
+                                            .doc(widget.postId)
+                                            .update({
+                                          "totalEarnings": FieldValue.increment(
+                                              widget.nondealCost),
+                                          "nondealPaymentRevenue":
+                                              FieldValue.increment(
+                                                  widget.nondealCost),
+                                          "distinctNondealPayments":
+                                              FieldValue.increment(1)
+                                        });
+                                      }
                                     });
 
                                     usersRef
@@ -2624,5 +2691,23 @@ class _PayNondealCostBottomSheetState extends State<PayNondealCostBottomSheet>
   void dispose() {
     _animationController.dispose();
     super.dispose();
+  }
+}
+
+class NeedARideButton extends StatefulWidget {
+  final double height;
+
+  NeedARideButton(this.height);
+  @override
+  _NeedARideButtonState createState() => _NeedARideButtonState();
+}
+
+class _NeedARideButtonState extends State<NeedARideButton> {
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: Duration(seconds: 1),
+      height: widget.height,
+    );
   }
 }
