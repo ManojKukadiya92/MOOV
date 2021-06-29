@@ -165,103 +165,105 @@ class _HomePageState extends State<HomePage>
                                         Padding(
                                             padding: const EdgeInsets.only(
                                                 bottom: 2.0, left: 20, top: 1),
-                                            child: todayOnly == 0
-                                                ? RaisedButton(
-                                                    onPressed: () {
-                                                      HapticFeedback
-                                                          .lightImpact();
+                                            child: Container(
+                                                width: 125,
+                                                child: todayOnly == 0
+                                                    ? RaisedButton(
+                                                        onPressed: () {
+                                                          HapticFeedback
+                                                              .lightImpact();
 
-                                                      setState(() {
-                                                        todayOnly = 1;
-                                                      });
-                                                    },
-                                                    color: TextThemes.ndBlue,
-                                                    child: Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              0.0),
-                                                      child: Row(
-                                                        children: [
-                                                          Padding(
-                                                            padding:
-                                                                EdgeInsets.only(
-                                                                    right: 8.0),
-                                                            child: Text(
-                                                                'Today Only?',
-                                                                style: TextStyle(
-                                                                    color: Colors
-                                                                        .white,
-                                                                    fontSize:
-                                                                        isLargePhone
+                                                          setState(() {
+                                                            todayOnly = 1;
+                                                          });
+                                                        },
+                                                        color:
+                                                            TextThemes.ndBlue,
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(0.0),
+                                                          child: Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .center,
+                                                            children: [
+                                                              Padding(
+                                                                padding: EdgeInsets
+                                                                    .only(
+                                                                        right:
+                                                                            0.0),
+                                                                child: Text(
+                                                                    'Today Only?',
+                                                                    style: TextStyle(
+                                                                        color: Colors
+                                                                            .white,
+                                                                        fontSize: isLargePhone
                                                                             ? 14
                                                                             : 12.5)),
+                                                              ),
+                                                              // Icon(
+                                                              //     Icons
+                                                              //         .calendar_today,
+                                                              //     size: 15,
+                                                              //     color: TextThemes
+                                                              //         .ndGold),
+                                                            ],
                                                           ),
-                                                          Icon(
-                                                              Icons
-                                                                  .calendar_today,
-                                                              size: 15,
-                                                              color: TextThemes
-                                                                  .ndGold),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    shape:
-                                                        RoundedRectangleBorder(
+                                                        ),
+                                                        shape: RoundedRectangleBorder(
                                                             borderRadius:
                                                                 BorderRadius
                                                                     .circular(
                                                                         8.0)),
-                                                  )
-                                                : RaisedButton(
-                                                    onPressed: () {
-                                                      setState(() {
-                                                        todayOnly = 0;
-                                                      });
-                                                    },
-                                                    color: Colors.green,
-                                                    child: Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              0.0),
-                                                      child: Row(
-                                                        mainAxisSize:
-                                                            MainAxisSize.min,
-                                                        children: [
-                                                          Padding(
-                                                            padding:
-                                                                EdgeInsets.only(
-                                                                    right: 8.0),
-                                                            child: Text(
-                                                                'Today Only!',
-                                                                style: TextStyle(
-                                                                    color: Colors
-                                                                        .white,
-                                                                    fontSize:
-                                                                        isLargePhone
+                                                      )
+                                                    : RaisedButton(
+                                                        onPressed: () {
+                                                          setState(() {
+                                                            todayOnly = 0;
+                                                          });
+                                                        },
+                                                        color: Colors.green,
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(0.0),
+                                                          child: Row(
+                                                            mainAxisSize:
+                                                                MainAxisSize
+                                                                    .min,
+                                                            children: [
+                                                              Padding(
+                                                                padding: EdgeInsets
+                                                                    .only(
+                                                                        right:
+                                                                            0.0),
+                                                                child: Text(
+                                                                    'Today Only!',
+                                                                    style: TextStyle(
+                                                                        color: Colors
+                                                                            .white,
+                                                                        fontSize: isLargePhone
                                                                             ? 14
                                                                             : 12.5)),
+                                                              ),
+                                                              // Icon(Icons.check,
+                                                              //     color: TextThemes
+                                                              //         .ndGold),
+                                                            ],
                                                           ),
-                                                          Icon(Icons.check,
-                                                              color: TextThemes
-                                                                  .ndGold),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    shape:
-                                                        RoundedRectangleBorder(
+                                                        ),
+                                                        shape: RoundedRectangleBorder(
                                                             borderRadius:
                                                                 BorderRadius
                                                                     .circular(
                                                                         8.0)),
-                                                  )),
+                                                      ))),
                                         Padding(
                                           padding: EdgeInsets.symmetric(
                                               horizontal: 10.0, vertical: 1),
                                           child: Container(
-                                            width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                .29,
+                                            width: 125,
                                             decoration: BoxDecoration(
                                                 borderRadius:
                                                     BorderRadius.circular(
@@ -301,16 +303,19 @@ class _HomePageState extends State<HomePage>
                                                           fontSize: 12.5,
                                                           color: Colors.white),
                                                   value: privacyDropdownValue,
-                                                  icon: Icon(
-                                                      Icons.arrow_drop_down,
-                                                      color: TextThemes.ndGold),
+                                                  icon: Container(),
                                                   items: privacyList
                                                       .map((String value) {
                                                     return DropdownMenuItem<
                                                         String>(
                                                       value: value,
-                                                      child: Text(
-                                                        value,
+                                                      child: SizedBox(
+                                                        width: 100,
+                                                        child: Text(
+                                                          value,
+                                                          textAlign:
+                                                              TextAlign.center,
+                                                        ),
                                                       ),
                                                     );
                                                   }).toList(),
@@ -345,284 +350,278 @@ class _HomePageState extends State<HomePage>
                               return loadingMOOVs();
                             }
 
-                            return ListView.builder(
-                              physics: ClampingScrollPhysics(),
-                              controller: _scrollController,
-                              itemCount: snapshot.data.docs.length + 1,
-                              itemBuilder: (context, index) {
-                                if (index == 0) {
-                                  return Column(children: [
-                                    AnimatedBuilder(
-                                      animation: _notifier,
-                                      builder: (context, _) {
-                                        return Container(
-                                          color: colorTween(Colors.white,
-                                              Colors.black87, _notifier),
-                                          height: isLargePhone ? 390 : 360,
-                                          child: Column(children: <Widget>[
-                                            Container(
+                            return (privacyDropdownValue == "Private")
+                                ? Container()
+                                : ListView.builder(
+                                    physics: ClampingScrollPhysics(),
+                                    controller: _scrollController,
+                                    itemCount: snapshot.data.docs.length + 1,
+                                    itemBuilder: (context, index) {
+                                      if (index == 0) {
+                                        return Column(children: [
+                                          AnimatedBuilder(
+                                            animation: _notifier,
+                                            builder: (context, _) {
+                                              return Container(
+                                                color: colorTween(Colors.white,
+                                                    Colors.black87, _notifier),
                                                 height:
-                                                    isLargePhone ? 155 : 140,
-                                                child: PageView(
-                                                  controller: _pageController,
-                                                  
-                                                  children: [
-                                                    MOTD("MOTD", vibeType),
-                                                    MOTD("MOTN", vibeType)
-                                                  ],
-                                                )),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  bottom: 2),
-                                              child: Align(
-                                                  alignment: Alignment.center,
-                                                  child: GestureDetector(
-                                                    onTap: () {
-                                                      showDialog(
-                                                          context: context,
-                                                          builder: (_) =>
-                                                              CupertinoAlertDialog(
-                                                                title: Text(
-                                                                    "Your MOOV."),
-                                                                content:
-                                                                    Padding(
-                                                                  padding: const EdgeInsets
-                                                                          .only(
-                                                                      top: 8.0),
-                                                                  child: Text(
-                                                                      "Do you have the MOOV of the Day/Night? Email admin@whatsthemoov.com."),
-                                                                ),
-                                                              ),
-                                                          barrierDismissible:
-                                                              true);
-                                                    },
-                                                    child: Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              4.0),
-                                                      child: Stack(children: [
-                                                        AnimatedOpacity(
-                                                          opacity:
-                                                              _notifier.value,
-                                                          duration: Duration(
-                                                              milliseconds:
-                                                                  250),
-                                                          child: Text(
-                                                            "MOOV of the Night",
-                                                            style: TextStyle(
-                                                                fontFamily:
-                                                                    'Open Sans',
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                color: Colors
-                                                                    .white,
-                                                                fontSize: 16.0),
-                                                          ),
-                                                        ),
-                                                        AnimatedOpacity(
-                                                          opacity: 1 -
-                                                              _notifier.value,
-                                                          duration: Duration(
-                                                              milliseconds:
-                                                                  100),
-                                                          child: Text(
-                                                            "MOOV of the Day",
-                                                            style: TextStyle(
-                                                                fontFamily:
-                                                                    'Open Sans',
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                color: Colors
-                                                                    .black,
-                                                                fontSize: 16.0),
-                                                          ),
-                                                        ),
-                                                      ]),
-                                                    ),
-                                                  )),
-                                            ),
-                                            Expanded(
-                                                flex: 8,
-                                                child: Center(
-                                                    child: AnimatedBuilder(
-                                                  animation: _notifier,
-                                                  builder: (context, _) {
-                                                    return Container(
-                                                      color: colorTween(
-                                                          Colors.white,
-                                                          Color.fromRGBO(
-                                                              204, 204, 204, 0),
-                                                          _notifier),
-                                                      width:
-                                                          MediaQuery.of(context)
-                                                              .size
-                                                              .width,
-                                                      height: 220,
-                                                      child: Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
+                                                    isLargePhone ? 390 : 360,
+                                                child: Column(
+                                                    children: <Widget>[
+                                                      Container(
+                                                          height: isLargePhone
+                                                              ? 155
+                                                              : 140,
+                                                          child: PageView(
+                                                            controller:
+                                                                _pageController,
+                                                            children: [
+                                                              MOTD("MOTD",
+                                                                  vibeType),
+                                                              MOTD("MOTN",
+                                                                  vibeType)
+                                                            ],
+                                                          )),
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                bottom: 2),
+                                                        child: Align(
+                                                            alignment: Alignment
                                                                 .center,
-                                                        children: <Widget>[
-                                                          _currentIndex == 0 ||
-                                                                  todayOnly ==
-                                                                      0 ||
-                                                                  privacyDropdownValue !=
-                                                                      'Featured'
-                                                              ? CarouselSlider(
-                                                                  options:
-                                                                      CarouselOptions(
-                                                                    scrollPhysics:
-                                                                        AlwaysScrollableScrollPhysics(),
-                                                                    height:
-                                                                        isLargePhone
-                                                                            ? 170
-                                                                            : 170,
-                                                                    aspectRatio:
-                                                                        16 / 9,
-                                                                    viewportFraction:
-                                                                        1,
-                                                                    initialPage:
-                                                                        0,
-                                                                    enableInfiniteScroll:
-                                                                        true,
-                                                                    // scrollPhysics: NeverScrollableScrollPhysics(),
-                                                                    pauseAutoPlayOnTouch:
-                                                                        false,
-                                                                    reverse:
-                                                                        false,
-                                                                    autoPlay:
-                                                                        true,
-                                                                    autoPlayInterval:
-                                                                        Duration(
-                                                                            seconds:
-                                                                                6),
-                                                                    autoPlayAnimationDuration:
-                                                                        Duration(
-                                                                            milliseconds:
-                                                                                800),
-                                                                    autoPlayCurve:
-                                                                        Curves
-                                                                            .fastOutSlowIn,
-                                                                    enlargeCenterPage:
-                                                                        true,
-                                                                    // onPageChanged: callbackFunction,
-                                                                    scrollDirection:
-                                                                        Axis.horizontal,
-                                                                  ),
-                                                                  items: [
-                                                                      SecondCarousel(
-                                                                          notifier:
-                                                                              _notifier),
-                                                                      PollView(
-                                                                          notifier:
-                                                                              _notifier),
-
-                                                                      // SuggestionBoxCarousel(),
-                                                                      // currentUser.friendGroups !=
-                                                                      //         null
-                                                                      //     ? GroupCarousel()
-                                                                      //     : null,
-                                                                      // HottestMOOV()
-                                                                    ])
-                                                              : Container(),
-                                                          SizedBox(height: 10),
-                                                        ],
+                                                            child:
+                                                                GestureDetector(
+                                                              onTap: () {
+                                                                showDialog(
+                                                                    context:
+                                                                        context,
+                                                                    builder: (_) =>
+                                                                        CupertinoAlertDialog(
+                                                                          title:
+                                                                              Text("Your MOOV."),
+                                                                          content:
+                                                                              Padding(
+                                                                            padding:
+                                                                                const EdgeInsets.only(top: 8.0),
+                                                                            child:
+                                                                                Text("Do you have the MOOV of the Day/Night? Email admin@whatsthemoov.com."),
+                                                                          ),
+                                                                        ),
+                                                                    barrierDismissible:
+                                                                        true);
+                                                              },
+                                                              child: Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .all(
+                                                                        4.0),
+                                                                child: Stack(
+                                                                    children: [
+                                                                      AnimatedOpacity(
+                                                                        opacity:
+                                                                            _notifier.value,
+                                                                        duration:
+                                                                            Duration(milliseconds: 250),
+                                                                        child:
+                                                                            Text(
+                                                                          "MOOV of the Night",
+                                                                          style: TextStyle(
+                                                                              fontFamily: 'Open Sans',
+                                                                              fontWeight: FontWeight.bold,
+                                                                              color: Colors.white,
+                                                                              fontSize: 16.0),
+                                                                        ),
+                                                                      ),
+                                                                      AnimatedOpacity(
+                                                                        opacity:
+                                                                            1 - _notifier.value,
+                                                                        duration:
+                                                                            Duration(milliseconds: 100),
+                                                                        child:
+                                                                            Text(
+                                                                          "MOOV of the Day",
+                                                                          style: TextStyle(
+                                                                              fontFamily: 'Open Sans',
+                                                                              fontWeight: FontWeight.bold,
+                                                                              color: Colors.black,
+                                                                              fontSize: 16.0),
+                                                                        ),
+                                                                      ),
+                                                                    ]),
+                                                              ),
+                                                            )),
                                                       ),
-                                                    );
-                                                  },
-                                                ))),
-                                          ]),
-                                        );
-                                      },
-                                    ),
+                                                      Expanded(
+                                                          flex: 8,
+                                                          child: Center(
+                                                              child:
+                                                                  AnimatedBuilder(
+                                                            animation:
+                                                                _notifier,
+                                                            builder:
+                                                                (context, _) {
+                                                              return Container(
+                                                                color: colorTween(
+                                                                    Colors
+                                                                        .white,
+                                                                    Color
+                                                                        .fromRGBO(
+                                                                            204,
+                                                                            204,
+                                                                            204,
+                                                                            0),
+                                                                    _notifier),
+                                                                width: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width,
+                                                                height: 220,
+                                                                child: Column(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .center,
+                                                                  children: <
+                                                                      Widget>[
+                                                                    _currentIndex == 0 ||
+                                                                            todayOnly ==
+                                                                                0 ||
+                                                                            privacyDropdownValue !=
+                                                                                'Featured'
+                                                                        ? CarouselSlider(
+                                                                            options:
+                                                                                CarouselOptions(
+                                                                              scrollPhysics: AlwaysScrollableScrollPhysics(),
+                                                                              height: isLargePhone ? 170 : 170,
+                                                                              aspectRatio: 16 / 9,
+                                                                              viewportFraction: 1,
+                                                                              initialPage: 0,
+                                                                              enableInfiniteScroll: true,
+                                                                              // scrollPhysics: NeverScrollableScrollPhysics(),
+                                                                              pauseAutoPlayOnTouch: false,
+                                                                              reverse: false,
+                                                                              autoPlay: true,
+                                                                              autoPlayInterval: Duration(seconds: 6),
+                                                                              autoPlayAnimationDuration: Duration(milliseconds: 800),
+                                                                              autoPlayCurve: Curves.fastOutSlowIn,
+                                                                              enlargeCenterPage: true,
+                                                                              // onPageChanged: callbackFunction,
+                                                                              scrollDirection: Axis.horizontal,
+                                                                            ),
+                                                                            items: [
+                                                                                SecondCarousel(notifier: _notifier),
+                                                                                PollView(notifier: _notifier),
 
-                                    /// subcategories are arranged based on
-                                    /// the Tonights Vibe choice of "popular spots",
-                                    /// "something new" or "relax." each choice has 3
-                                    /// subcategories
-                                    Subcategories(
-                                        notifier: _notifier, type: "new"),
+                                                                                // SuggestionBoxCarousel(),
+                                                                                // currentUser.friendGroups !=
+                                                                                //         null
+                                                                                //     ? GroupCarousel()
+                                                                                //     : null,
+                                                                                // HottestMOOV()
+                                                                              ])
+                                                                        : Container(),
+                                                                    SizedBox(
+                                                                        height:
+                                                                            10),
+                                                                  ],
+                                                                ),
+                                                              );
+                                                            },
+                                                          ))),
+                                                    ]),
+                                              );
+                                            },
+                                          ),
 
-                                    Subcategories(
-                                        notifier: _notifier, type: "mountain"),
-                                  ]);
-                                }
-                                DocumentSnapshot course =
-                                    snapshot.data.docs[index - 1];
-                                Timestamp startDate = course["startDate"];
-                                privacy = course['privacy'];
+                                          /// subcategories are arranged based on
+                                          /// the Tonights Vibe choice of "popular spots",
+                                          /// "something new" or "relax." each choice has 3
+                                          /// subcategories
+                                          Subcategories(
+                                              notifier: _notifier, type: "new"),
 
-                                bool hide = false;
+                                          Subcategories(
+                                              notifier: _notifier,
+                                              type: "mountain"),
+                                        ]);
+                                      }
+                                      DocumentSnapshot course =
+                                          snapshot.data.docs[index - 1];
+                                      Timestamp startDate = course["startDate"];
+                                      privacy = course['privacy'];
 
-                                if (startDate.millisecondsSinceEpoch <
-                                    Timestamp.now().millisecondsSinceEpoch -
-                                        3600000) {
-                                  print("Expired. See ya later.");
-                                  Future.delayed(
-                                      const Duration(milliseconds: 1000), () {
-                                    Database().deletePost(
-                                        course['postId'],
-                                        course['userId'],
-                                        course['title'],
-                                        course['statuses'],
-                                        course['posterName']);
-                                  });
-                                }
-                                final now = DateTime.now();
-                                bool isToday = false;
-                                bool isTomorrow = false;
+                                      bool hide = false;
 
-                                final today =
-                                    DateTime(now.year, now.month, now.day);
+                                      if (startDate.millisecondsSinceEpoch <
+                                          Timestamp.now()
+                                                  .millisecondsSinceEpoch -
+                                              3600000) {
+                                        print("Expired. See ya later.");
+                                        Future.delayed(
+                                            const Duration(milliseconds: 1000),
+                                            () {
+                                          Database().deletePost(
+                                              course['postId'],
+                                              course['userId'],
+                                              course['title'],
+                                              course['statuses'],
+                                              course['posterName']);
+                                        });
+                                      }
+                                      final now = DateTime.now();
+                                      bool isToday = false;
+                                      bool isTomorrow = false;
 
-                                final tomorrow =
-                                    DateTime(now.year, now.month, now.day + 1);
+                                      final today = DateTime(
+                                          now.year, now.month, now.day);
 
-                                final dateToCheck = startDate.toDate();
-                                final aDate = DateTime(dateToCheck.year,
-                                    dateToCheck.month, dateToCheck.day);
+                                      final tomorrow = DateTime(
+                                          now.year, now.month, now.day + 1);
 
-                                if (aDate == today) {
-                                  isToday = true;
-                                } else if (aDate == tomorrow) {
-                                  isTomorrow = true;
-                                }
-                                if (course['featured'] != true &&
-                                    privacyDropdownValue == "Featured") {
-                                  hide = true;
-                                }
-                                if (isToday == false && todayOnly == 1) {
-                                  hide = true;
-                                }
-                                if (privacy == "Friends Only" ||
-                                    privacy == "Invite Only") {
-                                  hide = true;
-                                }
-                                if (privacyDropdownValue == "Private" &&
-                                    (privacy != "Friends Only" ||
-                                        privacy != "Invite Only")) {
-                                  hide = true;
-                                }
-                                if (privacy == "Friends Only" &&
-                                    privacyDropdownValue == "Private" &&
-                                    currentUser.friendArray
-                                        .contains(course['userId'])) {
-                                  hide = false;
-                                }
-                                if (privacy == "Invite Only" &&
-                                    privacyDropdownValue == "Private" &&
-                                    course['statuses']
-                                        .keys
-                                        .contains(currentUser.id)) {
-                                  hide = false;
-                                }
-                                return (hide == false)
-                                    ? PostOnFeedNew(course, _notifier)
-                                    : Container();
-                              },
-                            );
+                                      final dateToCheck = startDate.toDate();
+                                      final aDate = DateTime(dateToCheck.year,
+                                          dateToCheck.month, dateToCheck.day);
+
+                                      if (aDate == today) {
+                                        isToday = true;
+                                      } else if (aDate == tomorrow) {
+                                        isTomorrow = true;
+                                      }
+                                      if (course['featured'] != true &&
+                                          privacyDropdownValue == "Featured") {
+                                        hide = true;
+                                      }
+                                      if (isToday == false && todayOnly == 1) {
+                                        hide = true;
+                                      }
+                                      if (privacy == "Friends Only" ||
+                                          privacy == "Invite Only") {
+                                        hide = true;
+                                      }
+                                      if (privacyDropdownValue == "Private" &&
+                                          (privacy != "Friends Only" ||
+                                              privacy != "Invite Only")) {
+                                        hide = true;
+                                      }
+                                      if (privacy == "Friends Only" &&
+                                          privacyDropdownValue == "Private" &&
+                                          currentUser.friendArray
+                                              .contains(course['userId'])) {
+                                        hide = false;
+                                      }
+                                      if (privacy == "Invite Only" &&
+                                          privacyDropdownValue == "Private" &&
+                                          course['statuses']
+                                              .keys
+                                              .contains(currentUser.id)) {
+                                        hide = false;
+                                      }
+                                      return (hide == false)
+                                          ? PostOnFeedNew(course, _notifier)
+                                          : Container();
+                                    },
+                                  );
                           },
                         ),
                       ),

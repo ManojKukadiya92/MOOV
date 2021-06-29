@@ -730,12 +730,35 @@ class _BuyMoovOverPassSheetState extends State<BuyMoovOverPassSheet>
                                         .doc(widget.businessUserId)
                                         .collection('dashboard')
                                         .doc(widget.postId)
-                                        .update({
-                                      "totalEarnings": FieldValue.increment(10),
-                                      "earningsFromMOOVOver":
-                                          FieldValue.increment(10),
-                                      "moovOverPasses": FieldValue.arrayUnion(
-                                          [currentUser.id])
+                                        .get()
+                                        .then((value) {
+                                      if (!value.exists) {
+                                        businessDashboardRef
+                                            .doc(widget.businessUserId)
+                                            .collection('dashboard')
+                                            .doc(widget.postId)
+                                            .set({
+                                          "totalEarnings":
+                                              FieldValue.increment(10),
+                                          "earningsFromMOOVOver":
+                                              FieldValue.increment(10),
+                                          "moovOverPassesIssued":
+                                              FieldValue.increment(1)
+                                        });
+                                      } else {
+                                        businessDashboardRef
+                                            .doc(widget.businessUserId)
+                                            .collection('dashboard')
+                                            .doc(widget.postId)
+                                            .update({
+                                          "totalEarnings":
+                                              FieldValue.increment(10),
+                                          "earningsFromMOOVOver":
+                                              FieldValue.increment(10),
+                                          "moovOverPassesIssued":
+                                              FieldValue.increment(1)
+                                        });
+                                      }
                                     });
 
                                     usersRef
@@ -925,10 +948,31 @@ class _TipDialogState extends State<TipDialog> {
                             .doc(widget.businessId)
                             .collection('dashboard')
                             .doc(widget.postId)
-                            .update({
-                          "earningsFromTips": FieldValue.increment(_tipAmount),
-                          "totalEarnings": FieldValue.increment(_tipAmount),
-                          "distinctTips": FieldValue.increment(1)
+                            .get()
+                            .then((value) {
+                          if (!value.exists) {
+                             businessDashboardRef
+                                .doc(widget.businessId)
+                                .collection('dashboard')
+                                .doc(widget.postId)
+                                .set({
+                              "earningsFromTips":
+                                  FieldValue.increment(_tipAmount),
+                              "totalEarnings": FieldValue.increment(_tipAmount),
+                              "distinctTips": FieldValue.increment(1)
+                            });
+                          }else{
+                            businessDashboardRef
+                                .doc(widget.businessId)
+                                .collection('dashboard')
+                                .doc(widget.postId)
+                                .update({
+                              "earningsFromTips":
+                                  FieldValue.increment(_tipAmount),
+                              "totalEarnings": FieldValue.increment(_tipAmount),
+                              "distinctTips": FieldValue.increment(1)
+                            });
+                          }
                         });
 
                         setState(() {
