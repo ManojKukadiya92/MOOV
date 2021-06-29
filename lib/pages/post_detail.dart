@@ -288,7 +288,9 @@ class _BannerImage extends StatelessWidget {
               ),
             ],
           ),
-          child: OptimizedCacheImage(
+          child: CachedNetworkImage(
+            memCacheHeight: 100,
+            memCacheWidth: 100,
             imageUrl: bannerImage,
             fit: BoxFit.cover,
             height: 200,

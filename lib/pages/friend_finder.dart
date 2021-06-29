@@ -727,7 +727,9 @@ class UserResult extends StatelessWidget {
                                                             BorderRadius
                                                                 .circular(10),
                                                         child:
-                                                            OptimizedCacheImage(
+                                                            CachedNetworkImage(
+                                                          memCacheHeight: 100,
+                                                          memCacheWidth: 100,
                                                           imageUrl:
                                                               course['image'],
                                                           fit: BoxFit.cover,

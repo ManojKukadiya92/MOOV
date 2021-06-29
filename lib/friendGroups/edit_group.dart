@@ -403,7 +403,10 @@ class _EditGroupState extends State<EditGroup> {
                           child: Container(
                             child: (currentUser.photoUrl == null)
                                 ? AssetImage('images/user-avatar.png')
-                                : OptimizedCacheImage(imageUrl: photoUrl),
+                                : CachedNetworkImage(
+                                    memCacheHeight: 100,
+                                    memCacheWidth: 100,
+                                    imageUrl: photoUrl),
                             // backgroundImage: NetworkImage(currentUser.photoUrl),
                           ),
                         ),

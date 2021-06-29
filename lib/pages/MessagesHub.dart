@@ -347,7 +347,11 @@ class MessagesHub extends StatelessWidget {
                                                                         borderRadius:
                                                                             BorderRadius.all(Radius.circular(15)),
                                                                         child:
-                                                                            OptimizedCacheImage(
+                                                                            CachedNetworkImage(
+                                                                          memCacheHeight:
+                                                                              100,
+                                                                          memCacheWidth:
+                                                                              100,
                                                                           imageUrl:
                                                                               course4['groupPic'],
                                                                           fit: BoxFit
@@ -836,7 +840,9 @@ class MessageList extends StatelessWidget {
                                           child: ClipRRect(
                                             borderRadius:
                                                 BorderRadius.circular(10),
-                                            child: OptimizedCacheImage(
+                                            child: CachedNetworkImage(
+                                              memCacheHeight: 100,
+                                              memCacheWidth: 100,
                                               imageUrl:
                                                   snapshot.data['groupPic'],
                                               fit: BoxFit.cover,
@@ -1053,7 +1059,9 @@ class _MessageDetailState extends State<MessageDetail> {
                                       //   child: ClipRRect(
                                       //     borderRadius:
                                       //         BorderRadius.all(Radius.circular(15)),
-                                      //     child: OptimizedCacheImage(
+                                      //     child: CachedNetworkImage(
+                                      // memCacheHeight: 100,
+                                      // memCacheWidth: 100,
                                       //       imageUrl: snapshot.data['groupPic'],
                                       //       fit: BoxFit.cover,
                                       //       height: isLargePhone
@@ -1098,7 +1106,9 @@ class _MessageDetailState extends State<MessageDetail> {
                                         child: ClipRRect(
                                           borderRadius: BorderRadius.all(
                                               Radius.circular(15)),
-                                          child: OptimizedCacheImage(
+                                          child: CachedNetworkImage(
+                                            memCacheHeight: 100,
+                                            memCacheWidth: 100,
                                             imageUrl: snapshot.data['groupPic'],
                                             fit: BoxFit.cover,
                                             height: isLargePhone
