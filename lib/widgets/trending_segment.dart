@@ -394,8 +394,6 @@ class PostOnTrending extends StatelessWidget {
                         Container(
                           height: 500,
                           child: CachedNetworkImage(
-                            memCacheHeight: 100,
-                            memCacheWidth: 100,
                             imageUrl: course['image'],
                             fit: BoxFit.cover,
                             width: isLargePhone

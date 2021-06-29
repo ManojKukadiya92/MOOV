@@ -741,8 +741,6 @@ class DisplayMOOVResult extends StatelessWidget {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: CachedNetworkImage(
-                      memCacheHeight: 100,
-                      memCacheWidth: 100,
                       imageUrl: image,
                       fit: BoxFit.cover,
                     ),
@@ -939,8 +937,6 @@ class DisplayGroupResult extends StatelessWidget {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                         child: CachedNetworkImage(
-                          memCacheHeight: 100,
-                          memCacheWidth: 100,
                           imageUrl: groupPic,
                           fit: BoxFit.cover,
                         ),

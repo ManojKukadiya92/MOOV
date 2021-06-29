@@ -125,8 +125,6 @@ class MOTDUI extends StatelessWidget {
                               child: Container(
                                 child: Container(
                                   child: CachedNetworkImage(
-                                    memCacheHeight: 100,
-                                    memCacheWidth: 100,
                                     imageUrl: pic,
                                     fit: BoxFit.cover,
                                   ),
@@ -311,8 +309,6 @@ class BiteSizePostUI extends StatelessWidget {
                       child: Container(
                         child: Container(
                           child: CachedNetworkImage(
-                            memCacheHeight: 100,
-                            memCacheWidth: 100,
                             imageUrl: pic,
                             fit: BoxFit.cover,
                           ),
