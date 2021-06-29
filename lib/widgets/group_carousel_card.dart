@@ -131,9 +131,7 @@ class GroupCarousel extends StatelessWidget {
                                                         BorderRadius.all(
                                                             Radius.circular(
                                                                 15)),
-                                                    child: CachedNetworkImage(
-                                                      memCacheHeight: 100,
-                                                      memCacheWidth: 100,
+                                                    child: OptimizedCacheImage(
                                                       imageUrl:
                                                           course['groupPic'],
                                                       fit: BoxFit.cover,
@@ -351,11 +349,7 @@ class GroupCarousel extends StatelessWidget {
                                                                           .circular(
                                                                               10),
                                                                   child:
-                                                                      CachedNetworkImage(
-                                                                    memCacheHeight:
-                                                                        100,
-                                                                    memCacheWidth:
-                                                                        100,
+                                                                      OptimizedCacheImage(
                                                                     imageUrl: snapshot3
                                                                             .data[
                                                                         'image'],

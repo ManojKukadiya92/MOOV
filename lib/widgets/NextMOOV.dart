@@ -102,9 +102,7 @@ class _NextMOOVState extends State<NextMOOV> {
                                 child: Container(
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(10),
-                                    child: CachedNetworkImage(
-                                      memCacheHeight: 100,
-                                      memCacheWidth: 100,
+                                    child: OptimizedCacheImage(
                                       imageUrl: pic,
                                       fit: BoxFit.cover,
                                     ),

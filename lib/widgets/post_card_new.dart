@@ -104,9 +104,7 @@ class _PostOnFeedNewState extends State<PostOnFeedNew> {
                       child: Container(
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(10),
-                          child: CachedNetworkImage(
-                            memCacheHeight: 100,
-                            memCacheWidth: 100,
+                          child: OptimizedCacheImage(
                             imageUrl: widget.course['image'],
                             fit: BoxFit.cover,
                           ),
@@ -131,41 +129,39 @@ class _PostOnFeedNewState extends State<PostOnFeedNew> {
                       ),
                     ),
                   ),
-                  widget.course['title'].isNotEmpty
-                      ? Align(
-                          alignment: Alignment.center,
-                          child: Container(
-                            alignment: Alignment(0.0, 0.0),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(20)),
-                                gradient: LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  colors: <Color>[
-                                    Colors.black.withAlpha(0),
-                                    Colors.black,
-                                    Colors.black12,
-                                  ],
-                                ),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(4.0),
-                                child: Text(
-                                  widget.course['title'],
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                      fontFamily: 'Solway',
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                      fontSize: 20.0),
-                                ),
-                              ),
-                            ),
+                  widget.course['title'].isNotEmpty ? 
+                  Align(
+                    alignment: Alignment.center,
+                    child: Container(
+                      alignment: Alignment(0.0, 0.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(20)),
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: <Color>[
+                              Colors.black.withAlpha(0),
+                              Colors.black,
+                              Colors.black12,
+                            ],
                           ),
-                        )
-                      : Container(),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: Text(
+                            widget.course['title'],
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                                fontFamily: 'Solway',
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                fontSize: 20.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ) : Container(),
                   Positioned(
                       bottom: 10,
                       right: 22.5,
@@ -357,33 +353,31 @@ class _PostOnFeedNewState extends State<PostOnFeedNew> {
                           ),
                         )
                       : Text(""),
-                  moovMountain
-                      ? Positioned(
-                          top: -15,
-                          right: 5,
-                          child: AvatarGlow(
-                            glowColor: Colors.green,
-                            endRadius: 50.0,
-                            duration: Duration(milliseconds: 2000),
-                            repeat: true,
-                            showTwoGlows: true,
-                            repeatPauseDuration: Duration(milliseconds: 100),
-                            child: Material(
-                              // Replace this child with your own
-                              elevation: 8.0,
-                              shape: CircleBorder(),
-                              child: CircleAvatar(
-                                backgroundColor: Colors.blueGrey[50],
-                                child: Image.asset(
-                                  'lib/assets/greenmountain.png',
-                                  height: 40,
-                                ),
-                                radius: 30.0,
-                              ),
-                            ),
+                 moovMountain ? Positioned(
+                    top: -15,
+                    right: 5,
+                    child: AvatarGlow(
+                      glowColor: Colors.green,
+                      endRadius: 50.0,
+                      duration: Duration(milliseconds: 2000),
+                      repeat: true,
+                      showTwoGlows: true,
+                      repeatPauseDuration: Duration(milliseconds: 100),
+                      child: Material(
+                        // Replace this child with your own
+                        elevation: 8.0,
+                        shape: CircleBorder(),
+                        child: CircleAvatar(
+                          backgroundColor: Colors.blueGrey[50],
+                          child: Image.asset(
+                            'lib/assets/greenmountain.png',
+                            height: 40,
                           ),
-                        )
-                      : Container(),
+                          radius: 30.0,
+                        ),
+                      ),
+                    ),
+                  ): Container(),
                 ]),
                 AnimatedBuilder(
                     animation: widget.notifier,

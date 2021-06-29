@@ -12,7 +12,6 @@ import 'package:MOOV/services/database.dart';
 import 'package:MOOV/utils/themes_styles.dart';
 import 'package:MOOV/widgets/progress.dart';
 import 'package:algolia/algolia.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../pages/ProfilePageWithHeader.dart';
@@ -1315,9 +1314,7 @@ class _InviteGroupState extends State<InviteGroup> {
                     child: Container(
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
-                        child: CachedNetworkImage(
-                          memCacheHeight: 100,
-                          memCacheWidth: 100,
+                        child: OptimizedCacheImage(
                           imageUrl: pic,
                           fit: BoxFit.cover,
                         ),

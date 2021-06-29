@@ -789,7 +789,7 @@ class _EditArchiveState extends State<EditArchive> {
                                                       type: PageTransitionType
                                                           .bottomToTop,
                                                       child: SearchUsersPost(
-                                                          invitees: invitees)))
+                                                          invitees:invitees)))
                                               .then(onGoBack);
                                         },
                                       ),
@@ -999,11 +999,7 @@ class _EditArchiveState extends State<EditArchive> {
                                                                         borderRadius:
                                                                             BorderRadius.circular(10),
                                                                         child:
-                                                                            CachedNetworkImage(
-                                                                          memCacheHeight:
-                                                                              100,
-                                                                          memCacheWidth:
-                                                                              100,
+                                                                            OptimizedCacheImage(
                                                                           imageUrl:
                                                                               groupPic,
                                                                           fit: BoxFit
@@ -1455,9 +1451,7 @@ class _BannerImage extends StatelessWidget {
               ),
             ],
           ),
-          child: CachedNetworkImage(
-            memCacheHeight: 100,
-            memCacheWidth: 100,
+          child: OptimizedCacheImage(
             imageUrl: bannerImage,
             fit: BoxFit.fitWidth,
             height: 200,

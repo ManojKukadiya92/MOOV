@@ -321,9 +321,7 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
             child: Stack(alignment: Alignment.center, children: [
               ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(15)),
-                child: CachedNetworkImage(
-                  memCacheHeight: 100,
-                  memCacheWidth: 100,
+                child: OptimizedCacheImage(
                   imageUrl: widget.image,
                   fit: BoxFit.cover,
                   height: MediaQuery.of(context).size.height * 0.15,

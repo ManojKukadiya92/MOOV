@@ -96,9 +96,7 @@ class CalendarPage extends StatelessWidget {
                               width: 43,
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(10),
-                                child: CachedNetworkImage(
-                                  memCacheHeight: 100,
-                                  memCacheWidth: 100,
+                                child: OptimizedCacheImage(
                                   imageUrl: meeting.image,
                                 ),
                               ),

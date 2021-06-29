@@ -393,9 +393,7 @@ class PostOnTrending extends StatelessWidget {
                       child: Stack(alignment: Alignment.center, children: [
                         Container(
                           height: 500,
-                          child: CachedNetworkImage(
-                            memCacheHeight: 100,
-                            memCacheWidth: 100,
+                          child: OptimizedCacheImage(
                             imageUrl: course['image'],
                             fit: BoxFit.cover,
                             width: isLargePhone

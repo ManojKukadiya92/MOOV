@@ -45,9 +45,7 @@ class DealDetail extends StatelessWidget {
                   ),
                 ],
               ),
-              child: CachedNetworkImage(
-                memCacheHeight: 100,
-                memCacheWidth: 100,
+              child: OptimizedCacheImage(
                 imageUrl: pic,
                 fit: BoxFit.cover,
                 height: 200,
