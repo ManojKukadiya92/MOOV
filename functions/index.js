@@ -697,13 +697,15 @@ exports.resetLimits = functions.pubsub.schedule("0 0 * * *")
           .then((snapshot) => {
             snapshot.docs.forEach(async (doc) => {
               const data = doc.data();
-              admin.firestore().collection("notreDame").doc("data").collection("users").doc(`${data.id}`).set({
-                postLimit: 3,
-                sendLimit: 5,
-                groupLimit: 2,
-                suggestLimit: 5,
-              }, {merge: true});
-              console.log("Limits reset!");
+              if (data != null) {
+                admin.firestore().collection("notreDame").doc("data").collection("users").doc(`${data.id}`).set({
+                  postLimit: 3,
+                  sendLimit: 5,
+                  groupLimit: 2,
+                  suggestLimit: 5,
+                }, {merge: true});
+                console.log("Limits reset!");
+              }
             });
             console.log(querySnapshot);
           });
