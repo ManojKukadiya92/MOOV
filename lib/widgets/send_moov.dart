@@ -249,6 +249,7 @@ class _SendMOOVSearchState extends State<SendMOOVSearch>
                           if (!snapshot2.hasData) {
                             return Container();
                           }
+
                           return CustomScrollView(
                             shrinkWrap: true,
                             slivers: <Widget>[
@@ -365,11 +366,15 @@ class _SendMOOVSearchState extends State<SendMOOVSearch>
                                                       SliverChildBuilderDelegate(
                                                     (context, index) {
                                                       return _searchTerm
-                                                                  .length >
-                                                              0 && currSearchStuff1[
-                                                                          index]
-                                                                      .data[
-                                                                  "members"].contains(currentUser.id)
+                                                                      .length >
+                                                                  0 &&
+                                                              currSearchStuff1[
+                                                                      index]
+                                                                  .data[
+                                                                      "members"]
+                                                                  .contains(
+                                                                      currentUser
+                                                                          .id)
                                                           ? DisplayGroupResult(
                                                               groupName: currSearchStuff1[
                                                                           index]

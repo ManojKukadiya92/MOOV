@@ -83,6 +83,10 @@ final communityGroupsRef = FirebaseFirestore.instance
     .collection('notreDame')
     .doc('data')
     .collection('communityGroups');
+final businessDashboardRef = FirebaseFirestore.instance
+    .collection('notreDame')
+    .doc('data')
+    .collection('businessDashboard');
 
 final DateTime timestamp = DateTime.now();
 User currentUser;

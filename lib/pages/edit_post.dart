@@ -787,7 +787,7 @@ class _EditPostState extends State<EditPost> {
                                                       type: PageTransitionType
                                                           .bottomToTop,
                                                       child: SearchUsersPost(
-                                                          invitees)))
+                                                          invitees:invitees)))
                                               .then(onGoBack);
                                         },
                                       ),

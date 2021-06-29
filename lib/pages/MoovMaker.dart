@@ -1780,7 +1780,7 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                                     PageTransition(
                                         type: PageTransitionType.bottomToTop,
                                         child:
-                                            SearchUsersPost(inviteesNameList)))
+                                            SearchUsersPost(invitees: inviteesNameList)))
                                 .then(onGoBack);
                           },
                           child: Padding(
@@ -1810,7 +1810,7 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                                                         type: PageTransitionType
                                                             .bottomToTop,
                                                         child: SearchUsersPost(
-                                                            inviteesNameList)))
+                                                            invitees:inviteesNameList)))
                                                 .then(onGoBack);
                                           },
                                         ),

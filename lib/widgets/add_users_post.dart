@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:MOOV/businessInterfaces/MobileOrdering.dart';
+import 'package:MOOV/businessInterfaces/livePassesSheet.dart';
 import 'package:MOOV/friendGroups/OtherGroup.dart';
 import 'package:MOOV/friendGroups/group_detail.dart';
 import 'package:MOOV/main.dart';
@@ -10,7 +12,6 @@ import 'package:MOOV/services/database.dart';
 import 'package:MOOV/utils/themes_styles.dart';
 import 'package:MOOV/widgets/progress.dart';
 import 'package:algolia/algolia.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../pages/ProfilePageWithHeader.dart';
@@ -19,10 +20,10 @@ import 'package:optimized_cached_image/optimized_cached_image.dart';
 
 class SearchUsersPost extends StatefulWidget {
   final List<String> invitees;
-  SearchUsersPost(this.invitees);
+  SearchUsersPost({this.invitees});
 
   @override
-  _SearchUsersPostState createState() => _SearchUsersPostState(this.invitees);
+  _SearchUsersPostState createState() => _SearchUsersPostState();
 }
 
 class _SearchUsersPostState extends State<SearchUsersPost>
@@ -37,9 +38,6 @@ class _SearchUsersPostState extends State<SearchUsersPost>
   int selectedIndex = 0;
 
   Widget getChildWidget() => childWidgets[selectedIndex];
-
-  List<String> invitees;
-  _SearchUsersPostState(this.invitees);
 
   final TextEditingController searchController = TextEditingController();
   final textFieldFocusNode = FocusNode();
@@ -265,7 +263,7 @@ class _SearchUsersPostState extends State<SearchUsersPost>
                                       snapshot.data["photoUrl"],
                                       snapshot.data["id"],
                                       snapshot.data["verifiedStatus"],
-                                      invitees,
+                                      widget.invitees,
                                     );
                                   })
                               : FutureBuilder(
@@ -287,7 +285,7 @@ class _SearchUsersPostState extends State<SearchUsersPost>
                                         snapshot.data["groupPic"],
                                         snapshot.data["nextMOOV"],
                                         snapshot.data["members"],
-                                        invitees,
+                                        widget.invitees,
                                         snapshot.data["memberNames"]);
                                   });
                         },
@@ -355,7 +353,7 @@ class _SearchUsersPostState extends State<SearchUsersPost>
                                                                           index]
                                                                       .data[
                                                                   "verifiedStatus"],
-                                                              invitees,
+                                                              widget.invitees,
                                                             )
                                                           : Container();
                                                     },
@@ -400,7 +398,7 @@ class _SearchUsersPostState extends State<SearchUsersPost>
                                                                           index]
                                                                       .data[
                                                                   "members"],
-                                                              invitees,
+                                                              widget.invitees,
                                                               currSearchStuff0[
                                                                           index]
                                                                       .data[
@@ -425,7 +423,7 @@ class _SearchUsersPostState extends State<SearchUsersPost>
 }
 
 class AddUsersFromCreateGroup extends StatefulWidget {
-  List<String> invitees;
+  final List<String> invitees;
   AddUsersFromCreateGroup(
     this.invitees,
   );
@@ -863,19 +861,15 @@ class _UserPostResultState extends State<UserPostResult> {
 class SearchUsersGroup extends StatefulWidget {
   final String gname, gid, pic, moov;
   final List<dynamic> members;
-  SearchUsersGroup(this.gname, this.gid, this.pic, this.moov, this.members);
+  final Map livePass; // for gifting a livepass
+  SearchUsersGroup(
+      {this.gname, this.gid, this.pic, this.moov, this.members, this.livePass});
 
   @override
-  _SearchUsersGroupState createState() => _SearchUsersGroupState(
-      this.gname, this.gid, this.pic, this.moov, this.members);
+  _SearchUsersGroupState createState() => _SearchUsersGroupState();
 }
 
 class _SearchUsersGroupState extends State<SearchUsersGroup> {
-  String gname, gid, pic, moov;
-  List<dynamic> members;
-  _SearchUsersGroupState(
-      this.gname, this.gid, this.pic, this.moov, this.members);
-
   final TextEditingController searchController = TextEditingController();
   final textFieldFocusNode = FocusNode();
 
@@ -983,13 +977,14 @@ class _SearchUsersGroupState extends State<SearchUsersGroup> {
         StreamBuilder<List<AlgoliaObjectSnapshot>>(
             stream: Stream.fromFuture(_operation(_searchTerm)),
             builder: (context, snapshot) {
-              if (_searchTerm == null || !snapshot.hasData) {
+              if (_searchTerm == null) {
                 return FutureBuilder(
                     future: usersRef.get(),
                     builder: (context, snapshot0) {
                       if (!snapshot0.hasData) {
                         return Container();
                       }
+
                       return CustomScrollView(
                         shrinkWrap: true,
                         slivers: <Widget>[
@@ -1004,11 +999,12 @@ class _SearchUsersGroupState extends State<SearchUsersGroup> {
                                     snapshot0.data.docs[index]
                                         ["verifiedStatus"],
                                     snapshot0.data.docs[index]["friendGroups"],
-                                    gname,
-                                    gid,
-                                    pic,
-                                    moov,
-                                    members);
+                                    widget.gname,
+                                    widget.gid,
+                                    widget.pic,
+                                    widget.moov,
+                                    widget.members,
+                                    widget.livePass);
                               },
                               childCount: snapshot0.data.docs.length ?? 0,
                             ),
@@ -1043,11 +1039,12 @@ class _SearchUsersGroupState extends State<SearchUsersGroup> {
                                           .data["verifiedStatus"],
                                       currSearchStuff[index]
                                           .data["friendGroups"],
-                                      gname,
-                                      gid,
-                                      pic,
-                                      moov,
-                                      members)
+                                      widget.gname,
+                                      widget.gid,
+                                      widget.pic,
+                                      widget.moov,
+                                      widget.members,
+                                      widget.livePass)
                                   : Container();
                             },
                             childCount: currSearchStuff.length ?? 0,
@@ -1071,68 +1068,41 @@ class UserGroupResultAdd extends StatefulWidget {
   final List<dynamic> friendGroups;
   final String gname, gid, pic, moov;
   final List<dynamic> members;
+  final Map livePass;
 
   UserGroupResultAdd(
       this.displayName,
       this.email,
       this.proPic,
-      this.userId,
+      this.userId, //
       this.verifiedStatus,
       this.friendGroups,
       this.gname,
       this.gid,
       this.pic,
       this.moov,
-      this.members);
+      this.members,
+      this.livePass);
 
   @override
-  _UserGroupResultAddState createState() => _UserGroupResultAddState(
-      this.displayName,
-      this.email,
-      this.proPic,
-      this.userId,
-      this.verifiedStatus,
-      this.friendGroups,
-      this.gname,
-      this.gid,
-      this.pic,
-      this.moov,
-      this.members);
+  _UserGroupResultAddState createState() => _UserGroupResultAddState();
 }
 
 class _UserGroupResultAddState extends State<UserGroupResultAdd> {
-  String displayName;
-  String email;
-  String proPic;
-  String userId;
-  int verifiedStatus;
-  String gname, gid, pic, moov;
-  List<dynamic> members, friendGroups;
   bool status = false;
-
-  _UserGroupResultAddState(
-      this.displayName,
-      this.email,
-      this.proPic,
-      this.userId,
-      this.verifiedStatus,
-      this.friendGroups,
-      this.gname,
-      this.gid,
-      this.pic,
-      this.moov,
-      this.members);
 
   @override
   Widget build(BuildContext context) {
     bool isLargePhone = Screen.diagonal(context) > 766;
 
-    friendGroups.contains(gid) ? status = true : false;
+    if (widget.friendGroups.contains(widget.gid)) {
+      status = true;
+    }
 
     return GestureDetector(
       onTap: () => Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => userId != currentUser.id
-              ? OtherProfile(userId)
+          builder: (context) => widget.userId != currentUser.id
+              ? OtherProfile(widget.userId)
               : ProfilePageWithHeader())),
       child: Stack(children: [
         Row(children: <Widget>[
@@ -1142,7 +1112,7 @@ class _UserGroupResultAddState extends State<UserGroupResultAdd> {
                 radius: 27,
                 backgroundColor: TextThemes.ndGold,
                 child: CircleAvatar(
-                  backgroundImage: NetworkImage(proPic),
+                  backgroundImage: NetworkImage(widget.proPic),
                   radius: 25,
                   backgroundColor: TextThemes.ndBlue,
                 )),
@@ -1150,14 +1120,14 @@ class _UserGroupResultAddState extends State<UserGroupResultAdd> {
           Padding(
             padding: const EdgeInsets.only(left: 12.5),
             child: Text(
-              displayName ?? "",
+              widget.displayName ?? "",
               style: TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.w500,
                   fontSize: isLargePhone ? 20 : 16),
             ),
           ),
-          verifiedStatus == 2
+          widget.verifiedStatus == 2
               ? Padding(
                   padding: const EdgeInsets.only(top: 3, left: 3),
                   child: Image.asset('lib/assets/verif.png', height: 30),
@@ -1171,51 +1141,116 @@ class _UserGroupResultAddState extends State<UserGroupResultAdd> {
             color: Colors.black,
           ),
         ]),
-        status
-            ? Positioned(
-                right: 20,
-                top: 10,
-                child: RaisedButton(
-                    padding: const EdgeInsets.all(2.0),
-                    color: Colors.green,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(3.0))),
-                    onPressed: () {
-                      setState(() {
-                        status = true;
-                      });
-                    },
-                    child: Text(
-                      "Added",
-                      style: new TextStyle(
-                        color: Colors.white,
-                        fontSize: 12.0,
-                      ),
-                    )))
-            : Positioned(
-                right: 20,
-                top: 10,
-                child: RaisedButton(
-                    padding: const EdgeInsets.all(2.0),
-                    color: TextThemes.ndBlue,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(3.0))),
-                    onPressed: () {
-                      Database()
-                          .addUserToGroup(userId, gname, gid, displayName);
-                      Database().addedToGroup(userId, gname, gid, pic);
-                      setState(() {
-                        status = true;
-                      });
-                    },
-                    child: Text(
-                      "Add to Group",
-                      style: new TextStyle(
-                        color: Colors.white,
-                        fontSize: 12.0,
-                      ),
-                    )),
-              ),
+        widget.livePass != null
+            ? Align(
+                alignment: Alignment.centerRight,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextButton(
+                      onPressed: () {
+                        //  isLoading = true;
+                        showBottomSheet(
+                            backgroundColor: Colors.pink[100],
+                            context: context,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15)),
+                            builder: (context) => GiftBottomSheet(
+                                widget.livePass, widget.userId));
+                      },
+                      //  else {
+                      //   usersRef
+                      //                   .doc(currentUser.id)
+                      //                   .collection('livePasses')
+                      //                   .doc(passId)
+                      //                   .set({
+                      //                 "type": "MOOV Over Pass",
+                      //                 "name": "MOOV Over Pass",
+                      //                 "startDate": widget.startDate,
+                      //                 "businessName": widget.businessName,
+                      //                 "price": 10,
+                      //                 "photo": "widget.photo",
+                      //                 "time": Timestamp.now(),
+                      //                 "businessId": widget.businessUserId,
+                      //                 "postId": widget.postId,
+                      //                 "passId": passId,
+                      //                 "tip": 0
+                      //               }, SetOptions(merge: true)).
+
+                      //   usersRef.doc(currentUser.id).set({
+                      //     "moovMoney": FieldValue.increment(-1 * _tipAmount)
+                      //   }, SetOptions(merge: true));
+
+                      //   usersRef.doc(widget.userId).collection('livePasses') set(
+                      //       {"moovMoney": FieldValue.increment(_tipAmount)},
+                      //       SetOptions(merge: true));
+
+                      //   setState(() {
+                      //     isChecking = true;
+                      //   });
+                      //   Future.delayed(Duration(seconds: 2), () {
+                      //     Navigator.pushAndRemoveUntil(
+                      //       context,
+                      //       MaterialPageRoute(builder: (context) => Home()),
+                      //       (Route<dynamic> route) => false,
+                      //     );
+                      //   });
+                      // }
+                      style: TextButton.styleFrom(
+                          side: BorderSide(color: Colors.green)),
+                      child: Text(
+                        "Gift",
+                        style: TextStyle(fontSize: 18, color: Colors.green),
+                      )),
+                ),
+              )
+            : status
+                ? Positioned(
+                    right: 20,
+                    top: 10,
+                    child: RaisedButton(
+                        padding: const EdgeInsets.all(2.0),
+                        color: Colors.green,
+                        shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(3.0))),
+                        onPressed: () {
+                          setState(() {
+                            status = true;
+                          });
+                        },
+                        child: Text(
+                          "Added",
+                          style: new TextStyle(
+                            color: Colors.white,
+                            fontSize: 12.0,
+                          ),
+                        )))
+                : Positioned(
+                    right: 20,
+                    top: 10,
+                    child: RaisedButton(
+                        padding: const EdgeInsets.all(2.0),
+                        color: TextThemes.ndBlue,
+                        shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(3.0))),
+                        onPressed: () {
+                          Database().addUserToGroup(widget.userId, widget.gname,
+                              widget.gid, widget.displayName);
+                          Database().addedToGroup(widget.userId, widget.gname,
+                              widget.gid, widget.pic);
+                          setState(() {
+                            status = true;
+                          });
+                        },
+                        child: Text(
+                          "Add to Group",
+                          style: new TextStyle(
+                            color: Colors.white,
+                            fontSize: 12.0,
+                          ),
+                        )),
+                  ),
       ]),
     );
   }

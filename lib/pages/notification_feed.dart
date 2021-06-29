@@ -966,6 +966,8 @@ class NotificationFeedItem extends StatelessWidget {
       activityItemText = ' commented: ';
     } else if (type == 'deleted') {
       activityItemText = ' has been canceled';
+    } else if (type == 'gift') {
+      activityItemText = ' gifted you a MOOV Pass™!';
     } else if (type == 'badge') {
       activityItemText = 'You have earned the badge, ';
     } else if (type == 'natties') {
@@ -995,7 +997,7 @@ class NotificationFeedItem extends StatelessWidget {
                   ? showProfile(context)
                   : (type == 'suggestion' || type == 'friendGroup')
                       ? showGroup(context)
-                      : type == 'badge' || type == 'natties'
+                      : type == 'badge' || type == 'natties' || type == 'gift'
                           ? null
                           : showPost(context);
             },
@@ -1042,10 +1044,14 @@ class NotificationFeedItem extends StatelessWidget {
             onTap: userProfilePic == 'badge'
                 ? () => null
                 : () => showProfile(context),
-            child: CircleAvatar(
+            child: type == "gift" ? 
+            CircleAvatar(child:
+                  Icon(Icons.local_offer)):
+ CircleAvatar(
               backgroundImage: userProfilePic == 'badge'
                   ? AssetImage("lib/assets/trophy2.png")
-                  : userProfilePic != null
+                                  :
+                  userProfilePic != null
                       ? CachedNetworkImageProvider(userProfilePic)
                       : AssetImage("lib/assets/otherbutton1.png"),
             ),
