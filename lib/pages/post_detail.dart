@@ -447,7 +447,7 @@ class _NonImageContents extends StatelessWidget {
               course),
           CommentPreviewOnPost(
               postId: course['postId'], postOwnerId: course['userId']),
-          NeedARideButton(height),
+          // NeedARideButton(height),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 1.0),
             child: Container(
@@ -2694,20 +2694,20 @@ class _PayNondealCostBottomSheetState extends State<PayNondealCostBottomSheet>
   }
 }
 
-class NeedARideButton extends StatefulWidget {
-  final double height;
+// class NeedARideButton extends StatefulWidget {
+//   final double height;
 
-  NeedARideButton(this.height);
-  @override
-  _NeedARideButtonState createState() => _NeedARideButtonState();
-}
+//   NeedARideButton(this.height);
+//   @override
+//   _NeedARideButtonState createState() => _NeedARideButtonState();
+// }
 
-class _NeedARideButtonState extends State<NeedARideButton> {
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: Duration(seconds: 1),
-      height: widget.height,
-    );
-  }
-}
+// class _NeedARideButtonState extends State<NeedARideButton> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return AnimatedContainer(
+//       duration: Duration(seconds: 1),
+//       height: widget.height,
+//     );
+//   }
+// }

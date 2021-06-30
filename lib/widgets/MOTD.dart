@@ -2,13 +2,14 @@ import 'package:MOOV/helpers/size_config.dart';
 import 'package:MOOV/main.dart';
 import 'package:MOOV/pages/home.dart';
 import 'package:MOOV/pages/post_detail.dart';
+import 'package:MOOV/utils/themes_styles.dart';
 import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_device_type/flutter_device_type.dart';
-import 'package:optimized_cached_image/optimized_cached_image.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class MOTD extends StatefulWidget {
   final String type, vibeType;
@@ -68,6 +69,7 @@ class MOTDUI extends StatelessWidget {
     String title;
     String pic;
     String type;
+    List tags;
 
     bool isTablet = false;
     if (Device.get().isTablet) {
@@ -84,6 +86,7 @@ class MOTDUI extends StatelessWidget {
             DocumentSnapshot course = snapshot.data.docs[index];
             pic = course['image'];
             title = course['title'];
+            tags = course['tags'];
 
             if (course['paymentAmount'] != null &&
                 course['paymentAmount'] != 0) {
@@ -95,7 +98,6 @@ class MOTDUI extends StatelessWidget {
                     course.data()['mobileOrderMenu']['item3'])) {
               type = "order";
             }
-
             return Container(
               alignment: Alignment.center,
               // width: width * 0.8,
@@ -181,7 +183,7 @@ class MOTDUI extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            ExtraCornerElements(type)
+                            ExtraCornerElements(type, tags)
                           ]),
                         ),
                       ),
@@ -197,41 +199,44 @@ class MOTDUI extends StatelessWidget {
 
 class ExtraCornerElements extends StatelessWidget {
   final String type;
-  const ExtraCornerElements(this.type);
+  final List tags;
+  const ExtraCornerElements(this.type, this.tags);
 
   @override
   Widget build(BuildContext context) {
-    return (type == "order")
+    return (tags.contains('deal'))
         ? Positioned(
-            bottom: 2.5,
+            top: 2.5,
             right: 2.5,
             child: Container(
-              height: 30,
+              height: 40,
               padding: EdgeInsets.all(4),
               decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Colors.pink[400], Colors.purple[300]],
+                    colors: [TextThemes.ndBlue, TextThemes.ndBlue],
                     begin: Alignment.centerLeft,
                     end: Alignment.centerRight,
                   ),
                   borderRadius: BorderRadius.circular(10.0)),
               child: Row(
                 children: [
-                  Icon(
-                    Icons.menu_book,
-                    color: Colors.white,
-                    size: 15,
+                  Image.asset(
+                    'lib/assets/moovblue.png',
+                    fit: BoxFit.cover,
+                    height: 50.0,
                   ),
-                  Text(
-                    " Order Now",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.white, fontSize: 14),
-                  ),
+                  Text("Exclusive\nDEAL",
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.montserrat(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold)),
+                  SizedBox(width: 2)
                 ],
               ),
             ),
           )
-        : (type == "pay")
+        : (type == "order")
             ? Positioned(
                 bottom: 2.5,
                 right: 2.5,
@@ -240,7 +245,7 @@ class ExtraCornerElements extends StatelessWidget {
                   padding: EdgeInsets.all(4),
                   decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [Colors.green[400], Colors.green[300]],
+                        colors: [Colors.pink[400], Colors.purple[300]],
                         begin: Alignment.centerLeft,
                         end: Alignment.centerRight,
                       ),
@@ -248,12 +253,12 @@ class ExtraCornerElements extends StatelessWidget {
                   child: Row(
                     children: [
                       Icon(
-                        Icons.attach_money,
+                        Icons.menu_book,
                         color: Colors.white,
                         size: 15,
                       ),
                       Text(
-                        " Pay Now ",
+                        " Order Now",
                         textAlign: TextAlign.center,
                         style: TextStyle(color: Colors.white, fontSize: 14),
                       ),
@@ -261,7 +266,37 @@ class ExtraCornerElements extends StatelessWidget {
                   ),
                 ),
               )
-            : Container();
+            : (type == "pay")
+                ? Positioned(
+                    bottom: 2.5,
+                    right: 2.5,
+                    child: Container(
+                      height: 30,
+                      padding: EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [Colors.green[400], Colors.green[300]],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                          ),
+                          borderRadius: BorderRadius.circular(10.0)),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.attach_money,
+                            color: Colors.white,
+                            size: 15,
+                          ),
+                          Text(
+                            " Pay Now ",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.white, fontSize: 14),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                : Container();
   }
 }
 

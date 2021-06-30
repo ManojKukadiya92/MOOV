@@ -1055,7 +1055,7 @@ class __BusinessAccountOptionalsState extends State<_BusinessAccountOptionals> {
       "photoUrl": user.photoUrl,
       "badges": {},
       "bio": description ?? "Create a bio here",
-      "header": downloadUrl,
+      "header": downloadUrl ?? "",
       "timestamp": timestamp,
       "score": 0,
       "moovMoney": 0,
