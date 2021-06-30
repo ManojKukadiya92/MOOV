@@ -1003,56 +1003,59 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                               ],
                             ),
                           ),
-                    AnimatedContainer(
-                      child: DelayedDisplay(delay: Duration(milliseconds: 750),
-                      child:
-                      RichText(
-          overflow: TextOverflow.ellipsis,
-          text: TextSpan(
-              style: TextStyle(
-                color: Colors.black,
-              ),
-              children: [
-                TextSpan(
-                  text: "Posting a ",
-                  style: TextStyle(
-                      fontWeight: FontWeight.w300,
-                      fontSize: 16,
-                ),
-                ),
-                TextSpan(
-                  text: typeDropdownValue,
-                  style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                      color: TextThemes.ndGold),
-                ),
-                 TextSpan(
-                  text: ", ",
-                  style: TextStyle(
-                      fontWeight: FontWeight.w300,
-                      fontSize: 16,
-                )
-                ),
-                TextSpan(
-                  text: "$privacyDropdownValue",
-                  style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                      color: TextThemes.ndGold),
-                ),
-                TextSpan(
-                  text: " MOOV..",
-                  style: TextStyle(
-                      fontWeight: FontWeight.w300,
-                      fontSize: 16,
-                ),
-                ),
-              ]),
-        ),
-                      ),
-                        duration: Duration(milliseconds: 500),
-                        height: _emphasizeTypeAndPrivacyHeight),
+
+                          //this is a widget letting them confirm theyre posting this type
+                    currentUser.isBusiness
+                        ? Container()
+                        : AnimatedContainer(
+                            child: DelayedDisplay(
+                              delay: Duration(milliseconds: 750),
+                              child: RichText(
+                                overflow: TextOverflow.ellipsis,
+                                text: TextSpan(
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                    ),
+                                    children: [
+                                      TextSpan(
+                                        text: "Posting a ",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w300,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text: typeDropdownValue,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 16,
+                                            color: TextThemes.ndGold),
+                                      ),
+                                      TextSpan(
+                                          text: ", ",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w300,
+                                            fontSize: 16,
+                                          )),
+                                      TextSpan(
+                                        text: "$privacyDropdownValue",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 16,
+                                            color: TextThemes.ndGold),
+                                      ),
+                                      TextSpan(
+                                        text: " MOOV..",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w300,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ]),
+                              ),
+                            ),
+                            duration: Duration(milliseconds: 500),
+                            height: _emphasizeTypeAndPrivacyHeight),
                     !currentUser.isBusiness
                         ? Row(
                             children: [
