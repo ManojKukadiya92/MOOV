@@ -248,6 +248,7 @@ class _EditPostState extends State<EditPost> {
           String privacyDropdownValue = visibility;
           List<dynamic> going = snapshot.data['going'];
           String description = snapshot.data['description'];
+          String address = snapshot.data['address'];
 
           String maxOccupancy = snapshot.data['maxOccupancy'].toString();
           String paymentAmount = snapshot.data['paymentAmount'].toString();
@@ -472,6 +473,29 @@ class _EditPostState extends State<EditPost> {
                                       }
                                       return null;
                                     },
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      left: 8, right: 10, top: 10),
+                                  child: TextFormField(
+                                    onChanged: (text) {
+                                      setState(() {
+                                        address = text;
+                                      });
+                                    },
+                                    controller: addressController,
+                                    decoration: InputDecoration(
+                                      floatingLabelBehavior:
+                                          FloatingLabelBehavior.never,
+                                      icon: Text("New \nAddy"),
+                                      labelStyle: TextThemes.mediumbody,
+                                      labelText: address,
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                      ),
+                                    ),
                                   ),
                                 ),
                                 // Padding(
@@ -1117,7 +1141,7 @@ class _EditPostState extends State<EditPost> {
                                 ),
 
                                 Padding(
-                                  padding: const EdgeInsets.all(8.0),
+                                  padding: const EdgeInsets.all(0.0),
                                   child: RaisedButton(
                                       shape: RoundedRectangleBorder(
                                           borderRadius:
@@ -1278,7 +1302,7 @@ class _EditPostState extends State<EditPost> {
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.only(
-                                      top: 10.0, bottom: 20),
+                                      top: 10.0, bottom: 10),
                                   child: RaisedButton(
                                       shape: RoundedRectangleBorder(
                                           borderRadius:
@@ -1470,28 +1494,31 @@ class _EditPostState extends State<EditPost> {
                                               }),
                                         ],
                                         onPressed: () {},
-                                        child: Container(
-                                          height: 30,
-                                          padding: EdgeInsets.all(4),
-                                          decoration: BoxDecoration(
-                                              gradient: LinearGradient(
-                                                colors: [
-                                                  Colors.blue[400],
-                                                  Colors.purple[300]
-                                                ],
-                                                begin: Alignment.centerLeft,
-                                                end: Alignment.centerRight,
+                                        child: Padding(
+                                            padding: EdgeInsets.all(40),
+                                            child: Container(
+                                              height: 30,
+                                              padding: EdgeInsets.all(4),
+                                              decoration: BoxDecoration(
+                                                  gradient: LinearGradient(
+                                                    colors: [
+                                                      Colors.blue[400],
+                                                      Colors.purple[300]
+                                                    ],
+                                                    begin: Alignment.centerLeft,
+                                                    end: Alignment.centerRight,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          10.0)),
+                                              child: Text(
+                                                "MAKE MOTD",
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 18),
                                               ),
-                                              borderRadius:
-                                                  BorderRadius.circular(10.0)),
-                                          child: Text(
-                                            "MAKE MOTD",
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 18),
-                                          ),
-                                        ),
+                                            )),
                                       )
                                     : Text(""),
                                 currentUser.id == "108155010592087635288" ||

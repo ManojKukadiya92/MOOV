@@ -393,7 +393,7 @@ class _BannerImage extends StatelessWidget {
       Positioned(
         bottom: 10,
         right: 5,
-        child: PostOwnerInfo(userId),
+        child: userId != null ? PostOwnerInfo(userId) : Container(),
       ),
     ]);
   }

@@ -188,7 +188,7 @@ class Database {
       "tags": []
     }).then(inviteesNotification(postId, imageUrl, title, statuses));
 
-    if (privacy == 'Public' || privacy == 'Friends Only') {
+    if (privacy == 'Public' || privacy == 'Friends Only' && userId != null) {
       var peepsToAlert;
       currentUser.isBusiness == true
           ? peepsToAlert = currentUser.followers

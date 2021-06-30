@@ -167,7 +167,9 @@ class _PostOnFeedNewState extends State<PostOnFeedNew> {
                   Positioned(
                       bottom: 10,
                       right: 22.5,
-                      child: PostOwnerInfo(widget.course['userId'])),
+                      child: widget.course['userId'] != null
+                          ? PostOwnerInfo(widget.course['userId'])
+                          : Container()),
                   Positioned(
                       bottom: 10,
                       left: 22.5,

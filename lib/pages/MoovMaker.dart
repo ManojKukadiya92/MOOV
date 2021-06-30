@@ -96,7 +96,7 @@ class _MoovMakerState extends State<MoovMaker> {
                   ),
                 ),
                 Padding(
-                    padding: const EdgeInsets.only(bottom: 15.0),
+                    padding: const EdgeInsets.only(bottom: 15.0, top: 25),
                     child: Container(
                         child: Text("MOOV Maker",
                             style: GoogleFonts.montserrat(
@@ -283,7 +283,7 @@ class _MoovMakerFormState extends State<MoovMakerForm>
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
           title: Text(
             "Whaddaya got? 📸",
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
           children: <Widget>[
             SimpleDialogOption(
@@ -333,6 +333,7 @@ class _MoovMakerFormState extends State<MoovMakerForm>
 
   final _formKey = GlobalKey<FormState>();
   final privacyList = ["Public", "Friends Only", "Invite Only"];
+  final posterList = [currentUser.displayName.toString(), "Anonymous"];
   final listOfTypes = [
     "Food/Drink",
     "Hangouts",
@@ -413,6 +414,7 @@ class _MoovMakerFormState extends State<MoovMakerForm>
   // DateTime endTime = DateTime.now().add(Duration(minutes: 120));
   // DateTime endTimes;
   String privacyDropdownValue = 'Public';
+  String posterDropdownValue = currentUser.displayName.toString();
   String typeDropdownValue = 'Hangouts';
   String clubPostValue = 'No';
 
@@ -1458,6 +1460,94 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                                   fontSize: 18.0, fontWeight: FontWeight.bold),
                             ),
                             children: <Widget>[
+                              ListTile(
+                                title: Row(
+                                  children: <Widget>[
+                                    Expanded(
+                                        flex: 4,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            RichText(
+                                              overflow: TextOverflow.ellipsis,
+                                              text: TextSpan(
+                                                  style: TextStyle(
+                                                    color: Colors.black,
+                                                  ),
+                                                  children: [
+                                                    TextSpan(
+                                                      text:
+                                                          "Post this MOOV as: ",
+                                                      style: TextStyle(),
+                                                    ),
+                                                    TextSpan(
+                                                        text:
+                                                            '\nWho posted this MOOV?',
+                                                        style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.w300,
+                                                          fontSize: 10,
+                                                        )),
+                                                  ]),
+                                            ),
+                                          ],
+                                        )),
+
+                                    // Expanded(
+                                    //   flex: 1,
+                                    //   child: TextField(
+                                    //     textAlign: TextAlign.center,
+                                    //     inputFormatters: [
+                                    //       CurrencyTextInputFormatter(
+                                    //         decimalDigits: 0,
+                                    //         symbol: '\$',
+                                    //       )
+                                    //     ],
+                                    //     controller: paymentAmountController,
+                                    //     keyboardType: TextInputType.number,
+                                    //     onChanged: (value) => setState(
+                                    //         () => paymentAmount = value),
+                                    //   ),
+                                    // ),
+                                    Container(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                .35,
+                                        child: ButtonTheme(
+                                          child: DropdownButtonFormField(
+                                            style: isLargePhone
+                                                ? null
+                                                : TextStyle(
+                                                    fontSize: 12.5,
+                                                    color: Colors.black),
+                                            value: posterDropdownValue,
+                                            icon: Icon(Icons.contact_page_sharp,
+                                                color: TextThemes.ndGold),
+                                            decoration: InputDecoration(
+                                              enabledBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(10.0),
+                                              ),
+                                            ),
+                                            items:
+                                                posterList.map((String value) {
+                                              return new DropdownMenuItem<
+                                                  String>(
+                                                value: value,
+                                                child: new Text(value),
+                                              );
+                                            }).toList(),
+                                            onChanged: (String newValue) {
+                                              setState(() {
+                                                posterDropdownValue = newValue;
+                                              });
+                                            },
+                                          ),
+                                        ))
+                                  ],
+                                ),
+                              ),
                               widget.fromMoovOver
                                   ? AnimatedBuilder(
                                       animation: _animation,
@@ -1682,7 +1772,7 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                                                           ),
                                                           TextSpan(
                                                               text:
-                                                                  '\nYour MOOV will show "full"',
+                                                                  '\nYour MOOV will show "Full"',
                                                               style: TextStyle(
                                                                 fontWeight:
                                                                     FontWeight
@@ -2475,7 +2565,10 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                                           maxOccupancy: maxOccupancyInt,
                                           paymentAmount: paymentAmountInt,
                                           imageUrl: downloadUrl,
-                                          userId: strUserId,
+                                          userId:
+                                              posterDropdownValue != "Anonymous"
+                                                  ? strUserId
+                                                  : null,
                                           postId: postId,
                                           posterName: currentUser.displayName,
                                           push: push,

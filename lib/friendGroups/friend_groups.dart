@@ -453,8 +453,6 @@ class _FriendGroupsState extends State<FriendGroupsPage> {
                                                             Radius.circular(
                                                                 15)),
                                                     child: CachedNetworkImage(
-                                                       
-                                                       
                                                       placeholder:
                                                           (context, url) {
                                                         return Container(
