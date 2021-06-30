@@ -309,8 +309,6 @@ class _PollViewState extends State<PollView> {
                                                       // backgroundImage: snapshot.data
                                                       //     .documents[index].data['photoUrl'],
                                                       child: CachedNetworkImage(
-                                                        memCacheHeight: 100,
-                                                        memCacheWidth: 100,
                                                         // memCacheHeight: 15,
                                                         // memCacheWidth: 15,
                                                         imageUrl: pic,

@@ -2418,7 +2418,6 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                                       "dealLimit": dealLimitInt,
                                     });
                                   }
-
                                   currentUser.isBusiness
                                       ? Database().createBusinessPost(
                                           title: titleController.text,

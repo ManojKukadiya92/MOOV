@@ -1594,8 +1594,6 @@ class _BannerImage extends StatelessWidget {
             ],
           ),
           child: CachedNetworkImage(
-            memCacheHeight: 100,
-            memCacheWidth: 100,
             imageUrl: bannerImage,
             fit: BoxFit.fitWidth,
             height: 200,
@@ -2013,8 +2011,8 @@ void showAlertDialog2(
 //                           child: (currentUser.photoUrl == null)
 //                               ? AssetImage('images/user-avatar.png')
 //                               : CachedNetworkImage(
-                                      // memCacheHeight: 100,
-                                      // memCacheWidth: 100,imageUrl: photoUrl),
+//
+// imageUrl: photoUrl),
 //                           // backgroundImage: NetworkImage(currentUser.photoUrl),
 //                         ),
 //                       ),

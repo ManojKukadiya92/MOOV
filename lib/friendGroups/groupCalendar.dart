@@ -434,8 +434,6 @@ class CalendarMOOV extends StatelessWidget {
                             child: Container(
                               child: Container(
                                 child: CachedNetworkImage(
-                                  memCacheHeight: 100,
-                                  memCacheWidth: 100,
                                   imageUrl: event.pic,
                                   fit: BoxFit.cover,
                                 ),

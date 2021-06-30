@@ -147,8 +147,6 @@ class MOOVMemories extends StatelessWidget {
                                                 borderRadius:
                                                     BorderRadius.circular(10),
                                                 child: CachedNetworkImage(
-                                                  memCacheHeight: 100,
-                                                  memCacheWidth: 100,
                                                   imageUrl: course['image'],
                                                   fit: BoxFit.cover,
                                                 ),

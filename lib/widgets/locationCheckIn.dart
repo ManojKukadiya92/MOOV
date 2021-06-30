@@ -322,8 +322,6 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
               ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(15)),
                 child: CachedNetworkImage(
-                  memCacheHeight: 100,
-                  memCacheWidth: 100,
                   imageUrl: widget.image,
                   fit: BoxFit.cover,
                   height: MediaQuery.of(context).size.height * 0.15,

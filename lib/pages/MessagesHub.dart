@@ -841,8 +841,6 @@ class MessageList extends StatelessWidget {
                                             borderRadius:
                                                 BorderRadius.circular(10),
                                             child: CachedNetworkImage(
-                                              memCacheHeight: 100,
-                                              memCacheWidth: 100,
                                               imageUrl:
                                                   snapshot.data['groupPic'],
                                               fit: BoxFit.cover,
@@ -1060,8 +1058,8 @@ class _MessageDetailState extends State<MessageDetail> {
                                       //     borderRadius:
                                       //         BorderRadius.all(Radius.circular(15)),
                                       //     child: CachedNetworkImage(
-                                      // memCacheHeight: 100,
-                                      // memCacheWidth: 100,
+                                      //
+                                      //
                                       //       imageUrl: snapshot.data['groupPic'],
                                       //       fit: BoxFit.cover,
                                       //       height: isLargePhone
@@ -1107,8 +1105,6 @@ class _MessageDetailState extends State<MessageDetail> {
                                           borderRadius: BorderRadius.all(
                                               Radius.circular(15)),
                                           child: CachedNetworkImage(
-                                            memCacheHeight: 100,
-                                            memCacheWidth: 100,
                                             imageUrl: snapshot.data['groupPic'],
                                             fit: BoxFit.cover,
                                             height: isLargePhone

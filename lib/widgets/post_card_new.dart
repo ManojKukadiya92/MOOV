@@ -105,8 +105,6 @@ class _PostOnFeedNewState extends State<PostOnFeedNew> {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(10),
                           child: CachedNetworkImage(
-                            memCacheHeight: 100,
-                            memCacheWidth: 100,
                             imageUrl: widget.course['image'],
                             fit: BoxFit.cover,
                           ),

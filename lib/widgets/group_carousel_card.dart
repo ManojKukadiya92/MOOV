@@ -132,8 +132,6 @@ class GroupCarousel extends StatelessWidget {
                                                             Radius.circular(
                                                                 15)),
                                                     child: CachedNetworkImage(
-                                                      memCacheHeight: 100,
-                                                      memCacheWidth: 100,
                                                       imageUrl:
                                                           course['groupPic'],
                                                       fit: BoxFit.cover,
