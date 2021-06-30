@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:MOOV/pages/home.dart';
 import 'package:MOOV/utils/themes_styles.dart';
 import 'package:MOOV/widgets/camera.dart';
-import 'package:MOOV/widgets/progress.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:confetti/confetti.dart';
 import 'package:delayed_display/delayed_display.dart';

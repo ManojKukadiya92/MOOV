@@ -18,7 +18,7 @@ class GoogleMap extends StatefulWidget {
   final Callback callback;
   final Callback callback2;
   final Callback callback3;
-  final List coords;
+  final List coords, mapAddy;
   final String businessName, businessType;
 
   GoogleMap(
@@ -27,6 +27,7 @@ class GoogleMap extends StatefulWidget {
       this.callback2,
       this.callback3,
       this.coords,
+      this.mapAddy,
       this.businessName,
       this.businessType});
 
@@ -387,8 +388,11 @@ class _GoogleMapState extends State<GoogleMap> {
                                           : TextButton(
                                               onPressed: () {
                                                 selectedPlace = _selectedPlace;
+                                                widget.mapAddy.add(selectedPlace
+                                                    .formattedAddress);
                                                 widget.coords.add(selectedPlace
                                                     .geometry.location);
+                                              
                                                 setState(() {});
                                                 Navigator.pop(context);
                                               },
@@ -426,7 +430,6 @@ class _GoogleMapState extends State<GoogleMap> {
                                     ConnectionState.done) {
                                   return circularProgress();
                                 }
-                                print(selectedPlace.geometry.location);
                                 if (!snapshot.hasData) {
                                   return Container();
                                 }
@@ -451,14 +454,14 @@ class _GoogleMapState extends State<GoogleMap> {
                                     NumberFormat.compact(locale: 'eu')
                                         .format(y);
 
-                                CreateAccount.of(context)
-                                        .businessLocationLatitude =
-                                    latitude.toString();
-                                CreateAccount.of(context)
-                                        .businessLocationLongitude =
-                                    longtitude.toString();
-                                CreateAccount.of(context).businessAddress =
-                                    selectedPlace.formattedAddress;
+                                // CreateAccount.of(context)
+                                //         .businessLocationLatitude =
+                                //     latitude.toString();
+                                // CreateAccount.of(context)
+                                //         .businessLocationLongitude =
+                                //     longtitude.toString();
+                                // CreateAccount.of(context).businessAddress =
+                                //     selectedPlace.formattedAddress;
 
                                 return Padding(
                                   padding: const EdgeInsets.symmetric(

@@ -463,15 +463,30 @@ class _MoovMakerFormState extends State<MoovMakerForm>
     id++;
   }
 
+  String addressFromMap = "m";
+
   FutureOr onGoBack(dynamic value) {
     refreshData();
     setState(() {});
   }
 
+  FutureOr setAddress(dynamic value) {
+    refreshData();
+    setState(() {
+      addressController.text = mapAddy.first.toString();
+    });
+  }
+
+//these fields populate once the map is clicked on, dropping the pin on a certain location
+  List mapAddy = [];
   List coords = [];
+
   bool postANewMOOVPressed = false;
   bool _isDeal = false;
   List<String> tags = [];
+
+  double _emphasizeTypeAndPrivacyHeight = 0;
+  //this is to make sure people know about these fields, turns on once details are filled out.
 
   @override
   Widget build(BuildContext context) {
@@ -988,6 +1003,56 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                               ],
                             ),
                           ),
+                    AnimatedContainer(
+                      child: DelayedDisplay(delay: Duration(milliseconds: 750),
+                      child:
+                      RichText(
+          overflow: TextOverflow.ellipsis,
+          text: TextSpan(
+              style: TextStyle(
+                color: Colors.black,
+              ),
+              children: [
+                TextSpan(
+                  text: "Posting a ",
+                  style: TextStyle(
+                      fontWeight: FontWeight.w300,
+                      fontSize: 16,
+                ),
+                ),
+                TextSpan(
+                  text: typeDropdownValue,
+                  style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                      color: TextThemes.ndGold),
+                ),
+                 TextSpan(
+                  text: ", ",
+                  style: TextStyle(
+                      fontWeight: FontWeight.w300,
+                      fontSize: 16,
+                )
+                ),
+                TextSpan(
+                  text: "$privacyDropdownValue",
+                  style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                      color: TextThemes.ndGold),
+                ),
+                TextSpan(
+                  text: " MOOV..",
+                  style: TextStyle(
+                      fontWeight: FontWeight.w300,
+                      fontSize: 16,
+                ),
+                ),
+              ]),
+        ),
+                      ),
+                        duration: Duration(milliseconds: 500),
+                        height: _emphasizeTypeAndPrivacyHeight),
                     !currentUser.isBusiness
                         ? Row(
                             children: [
@@ -1021,10 +1086,10 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                                     ? () => Navigator.of(context)
                                         .push(MaterialPageRoute(
                                             builder: (context) => GoogleMap(
-                                                  fromMOOVMaker: true,
-                                                  coords: coords,
-                                                )))
-                                        .then(onGoBack)
+                                                fromMOOVMaker: true,
+                                                coords: coords,
+                                                mapAddy: mapAddy)))
+                                        .then(setAddress)
                                     : null,
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(
@@ -2613,6 +2678,11 @@ class _MoovMakerFormState extends State<MoovMakerForm>
     setState(() {
       detailLength = value.length;
     });
+    if (detailLength > 3) {
+      setState(() {
+        _emphasizeTypeAndPrivacyHeight = 30;
+      });
+    }
     print(detailLength);
   }
 
