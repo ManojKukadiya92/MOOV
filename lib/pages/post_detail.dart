@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:ui';
-import 'package:MOOV/businessInterfaces/CrowdManagement.dart';
-import 'package:MOOV/businessInterfaces/MobileOrdering.dart';
-import 'package:MOOV/businessInterfaces/livePassesSheet.dart';
+import 'package:MOOV/businessInterfaces/crowd_management.dart';
+import 'package:MOOV/businessInterfaces/mobile_ordering.dart';
+import 'package:MOOV/businessInterfaces/live_passes_sheet.dart';
 import 'package:MOOV/pages/MoovMaker.dart';
 import 'package:MOOV/widgets/post_card_new.dart';
 import 'package:MOOV/helpers/themes.dart';

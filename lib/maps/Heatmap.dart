@@ -203,18 +203,23 @@ class _TileLayerSampleState extends SampleViewState {
                     },
                     markerBuilder: (BuildContext context, int index) {
                       final _WonderDetails item = _worldWonders[index];
-                      int heat = 50;
-                      if (item.goingCount > 5) {
-                        heat = 100;
+                      int heat = 100;
+                      double size = 24;
+                      if (item.goingCount > 0) {
+                        heat = 200;
+
                       }
                       if (item.goingCount > 10) {
                         heat = 400;
+                        size = 27;
                       }
-                      if (item.goingCount > 30) {
-                        heat = 900;
+                      if (item.goingCount > 10) {
+                        heat = 500;
+                        size = 31;
                       }
-                      if (item.goingCount > 50) {
+                      if (item.goingCount > 29) {
                         heat = 900;
+                        size = 35;
                       }
                       return MapMarker(
                         latitude: _worldWonders[index].latitude,
@@ -237,7 +242,7 @@ class _TileLayerSampleState extends SampleViewState {
                               child: Opacity(
                                 opacity: .7,
                                 child: Icon(Icons.circle,
-                                    color: Colors.red[heat], size: 30.0),
+                                    color: Colors.red[heat], size: size),
                               ),
                             ),
                             SizedBox(
@@ -259,17 +264,19 @@ class _TileLayerSampleState extends SampleViewState {
                     Align(
                       alignment: Alignment.centerRight,
                       child: Padding(
-                        padding: const EdgeInsets.only(bottom: 10.0, right: 40.0),
+                        padding:
+                            const EdgeInsets.only(bottom: 10.0, right: 40.0),
                         child: AnimatedTextKit(
-                          totalRepeatCount: 100,
-                          animatedTexts: [
-                          ColorizeAnimatedText(
-                            'Swipe >',
-                            // speed: Duration(seconds: 2),
-                            textStyle: GoogleFonts.montserrat(fontSize: 20, fontWeight: FontWeight.bold),
-                            colors: colorizeColors,
-                          ),
-                        ]),
+                            totalRepeatCount: 100,
+                            animatedTexts: [
+                              ColorizeAnimatedText(
+                                'Swipe >',
+                                // speed: Duration(seconds: 2),
+                                textStyle: GoogleFonts.montserrat(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                                colors: colorizeColors,
+                              ),
+                            ]),
                       ),
                     ),
                     Container(
@@ -384,7 +391,7 @@ class _TileLayerSampleState extends SampleViewState {
                           opacity: .7,
                           child: Stack(children: [
                             Container(
-                                height: 125,
+                                height: 145,
                                 width: 120,
                                 decoration: BoxDecoration(
                                     color: Colors.blue[50],
@@ -404,28 +411,28 @@ class _TileLayerSampleState extends SampleViewState {
                                     Row(
                                       children: [
                                         Icon(Icons.circle,
-                                            color: Colors.red[50]),
+                                            color: Colors.red[200]),
                                         Text(" 1-5"),
                                       ],
                                     ),
                                     Row(
                                       children: [
                                         Icon(Icons.circle,
-                                            color: Colors.red[100]),
+                                            size: 27, color: Colors.red[400]),
                                         Text(" 6-10"),
                                       ],
                                     ),
                                     Row(
                                       children: [
                                         Icon(Icons.circle,
-                                            color: Colors.red[400]),
+                                            size: 31, color: Colors.red[500]),
                                         Text(" 11-30"),
                                       ],
                                     ),
                                     Row(
                                       children: [
                                         Icon(Icons.circle,
-                                            color: Colors.red[900]),
+                                            size: 35, color: Colors.red[900]),
                                         Text(" 30+"),
                                       ],
                                     ),

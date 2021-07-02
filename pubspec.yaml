@@ -120,6 +120,7 @@ dependencies:
   optimized_cached_image: ^1.0.0
   flutter_slidable: ^0.6.0
   swipeable: ^1.1.0
+  auto_animated: ^3.0.0
 
 dependency_overrides:
   intl: ^0.16.1
@@ -329,6 +330,12 @@ flutter:
     - lib/assets/nd.png
     - lib/assets/runningGif.gif
     - lib/assets/ndMap.json
+    - lib/assets/wachaIntoPics/bars.jpeg
+    - lib/assets/wachaIntoPics/board.jpg
+    - lib/assets/wachaIntoPics/new.jpg
+    - lib/assets/wachaIntoPics/outdoors.gif
+    - lib/assets/wachaIntoPics/shows.jpg
+    - lib/assets/wachaIntoPics/sports.jpg
 
 
 

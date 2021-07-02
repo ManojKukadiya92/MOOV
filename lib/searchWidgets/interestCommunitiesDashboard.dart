@@ -1,10 +1,8 @@
-import 'package:MOOV/businessInterfaces/CrowdManagement.dart';
+import 'package:MOOV/businessInterfaces/crowd_management.dart';
 import 'package:MOOV/pages/NewSearch.dart';
 import 'package:MOOV/pages/home.dart';
 import 'package:MOOV/searchWidgets/interestCommunityDetail.dart';
 import 'package:MOOV/searchWidgets/interestCommunityMaker.dart';
-import 'package:MOOV/utils/themes_styles.dart';
-import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 

@@ -127,6 +127,9 @@ class MOTDUI extends StatelessWidget {
                               child: Container(
                                 child: Container(
                                   child: CachedNetworkImage(
+                                    //this is where I believe the issue is for example
+                                    //this widget is showing the "Pool Hangout" you see at the top
+                                    //loading images like this is the problem
                                     imageUrl: pic,
                                     fit: BoxFit.cover,
                                   ),

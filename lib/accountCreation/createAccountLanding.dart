@@ -1,8 +1,12 @@
 import 'dart:io';
 import 'dart:math';
+import 'package:MOOV/main.dart';
+import 'package:MOOV/pages/create_account.dart';
 import 'package:MOOV/pages/home.dart';
 import 'package:MOOV/utils/themes_styles.dart';
 import 'package:MOOV/widgets/camera.dart';
+import 'package:animations/animations.dart';
+import 'package:auto_animated/auto_animated.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:confetti/confetti.dart';
 import 'package:delayed_display/delayed_display.dart';
@@ -94,7 +98,8 @@ class CreateAccountNew extends StatelessWidget {
                               duration: Duration(milliseconds: 500),
                               onPressed: () {
                                 accountButtonPressed(
-                                    context: context, page: Home());
+                                    context: context,
+                                    page: _StudentAccountCreation());
                               },
                               child: Container(
                                 height: 50.0,
@@ -1315,5 +1320,740 @@ By phone number: 6315609452
                 child: Text(pdfText),
               ),
             )));
+  }
+}
+
+class _StudentAccountCreation extends StatefulWidget {
+  final bool secondTime;
+  _StudentAccountCreation({this.secondTime = false});
+  @override
+  __StudentAccountCreationState createState() =>
+      __StudentAccountCreationState();
+}
+
+class __StudentAccountCreationState extends State<_StudentAccountCreation> {
+  final _formKey = GlobalKey<FormState>();
+  final studentDormController = TextEditingController();
+  bool _dormNameValid = false;
+  String _yearValue;
+  String _genderValue;
+  String _raceValue;
+  bool _dormChosen = false;
+  bool _yearChosen = false;
+
+  @override
+  Widget build(BuildContext context) {
+    bool isLargePhone = Screen.diagonal(context) > 766;
+
+    return Scaffold(
+      backgroundColor: TextThemes.ndBlue,
+      body: Form(
+        key: _formKey,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: widget.secondTime
+                ? MainAxisAlignment.start
+                : MainAxisAlignment.center,
+            children: widget.secondTime
+                ?
+                //these fields populate once the student has submitted the first
+                //set of info
+
+                [
+                    Align(
+                        alignment: Alignment.topLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.all(30.0),
+                          child: GestureDetector(
+                              onTap: () => Navigator.pop(context),
+                              child:
+                                  Icon(Icons.arrow_back, color: Colors.white)),
+                        )),
+                    SizedBox(height: 15),
+                    DelayedDisplay(
+                      delay: Duration(milliseconds: 200),
+                      child: Text(
+                        "—Optional Details—",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 20.0,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: isLargePhone ? 75 : 30),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        DelayedDisplay(
+                          delay: Duration(milliseconds: 200),
+                          child: Padding(
+                              padding: EdgeInsets.only(
+                                  bottom: 15.0, left: 15, right: 15, top: 0),
+                              child: Center(
+                                child: Theme(
+                                  data: Theme.of(context).copyWith(
+                                    canvasColor: TextThemes.ndBlue,
+                                  ),
+                                  child: DropdownButton<String>(
+                                    iconSize: 0,
+                                    value: _genderValue,
+                                    elevation: 5,
+                                    items: <String>[
+                                      'Female',
+                                      'Male',
+                                      'Other',
+                                    ].map<DropdownMenuItem<String>>(
+                                        (String value) {
+                                      return DropdownMenuItem<String>(
+                                          value: value,
+                                          child: Text(value,
+                                              style: TextStyle(
+                                                  color: Colors.white)));
+                                    }).toList(),
+                                    hint: Text(
+                                      "Gender?",
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w300),
+                                    ),
+                                    onChanged: (String value) {
+                                      setState(() {
+                                        _genderValue = value;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              )),
+                        ),
+                        SizedBox(height: 40),
+                        DelayedDisplay(
+                          delay: Duration(milliseconds: 300),
+                          child: Padding(
+                              padding: EdgeInsets.only(
+                                  bottom: 15.0, left: 15, right: 15, top: 0),
+                              child: Center(
+                                child: Theme(
+                                  data: Theme.of(context).copyWith(
+                                    canvasColor: TextThemes.ndBlue,
+                                  ),
+                                  child: DropdownButton<String>(
+                                    iconSize: 0,
+                                    value: _raceValue,
+                                    elevation: 5,
+                                    items: <String>[
+                                      'Black',
+                                      'Asian',
+                                      'Latino',
+                                      'American Indian',
+                                      'White',
+                                    ].map<DropdownMenuItem<String>>(
+                                        (String value) {
+                                      return DropdownMenuItem<String>(
+                                          value: value,
+                                          child: Text(value,
+                                              style: TextStyle(
+                                                  color: Colors.white)));
+                                    }).toList(),
+                                    hint: Text(
+                                      "Race?",
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w300),
+                                    ),
+                                    onChanged: (String value) {
+                                      setState(() {
+                                        _raceValue = value;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              )),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 20),
+                    ParallaxCommunities(),
+                    DelayedDisplay(
+                      delay: Duration(milliseconds: 700),
+                      child: Bounce(
+                        duration: Duration(milliseconds: 500),
+                        onPressed: () {
+                          // _createBusinessInFirestore(
+                          //     businessName: widget.bizName,
+                          //     latitude: widget.bizLat,
+                          //     longtitude: widget.bizLong,
+                          //     type: widget.bizType,
+                          //     address: widget.bizAddress,
+                          //     description:
+                          //         businessDescriptionController
+                          //             .text);
+                        },
+                        child: Container(
+                          height: 50.0,
+                          width: 150.0,
+                          decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.3),
+                                spreadRadius: 5,
+                                blurRadius: 7,
+                                offset:
+                                    Offset(0, 3), // changes position of shadow
+                              ),
+                            ],
+                            border: Border.all(color: Colors.white),
+                            color: TextThemes.ndGold,
+                            borderRadius: BorderRadius.circular(7.0),
+                          ),
+                          child: Center(
+                            child: Text(
+                              'Create',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15.0,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ]
+                : [
+                    DelayedDisplay(
+                      delay: Duration(milliseconds: 200),
+                      child: Text(
+                        "What dorm?",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w300,
+                          fontSize: 20.0,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    DelayedDisplay(
+                      delay: Duration(milliseconds: 700),
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                            bottom: 40.0, left: 15, right: 15, top: 15),
+                        child: TextFormField(
+                          style: TextStyle(color: Colors.white),
+
+                          controller: studentDormController,
+                          decoration: InputDecoration(
+                            hintText: "Dorm name..",
+                            hintStyle: GoogleFonts.montserrat(
+                                color: Colors.white.withOpacity(.5)),
+                            // suffixIcon: IconButton(
+                            //   icon: _incorrect
+                            //       ? Icon(Icons.lock, color: Colors.red)
+                            //       : Icon(Icons.lock_open, color: Colors.white),
+                            //   onPressed: () {
+                            //     // _tryUnlock();
+                            //     // titleController.clear();
+                            //   },
+                            // ),
+                            border: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(2)),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                )),
+                            fillColor: Colors.white,
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                          ),
+                          onFieldSubmitted: (value) {
+                            if (_formKey.currentState.validate()) {
+                              setState(() {
+                                _dormNameValid = true;
+                              });
+                            }
+                            // _tryUnlock();
+                          },
+
+                          // The validator receives the text that the user has entered.
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return 'No dorm?';
+                            }
+                            if (value.length < 4) {
+                              return 'Name is too short';
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                    ),
+                    _dormNameValid
+                        ? DelayedDisplay(
+                            delay: Duration(milliseconds: 300),
+                            child: Padding(
+                                padding: EdgeInsets.only(
+                                    bottom: 15.0, left: 15, right: 15, top: 0),
+                                child: Center(
+                                  child: Theme(
+                                    data: Theme.of(context).copyWith(
+                                      canvasColor: TextThemes.ndBlue,
+                                    ),
+                                    child: DropdownButton<String>(
+                                      iconSize: 0,
+                                      value: _yearValue,
+                                      elevation: 5,
+                                      items: <String>[
+                                        'Freshman',
+                                        'Sophomore',
+                                        'Junior',
+                                        'Senior',
+                                      ].map<DropdownMenuItem<String>>(
+                                          (String value) {
+                                        return DropdownMenuItem<String>(
+                                            value: value,
+                                            child: Text(value,
+                                                style: TextStyle(
+                                                    color: Colors.white)));
+                                      }).toList(),
+                                      hint: Text(
+                                        "What year?",
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w300),
+                                      ),
+                                      onChanged: (String value) {
+                                        setState(() {
+                                          _yearChosen = true;
+                                          _yearValue = value;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                )),
+                          )
+                        : Container(),
+                    _dormNameValid
+                        ? DelayedDisplay(
+                            delay: Duration(milliseconds: 750),
+                            child: Padding(
+                                padding: const EdgeInsets.only(top: 0.0),
+                                child: Text(
+                                    "you can hide this info in settings..\nMOOV off the grid",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w300,
+                                      fontSize: 14.0,
+                                      color: Colors.grey,
+                                    ),
+                                    textAlign: TextAlign.center)),
+                          )
+                        : Container(),
+                    _yearChosen
+                        ? Padding(
+                            padding:
+                                const EdgeInsets.only(top: 20.0, left: 200),
+                            child: DelayedDisplay(
+                              delay: Duration(milliseconds: 200),
+                              child: Bounce(
+                                duration: Duration(milliseconds: 500),
+                                onPressed: () {
+                                  accountButtonPressed(
+                                      context: context,
+                                      page: _StudentAccountCreation(
+                                          secondTime: true)
+                                      //  StudentAccountDemographics(
+                                      //     this.studentDormController.text,
+                                      //     this._chosenValue)
+                                      );
+                                },
+                                child: Container(
+                                  height: 50.0,
+                                  width: 100.0,
+                                  decoration: BoxDecoration(
+                                    color: TextThemes.ndBlue,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.3),
+                                        spreadRadius: 5,
+                                        blurRadius: 7,
+                                        offset: Offset(
+                                            0, 3), // changes position of shadow
+                                      ),
+                                    ],
+                                    border: Border.all(color: Colors.white),
+                                    borderRadius: BorderRadius.circular(30.0),
+                                  ),
+                                  child: Center(
+                                      child: Icon(Icons.arrow_forward,
+                                          color: Colors.white)),
+                                ),
+                              ),
+                            ),
+                          )
+                        : Container(),
+                  ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ParallaxCommunities extends StatefulWidget {
+  @override
+  _ParallaxCommunitiesState createState() => _ParallaxCommunitiesState();
+}
+
+class _ParallaxCommunitiesState extends State<ParallaxCommunities> {
+  PageController pageController;
+  double pageOffset = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    pageController = PageController(viewportFraction: 0.7);
+    pageController.addListener(() {
+      setState(() {
+        pageOffset = pageController.page;
+      });
+    });
+  }
+
+  List<Map> communitiesMap = [
+    {
+      'image': 'lib/assets/wachaIntoPics/new.jpg',
+      'name': 'discovering\nnew spots',
+      'id': 'new'
+    },
+    {
+      'image': 'lib/assets/wachaIntoPics/sports.jpg',
+      'name': 'sports',
+      'id': 'sports'
+    },
+    {
+      'image': 'lib/assets/wachaIntoPics/bars.jpeg',
+      'name': 'bars',
+      'id': 'bars'
+    },
+    {
+      'image': 'lib/assets/wachaIntoPics/shows.jpg',
+      'name': 'shows',
+      'id': 'shows'
+    },
+    {
+      'image': 'lib/assets/wachaIntoPics/board.jpg',
+      'name': 'board/video games',
+      'id': 'board'
+    },
+    {
+      'image': 'lib/assets/wachaIntoPics/outdoors.gif',
+      'name': 'outdoors',
+      'id': 'outdoors'
+    },
+    // {'image': 'lib/assets/editclub.jpeg', 'name': 'Service', 'id': 'service'},
+  ];
+
+  final List communityJoinList = [];
+  final List communityNotificationList = [];
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      height: 350,
+      // decoration: BoxDecoration(
+      //   image: DecorationImage(
+      //     image: AssetImage("assets/clouds.jpeg"),
+      //     fit: BoxFit.cover,
+      //   ),
+      // ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [],
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 20, bottom: 20),
+                child: Text(
+                  'wacha into?',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                  ),
+                ),
+              ),
+              Container(
+                height: 300,
+                padding: EdgeInsets.only(bottom: 30),
+                child: PageView.builder(
+                    itemCount: communitiesMap.length,
+                    controller: pageController,
+                    itemBuilder: (context, i) {
+                      return Transform.scale(
+                        scale: 1,
+                        child: Container(
+                          padding: EdgeInsets.only(right: 20),
+                          child: Stack(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(15),
+                                child: OpenContainer(
+                                  transitionType: ContainerTransitionType.fade,
+                                  transitionDuration:
+                                      Duration(milliseconds: 500),
+                                  openBuilder: (context, _) => CommunityPreview(
+                                      communitiesMap[i]['image'],
+                                      communitiesMap[i]['name'],
+                                      communitiesMap[i]['id'],
+                                      communityJoinList,
+                                      communityNotificationList),
+                                  closedElevation: 0,
+                                  closedBuilder: (context, _) => Image.asset(
+                                    communitiesMap[i]['image'],
+                                    height: 250,
+                                    fit: BoxFit.cover,
+                                    alignment:
+                                        Alignment(-pageOffset.abs() + i, 0),
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                left: 10,
+                                bottom: 25,
+                                right: 10,
+                                child: Text(
+                                  communitiesMap[i]['name'],
+                                  style: GoogleFonts.montserrat(
+                                    color: Colors.white,
+                                    fontSize: 27,
+                                    // fontStyle: FontStyle.italic,
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      );
+                    }),
+              )
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class CommunityPreview extends StatelessWidget {
+  final String pic, name, id;
+  final List communityJoinList, communityNotificationList;
+  CommunityPreview(this.pic, this.name, this.id, this.communityJoinList,
+      this.communityNotificationList);
+
+  final scrollController = ScrollController();
+  final int listItemCount = 4;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              Navigator.pop(
+                context,
+              );
+            },
+          ),
+          flexibleSpace: Image.asset(
+            pic,
+            fit: BoxFit.cover,
+            colorBlendMode: BlendMode.darken,
+            color: Colors.black38,
+          ),
+          title: RichText(
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
+            text: TextSpan(
+                style: TextStyle(
+                  color: Colors.black,
+                ),
+                children: [
+                  TextSpan(
+                    text: name,
+                    style: GoogleFonts.montserrat(
+                        color: Colors.white, fontSize: 20),
+                  ),
+                ]),
+          ),
+        ),
+        body: // With predefined options
+            FutureBuilder(
+                future:
+                    communityGroupsRef.where("tags", arrayContains: id).get(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return Container();
+                  }
+                  return CustomScrollView(
+                    // Must add scrollController to sliver root
+                    controller: scrollController,
+
+                    slivers: <Widget>[
+                      LiveSliverGrid(
+                        // And attach root sliver scrollController to widgets
+                        controller: scrollController,
+                        itemCount: snapshot.data.docs.length,
+                        itemBuilder: (
+                          BuildContext context,
+                          int index,
+                          Animation<double> animation,
+                        ) =>
+                            FadeTransition(
+                                opacity: Tween<double>(
+                                  begin: 0,
+                                  end: 1,
+                                ).animate(animation),
+                                // And slide transition
+                                child: SlideTransition(
+                                    position: Tween<Offset>(
+                                      begin: Offset(0, -0.1),
+                                      end: Offset.zero,
+                                    ).animate(animation),
+                                    // Paste you Widget
+                                    child: Container(
+                                        margin: EdgeInsets.only(
+                                            left: 6,
+                                            top: 20,
+                                            right: 6,
+                                            bottom: 10),
+                                        height: double.infinity,
+                                        width: double.infinity,
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.only(
+                                              topLeft: Radius.circular(10),
+                                              topRight: Radius.circular(10),
+                                              bottomLeft: Radius.circular(10),
+                                              bottomRight: Radius.circular(10)),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color:
+                                                  Colors.grey.withOpacity(0.5),
+                                              spreadRadius: 5,
+                                              blurRadius: 7,
+                                              offset: Offset(0,
+                                                  3), // changes position of shadow
+                                            ),
+                                          ],
+                                        ),
+                                        child: Column(
+                                          children: [
+                                            Expanded(
+                                              child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.only(
+                                                          topLeft:
+                                                              Radius.circular(
+                                                                  10),
+                                                          topRight:
+                                                              Radius.circular(
+                                                                  10)),
+                                                  child: Container(
+                                                    child: Image.network(
+                                                      //this is where I believe the issue is for example
+                                                      //this widget is showing the "Pool Hangout" you see at the top
+                                                      snapshot.data.docs[index]
+                                                          ['groupPic'],
+                                                      fit: BoxFit.cover,
+                                                    ),
+                                                  )),
+                                            ),
+                                            _JoinNotifRow(
+                                                snapshot.data.docs[index],
+                                                communityJoinList,
+                                                communityNotificationList)
+                                          ],
+                                        )))),
+
+                        // buildAnimatedItem,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          childAspectRatio: .5,
+                          mainAxisSpacing: 10,
+                        ),
+                      ),
+                    ],
+                  );
+                }));
+  }
+}
+
+class _JoinNotifRow extends StatefulWidget {
+  final QueryDocumentSnapshot course;
+  final List communityJoinList, communityNotificationList;
+  _JoinNotifRow(
+      this.course, this.communityJoinList, this.communityNotificationList);
+
+  @override
+  __JoinNotifRowState createState() => __JoinNotifRowState();
+}
+
+class __JoinNotifRowState extends State<_JoinNotifRow> {
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Bounce(
+          duration: Duration(milliseconds: 500),
+          onPressed: () {
+            widget.communityJoinList.add(widget.course['groupId']);
+            setState(() {});
+          },
+          child: Container(
+              width: 70,
+              height: 50,
+              decoration: BoxDecoration(
+                  color: Colors.green,
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(10),
+                  )),
+              child: Center(
+                child:
+                    widget.communityJoinList.contains(widget.course['groupId'])
+                        ? Icon(Icons.check, color: Colors.white)
+                        : Text("JOIN",
+                            style: GoogleFonts.montserrat(color: Colors.white)),
+              )),
+        ),
+        Container(
+            width: 40,
+            child: Center(
+                child: Bounce(
+                    duration: Duration(milliseconds: 500),
+                    onPressed: () {
+                      widget.communityNotificationList
+                          .add(widget.course['groupId']);
+                      setState(() {});
+                    },
+                    child: widget.communityNotificationList
+                            .contains(widget.course['groupId'])
+                        ? Icon(Icons.notifications)
+                        : Icon(Icons.notifications_outlined))))
+      ],
+    );
   }
 }
