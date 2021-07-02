@@ -769,6 +769,7 @@ class __BusinessAccountOptionalsState extends State<_BusinessAccountOptionals> {
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
         backgroundColor: TextThemes.ndBlue,
         body: Center(
@@ -1521,7 +1522,11 @@ class __StudentAccountCreationState extends State<_StudentAccountCreation> {
                             ))),
                     SizedBox(height: 20),
                     ParallaxCommunities(
-                        dorm: widget.dorm, year: widget.year),
+                        dorm: widget.dorm,
+                        year: widget.year,
+                        gender: _genderValue,
+                        race: _raceValue,
+                        clubExec: _clubExec),
                   ]
                 : [
                     DelayedDisplay(
@@ -1706,8 +1711,10 @@ class __StudentAccountCreationState extends State<_StudentAccountCreation> {
 }
 
 class ParallaxCommunities extends StatefulWidget {
-  final String dorm, year;
-  ParallaxCommunities({this.dorm, this.year});
+  final String dorm, year, gender, race;
+  final bool clubExec;
+  ParallaxCommunities(
+      {this.dorm, this.year, this.gender, this.race, this.clubExec});
   @override
   _ParallaxCommunitiesState createState() => _ParallaxCommunitiesState();
 }
@@ -1765,9 +1772,12 @@ class _ParallaxCommunitiesState extends State<ParallaxCommunities> {
   final List communityNotificationList = [];
   bool _isUploading = false;
   bool _success = false;
+   final ConfettiController _controllerCenterLeft =
+        ConfettiController(duration: const Duration(seconds: 2));
 
   @override
   Widget build(BuildContext context) {
+    
     return DelayedDisplay(
       delay: Duration(seconds: 1),
       child: Container(
@@ -1779,130 +1789,190 @@ class _ParallaxCommunitiesState extends State<ParallaxCommunities> {
         //     fit: BoxFit.cover,
         //   ),
         // ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [],
-              ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 20, bottom: 20),
-                  child: Text(
-                    'wacha into?',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                    ),
-                  ),
-                ),
-                Container(
-                  height: 300,
-                  padding: EdgeInsets.only(bottom: 30),
-                  child: PageView.builder(
-                      itemCount: communitiesMap.length,
-                      controller: pageController,
-                      itemBuilder: (context, i) {
-                        return Transform.scale(
-                          scale: 1,
-                          child: Container(
-                            padding: EdgeInsets.only(right: 20),
-                            child: Stack(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(15),
-                                  child: OpenContainer(
-                                    transitionType:
-                                        ContainerTransitionType.fade,
-                                    transitionDuration:
-                                        Duration(milliseconds: 500),
-                                    openBuilder: (context, _) =>
-                                        CommunityPreview(
-                                            communitiesMap[i]['image'],
-                                            communitiesMap[i]['name'],
-                                            communitiesMap[i]['id'],
-                                            communityJoinList,
-                                            communityNotificationList),
-                                    closedElevation: 0,
-                                    closedBuilder: (context, _) => Image.asset(
-                                      communitiesMap[i]['image'],
-                                      height: 250,
-                                      fit: BoxFit.cover,
-                                      alignment:
-                                          Alignment(-pageOffset.abs() + i, 0),
-                                    ),
-                                  ),
-                                ),
-                                Positioned(
-                                  left: 10,
-                                  bottom: 25,
-                                  right: 10,
-                                  child: Text(
-                                    communitiesMap[i]['name'],
-                                    style: GoogleFonts.montserrat(
+        child: Center(
+          child: 
+          _isUploading
+                ? Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(height: 150),
+                      Text("Asking the MOOV Gods..",
+                          style: GoogleFonts.montserrat(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600)),
+                      SizedBox(height: 10),
+                      const SpinKitWave(
+                          color: Colors.amber, type: SpinKitWaveType.center),
+                    ],
+                  )
+                : _success
+                    ? Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(height: 300),
+                              Text("They said yes!",
+                                  style: GoogleFonts.montserrat(
                                       color: Colors.white,
-                                      fontSize: 27,
-                                      // fontStyle: FontStyle.italic,
-                                    ),
-                                  ),
-                                )
-                              ],
+                                      fontWeight: FontWeight.w600)),
+                              SizedBox(height: 10),
+                              // SpinKitWave(
+                              //     duration: Duration(milliseconds: 1),
+                              //     color: TextThemes.ndGold,
+                              //     type: SpinKitWaveType.center),
+                            ],
+                          ),
+                          Align(
+                            alignment: Alignment.bottomRight,
+                            child: ConfettiWidget(
+                              confettiController: _controllerCenterLeft,
+                              blastDirection: pi, // radial value - LEFT
+                              particleDrag: 0.05, // apply drag to the confetti
+                              emissionFrequency:
+                                  0.05, // how often it should emit
+                              numberOfParticles:
+                                  20, // number of particles to emit
+                              gravity: 0.05, // gravity - or fall speed
+                              shouldLoop: false,
+                              colors: [
+                                TextThemes.ndBlue,
+                                TextThemes.ndGold
+                                // Colors.pink
+                              ], // manually specify the colors to be used
                             ),
                           ),
-                        );
-                      }),
+                        ],
+                      ):
+          Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [],
                 ),
-                DelayedDisplay(
-                  delay: Duration(milliseconds: 700),
-                  child: Bounce(
-                    duration: Duration(milliseconds: 500),
-                    onPressed: () {
-                      print(widget.dorm);
-                      // _createStudentInFirestore(
-                      //     dorm: widget.dorm,
-                      //     year: widget.year,
-                      //     );
-                    },
-                    child: Center(
-                      child: Container(
-                        height: 50.0,
-                        width: 150.0,
-                        decoration: BoxDecoration(
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.3),
-                              spreadRadius: 5,
-                              blurRadius: 7,
-                              offset:
-                                  Offset(0, 3), // changes position of shadow
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20, bottom: 20),
+                    child: Text(
+                      'wacha into?',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    height: 300,
+                    padding: EdgeInsets.only(bottom: 30),
+                    child: PageView.builder(
+                        itemCount: communitiesMap.length,
+                        controller: pageController,
+                        itemBuilder: (context, i) {
+                          return Transform.scale(
+                            scale: 1,
+                            child: Container(
+                              padding: EdgeInsets.only(right: 20),
+                              child: Stack(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(15),
+                                    child: OpenContainer(
+                                      transitionType:
+                                          ContainerTransitionType.fade,
+                                      transitionDuration:
+                                          Duration(milliseconds: 500),
+                                      openBuilder: (context, _) =>
+                                          CommunityPreview(
+                                              communitiesMap[i]['image'],
+                                              communitiesMap[i]['name'],
+                                              communitiesMap[i]['id'],
+                                              communityJoinList,
+                                              communityNotificationList),
+                                      closedElevation: 0,
+                                      closedBuilder: (context, _) => Image.asset(
+                                        communitiesMap[i]['image'],
+                                        height: 250,
+                                        fit: BoxFit.cover,
+                                        alignment:
+                                            Alignment(-pageOffset.abs() + i, 0),
+                                      ),
+                                    ),
+                                  ),
+                                  Positioned(
+                                    left: 10,
+                                    bottom: 25,
+                                    right: 10,
+                                    child: Text(
+                                      communitiesMap[i]['name'],
+                                      style: GoogleFonts.montserrat(
+                                        color: Colors.white,
+                                        fontSize: 27,
+                                        // fontStyle: FontStyle.italic,
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
                             ),
-                          ],
-                          border: Border.all(color: Colors.white),
-                          color: TextThemes.ndGold,
-                          borderRadius: BorderRadius.circular(7.0),
-                        ),
-                        child: Center(
-                          child: Text(
-                            'Create',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 15.0,
-                                fontWeight: FontWeight.bold),
+                          );
+                        }),
+                  ),
+                  DelayedDisplay(
+                    delay: Duration(milliseconds: 700),
+                    child: Bounce(
+                      duration: Duration(milliseconds: 500),
+                      onPressed: () {
+                        _createStudentInFirestore(
+                            dorm: widget.dorm,
+                            year: widget.year,
+                            gender: widget.gender,
+                            race: widget.race,
+                            clubExec: widget.clubExec,
+                            communityJoinList: communityJoinList,
+                            communityNotificationList: communityNotificationList);
+                      },
+                      child: Center(
+                        child: Container(
+                          height: 50.0,
+                          width: 150.0,
+                          decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.3),
+                                spreadRadius: 5,
+                                blurRadius: 7,
+                                offset:
+                                    Offset(0, 3), // changes position of shadow
+                              ),
+                            ],
+                            border: Border.all(color: Colors.white),
+                            color: TextThemes.ndGold,
+                            borderRadius: BorderRadius.circular(7.0),
+                          ),
+                          child: Center(
+                            child: Text(
+                              'Create',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15.0,
+                                  fontWeight: FontWeight.bold),
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -1913,10 +1983,14 @@ class _ParallaxCommunitiesState extends State<ParallaxCommunities> {
     String year,
     String gender,
     String race,
-    String type,
-    String address,
-    String description,
+    bool clubExec,
+    List communityJoinList,
+    List communityNotificationList,
   }) async {
+    Map userTypeMap = {};
+    if (clubExec) {
+        userTypeMap = {"clubExecutive": []};
+      }
     setState(() {
       _isUploading = true;
     });
@@ -1946,9 +2020,9 @@ class _ParallaxCommunitiesState extends State<ParallaxCommunities> {
       "friendArray": [],
       "friendRequests": [],
       "friendGroups": [],
-      // "userType": userTypeMap,
+      "userType": userTypeMap,
       "isSingle": false,
-      // "venmoUsername": venmoUsername,
+      "venmoUsername": "",
       "pushSettings": {
         "going": true,
         "hourBefore": true,
