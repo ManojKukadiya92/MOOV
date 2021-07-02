@@ -1,6 +1,5 @@
 import 'dart:ui';
-import 'package:MOOV/businessInterfaces/CrowdManagement.dart';
-import 'package:MOOV/businessInterfaces/MobileOrdering.dart';
+import 'package:MOOV/businessInterfaces/crowd_management.dart';
 import 'package:MOOV/pages/MoovMaker.dart';
 import 'package:MOOV/pages/home.dart';
 import 'package:MOOV/services/database.dart';
@@ -14,6 +13,8 @@ import 'package:intl/intl.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:swipeable/swipeable.dart';
+
+import 'mobile_ordering.dart';
 
 class LivePassesSheet extends StatefulWidget {
   final List livePasses;
@@ -505,7 +506,7 @@ class _PulsatingCircleIconButtonState extends State<PulsatingCircleIconButton>
                 duration: Duration(milliseconds: 500),
                 opacity: !_confirming ? 1 : 0,
                 child: Center(
-                  child: Text("RESTAURANT STAFF\n\nDOUBLE TAP",
+                  child: Text("BUSINESS STAFF\n\nDOUBLE TAP",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           fontSize: 32.5,
@@ -1056,149 +1057,7 @@ class _TipDialogState extends State<TipDialog> {
   }
 }
 
-class Parallax extends StatefulWidget {
-  @override
-  _ParallaxState createState() => _ParallaxState();
-}
 
-class _ParallaxState extends State<Parallax> {
-  PageController pageController;
-  double pageOffset = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    pageController = PageController(viewportFraction: 0.7);
-    pageController.addListener(() {
-      setState(() {
-        pageOffset = pageController.page;
-      });
-    });
-  }
-
-  List<Map> paintings = [
-    {
-      'image': 'lib/assets/clouds.jpeg',
-      'name': 'The Sower',
-    },
-    {
-      'image': 'lib/assets/editclub.jpeg',
-      'name': 'The Starry Night',
-    },
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        width: MediaQuery.of(context).size.width,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage("assets/clouds.jpeg"),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 30),
-                  Text(
-                    'Vincent\nvan Gogh',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 50,
-                      letterSpacing: 2,
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    '30 March 1853-29 July 1890',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    'Vincent Willem van Gogh was a Dutch post-impressionist painter who posthumously became one of the most famous and influential figures in the history of Western art.',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 15,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 20, bottom: 20),
-                  child: Text(
-                    'Highlight Paintings',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                    ),
-                  ),
-                ),
-                Container(
-                  height: 400,
-                  padding: EdgeInsets.only(bottom: 30),
-                  child: PageView.builder(
-                      itemCount: paintings.length,
-                      controller: pageController,
-                      itemBuilder: (context, i) {
-                        return Transform.scale(
-                          scale: 1,
-                          child: Container(
-                            padding: EdgeInsets.only(right: 20),
-                            child: Stack(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(15),
-                                  child: Image.asset(
-                                    paintings[i]['image'],
-                                    height: 370,
-                                    fit: BoxFit.cover,
-                                    alignment:
-                                        Alignment(-pageOffset.abs() + i, 0),
-                                  ),
-                                ),
-                                Positioned(
-                                  left: 10,
-                                  bottom: 20,
-                                  right: 10,
-                                  child: Text(
-                                    paintings[i]['name'],
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 35,
-                                      fontStyle: FontStyle.italic,
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                        );
-                      }),
-                )
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 class LivePassesWalletSheet extends StatelessWidget {
   // final Callback callback;

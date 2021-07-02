@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:MOOV/businessInterfaces/CrowdManagement.dart';
-import 'package:MOOV/businessInterfaces/MobileOrdering.dart';
+import 'package:MOOV/businessInterfaces/crowd_management.dart';
+import 'package:MOOV/businessInterfaces/mobile_ordering.dart';
 import 'package:MOOV/pages/MoovMaker.dart';
 import 'package:MOOV/pages/home.dart';
 import 'package:MOOV/utils/themes_styles.dart';

@@ -5,10 +5,11 @@ import 'package:MOOV/pages/home.dart';
 import 'package:MOOV/pages/post_detail.dart';
 import 'package:MOOV/utils/themes_styles.dart';
 import 'package:MOOV/widgets/progress.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:optimized_cached_image/optimized_cached_image.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 ///Map import
 // ignore: import_of_legacy_library_into_null_safe
@@ -39,6 +40,13 @@ class _TileLayerSampleState extends SampleViewState {
   bool _canUpdateZoomLevel;
   bool _isDesktop = false;
   bool legendClosed = false;
+
+  List<Color> colorizeColors = [
+    TextThemes.ndBlue,
+    Colors.blue,
+    Colors.blue,
+    TextThemes.ndGold
+  ];
 
   @override
   void initState() {
@@ -195,18 +203,23 @@ class _TileLayerSampleState extends SampleViewState {
                     },
                     markerBuilder: (BuildContext context, int index) {
                       final _WonderDetails item = _worldWonders[index];
-                      int heat = 50;
-                      if (item.goingCount > 5) {
-                        heat = 100;
+                      int heat = 100;
+                      double size = 24;
+                      if (item.goingCount > 0) {
+                        heat = 200;
+
                       }
                       if (item.goingCount > 10) {
                         heat = 400;
+                        size = 27;
                       }
-                      if (item.goingCount > 30) {
-                        heat = 900;
+                      if (item.goingCount > 10) {
+                        heat = 500;
+                        size = 31;
                       }
-                      if (item.goingCount > 50) {
+                      if (item.goingCount > 29) {
                         heat = 900;
+                        size = 35;
                       }
                       return MapMarker(
                         latitude: _worldWonders[index].latitude,
@@ -229,7 +242,7 @@ class _TileLayerSampleState extends SampleViewState {
                               child: Opacity(
                                 opacity: .7,
                                 child: Icon(Icons.circle,
-                                    color: Colors.red[heat], size: 30.0),
+                                    color: Colors.red[heat], size: size),
                               ),
                             ),
                             SizedBox(
@@ -245,99 +258,123 @@ class _TileLayerSampleState extends SampleViewState {
               ),
               Align(
                 alignment: Alignment.bottomCenter,
-                child: Container(
-                  height: _cardHeight,
-                  padding: EdgeInsets.only(bottom: 10),
-
-                  /// PageView which shows the world wonder details at the bottom.
-                  child: PageView.builder(
-                    itemCount: _worldWonders.length,
-                    onPageChanged: _handlePageChange,
-                    controller: _pageViewController,
-                    itemBuilder: (BuildContext context, int index) {
-                      final _WonderDetails item = _worldWonders[index];
-                      return Transform.scale(
-                          scale: index == _currentSelectedIndex ? 1 : 0.85,
-                          child: OpenContainer(
-                            openShape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(50)),
-                            transitionType: ContainerTransitionType.fade,
-                            transitionDuration: Duration(milliseconds: 500),
-                            openBuilder: (context, _) => PostDetail(item.id),
-                            closedElevation: 0,
-                            closedBuilder: (context, _) =>
-                                Stack(children: <Widget>[
-                              FractionallySizedBox(
-                                widthFactor: 1,
-                                child: Container(
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(10),
-                                    child: CachedNetworkImage(
-                                      imageUrl: item.tooltipImagePath,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(10),
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.grey.withOpacity(0.5),
-                                        spreadRadius: 5,
-                                        blurRadius: 7,
-                                        offset: Offset(
-                                            0, 3), // changes position of shadow
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Padding(
+                        padding:
+                            const EdgeInsets.only(bottom: 10.0, right: 40.0),
+                        child: AnimatedTextKit(
+                            totalRepeatCount: 100,
+                            animatedTexts: [
+                              ColorizeAnimatedText(
+                                'Swipe >',
+                                // speed: Duration(seconds: 2),
+                                textStyle: GoogleFonts.montserrat(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                                colors: colorizeColors,
                               ),
-                              Align(
-                                alignment: Alignment.center,
-                                child: Container(
-                                  alignment: Alignment(0.0, 0.0),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(10)),
-                                      gradient: LinearGradient(
-                                        begin: Alignment.topCenter,
-                                        end: Alignment.bottomCenter,
-                                        colors: <Color>[
-                                          Colors.black.withAlpha(15),
-                                          Colors.black,
-                                          Colors.black12,
+                            ]),
+                      ),
+                    ),
+                    Container(
+                      height: _cardHeight,
+                      padding: EdgeInsets.only(bottom: 10),
+
+                      /// PageView which shows the world wonder details at the bottom.
+                      child: PageView.builder(
+                        itemCount: _worldWonders.length,
+                        onPageChanged: _handlePageChange,
+                        controller: _pageViewController,
+                        itemBuilder: (BuildContext context, int index) {
+                          final _WonderDetails item = _worldWonders[index];
+                          return Transform.scale(
+                              scale: index == _currentSelectedIndex ? 1 : 0.85,
+                              child: OpenContainer(
+                                openShape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(50)),
+                                transitionType: ContainerTransitionType.fade,
+                                transitionDuration: Duration(milliseconds: 500),
+                                openBuilder: (context, _) =>
+                                    PostDetail(item.id),
+                                closedElevation: 0,
+                                closedBuilder: (context, _) =>
+                                    Stack(children: <Widget>[
+                                  FractionallySizedBox(
+                                    widthFactor: 1,
+                                    child: Container(
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(10),
+                                        child: CachedNetworkImage(
+                                          imageUrl: item.tooltipImagePath,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(10),
+                                        ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey.withOpacity(0.5),
+                                            spreadRadius: 5,
+                                            blurRadius: 7,
+                                            offset: Offset(0,
+                                                3), // changes position of shadow
+                                          ),
                                         ],
                                       ),
                                     ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(4.0),
-                                      child: ConstrainedBox(
-                                        constraints: BoxConstraints(
-                                            maxWidth: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                .7),
-                                        child: Text(
-                                          item.title,
-                                          maxLines: 2,
-                                          textAlign: TextAlign.center,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                              fontSize: 20,
-                                              color: Colors.white),
+                                  ),
+                                  Align(
+                                    alignment: Alignment.center,
+                                    child: Container(
+                                      alignment: Alignment(0.0, 0.0),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(10)),
+                                          gradient: LinearGradient(
+                                            begin: Alignment.topCenter,
+                                            end: Alignment.bottomCenter,
+                                            colors: <Color>[
+                                              Colors.black.withAlpha(15),
+                                              Colors.black,
+                                              Colors.black12,
+                                            ],
+                                          ),
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(4.0),
+                                          child: ConstrainedBox(
+                                            constraints: BoxConstraints(
+                                                maxWidth: MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    .7),
+                                            child: Text(
+                                              item.title,
+                                              maxLines: 2,
+                                              textAlign: TextAlign.center,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  color: Colors.white),
+                                            ),
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ),
-                            ]),
-                          ));
-                    },
-                  ),
+                                ]),
+                              ));
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ),
               Align(
@@ -354,7 +391,7 @@ class _TileLayerSampleState extends SampleViewState {
                           opacity: .7,
                           child: Stack(children: [
                             Container(
-                                height: 125,
+                                height: 145,
                                 width: 120,
                                 decoration: BoxDecoration(
                                     color: Colors.blue[50],
@@ -374,28 +411,28 @@ class _TileLayerSampleState extends SampleViewState {
                                     Row(
                                       children: [
                                         Icon(Icons.circle,
-                                            color: Colors.red[50]),
+                                            color: Colors.red[200]),
                                         Text(" 1-5"),
                                       ],
                                     ),
                                     Row(
                                       children: [
                                         Icon(Icons.circle,
-                                            color: Colors.red[100]),
+                                            size: 27, color: Colors.red[400]),
                                         Text(" 6-10"),
                                       ],
                                     ),
                                     Row(
                                       children: [
                                         Icon(Icons.circle,
-                                            color: Colors.red[400]),
+                                            size: 31, color: Colors.red[500]),
                                         Text(" 11-30"),
                                       ],
                                     ),
                                     Row(
                                       children: [
                                         Icon(Icons.circle,
-                                            color: Colors.red[900]),
+                                            size: 35, color: Colors.red[900]),
                                         Text(" 30+"),
                                       ],
                                     ),

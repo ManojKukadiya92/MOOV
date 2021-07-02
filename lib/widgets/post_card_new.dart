@@ -18,9 +18,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:MOOV/pages/home.dart';
-import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:page_transition/page_transition.dart';
 
 class PostOnFeedNew extends StatefulWidget {
@@ -361,6 +361,42 @@ class _PostOnFeedNewState extends State<PostOnFeedNew> {
                           ),
                         )
                       : Text(""),
+                  widget.course['tags'].contains('deal')
+                      ? Positioned(
+                          top: 2.5,
+                          right: 25,
+                          child: Container(
+                            height: 40,
+                            padding: EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    TextThemes.ndBlue,
+                                    TextThemes.ndBlue
+                                  ],
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
+                                ),
+                                borderRadius: BorderRadius.circular(10.0)),
+                            child: Row(
+                              children: [
+                                Image.asset(
+                                  'lib/assets/moovblue.png',
+                                  fit: BoxFit.cover,
+                                  height: 50.0,
+                                ),
+                                Text("Exclusive\nDEAL",
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.montserrat(
+                                        color: Colors.white,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold)),
+                                SizedBox(width: 2)
+                              ],
+                            ),
+                          ),
+                        )
+                      : Container(),
                   moovMountain
                       ? Positioned(
                           top: -15,

@@ -15,7 +15,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:polls/polls.dart';
-import 'package:optimized_cached_image/optimized_cached_image.dart';
 
 class PollView extends StatefulWidget {
   final ValueNotifier<double> notifier;

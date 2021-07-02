@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'package:MOOV/businessInterfaces/MobileOrdering.dart';
-import 'package:MOOV/businessInterfaces/livePassesSheet.dart';
+import 'package:MOOV/businessInterfaces/mobile_ordering.dart';
+import 'package:MOOV/businessInterfaces/live_passes_sheet.dart';
 import 'package:MOOV/friendGroups/OtherGroup.dart';
 import 'package:MOOV/friendGroups/group_detail.dart';
 import 'package:MOOV/main.dart';

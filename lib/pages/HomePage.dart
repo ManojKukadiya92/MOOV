@@ -462,71 +462,95 @@ class _HomePageState extends State<HomePage>
                                                                 _notifier,
                                                             builder:
                                                                 (context, _) {
-                                                              return Container(
-                                                                color: colorTween(
-                                                                    Colors
-                                                                        .white,
-                                                                    Color
-                                                                        .fromRGBO(
-                                                                            204,
-                                                                            204,
-                                                                            204,
-                                                                            0),
-                                                                    _notifier),
-                                                                width: MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width,
-                                                                height: 220,
-                                                                child: Column(
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .center,
-                                                                  children: <
-                                                                      Widget>[
-                                                                    _currentIndex == 0 ||
-                                                                            todayOnly ==
-                                                                                0 ||
-                                                                            privacyDropdownValue !=
-                                                                                'Featured'
-                                                                        ? CarouselSlider(
-                                                                            options:
-                                                                                CarouselOptions(
-                                                                              scrollPhysics: AlwaysScrollableScrollPhysics(),
-                                                                              height: isLargePhone ? 170 : 170,
-                                                                              aspectRatio: 16 / 9,
-                                                                              viewportFraction: 1,
-                                                                              initialPage: 0,
-                                                                              enableInfiniteScroll: true,
-                                                                              // scrollPhysics: NeverScrollableScrollPhysics(),
-                                                                              pauseAutoPlayOnTouch: false,
-                                                                              reverse: false,
-                                                                              autoPlay: true,
-                                                                              autoPlayInterval: Duration(seconds: 6),
-                                                                              autoPlayAnimationDuration: Duration(milliseconds: 800),
-                                                                              autoPlayCurve: Curves.fastOutSlowIn,
-                                                                              enlargeCenterPage: true,
-                                                                              // onPageChanged: callbackFunction,
-                                                                              scrollDirection: Axis.horizontal,
-                                                                            ),
-                                                                            items: [
-                                                                                SecondCarousel(notifier: _notifier),
-                                                                                PollView(notifier: _notifier),
+                                                              return FutureBuilder(
+                                                                  future: FirebaseFirestore
+                                                                      .instance
+                                                                      .collection(
+                                                                          'notreDame')
+                                                                      .doc(
+                                                                          'data')
+                                                                      .collection(
+                                                                          'poll')
+                                                                      .doc(
+                                                                          "PERMANENT")
+                                                                      .get(),
+                                                                  builder: (context,
+                                                                      snapshot) {
+                                                                    bool
+                                                                        hasVoted =
+                                                                        false;
+                                                                    if (!snapshot
+                                                                        .hasData) {
+                                                                      return Container();
+                                                                    }
+                                                                    if (snapshot
+                                                                        .data[
+                                                                            'voters']
+                                                                        .containsKey(
+                                                                            currentUser.id)) {
+                                                                      hasVoted =
+                                                                          true;
+                                                                    }
+                                                                    return Container(
+                                                                      color: colorTween(
+                                                                          Colors
+                                                                              .white,
+                                                                          Color.fromRGBO(
+                                                                              204,
+                                                                              204,
+                                                                              204,
+                                                                              0),
+                                                                          _notifier),
+                                                                      width: MediaQuery.of(
+                                                                              context)
+                                                                          .size
+                                                                          .width,
+                                                                      height:
+                                                                          220,
+                                                                      child:
+                                                                          Column(
+                                                                        mainAxisAlignment:
+                                                                            MainAxisAlignment.center,
+                                                                        children: <
+                                                                            Widget>[
+                                                                          _currentIndex == 0 || todayOnly == 0 || privacyDropdownValue != 'Featured'
+                                                                              ? CarouselSlider(
+                                                                                  options: CarouselOptions(
+                                                                                    scrollPhysics: AlwaysScrollableScrollPhysics(),
+                                                                                    height: isLargePhone ? 170 : 170,
+                                                                                    aspectRatio: 16 / 9,
+                                                                                    viewportFraction: 1,
+                                                                                    initialPage: 0,
+                                                                                    enableInfiniteScroll: true,
+                                                                                    // scrollPhysics: NeverScrollableScrollPhysics(),
+                                                                                    pauseAutoPlayOnTouch: false,
+                                                                                    reverse: false,
+                                                                                    autoPlay: hasVoted ? false : true,
+                                                                                    autoPlayInterval: Duration(seconds: 6),
+                                                                                    autoPlayAnimationDuration: Duration(milliseconds: 800),
+                                                                                    autoPlayCurve: Curves.fastOutSlowIn,
+                                                                                    enlargeCenterPage: true,
+                                                                                    // onPageChanged: callbackFunction,
+                                                                                    scrollDirection: Axis.horizontal,
+                                                                                  ),
+                                                                                  items: [
+                                                                                      SecondCarousel(notifier: _notifier),
+                                                                                      PollView(notifier: _notifier),
 
-                                                                                // SuggestionBoxCarousel(),
-                                                                                // currentUser.friendGroups !=
-                                                                                //         null
-                                                                                //     ? GroupCarousel()
-                                                                                //     : null,
-                                                                                // HottestMOOV()
-                                                                              ])
-                                                                        : Container(),
-                                                                    SizedBox(
-                                                                        height:
-                                                                            10),
-                                                                  ],
-                                                                ),
-                                                              );
+                                                                                      // SuggestionBoxCarousel(),
+                                                                                      // currentUser.friendGroups !=
+                                                                                      //         null
+                                                                                      //     ? GroupCarousel()
+                                                                                      //     : null,
+                                                                                      // HottestMOOV()
+                                                                                    ])
+                                                                              : Container(),
+                                                                          SizedBox(
+                                                                              height: 10),
+                                                                        ],
+                                                                      ),
+                                                                    );
+                                                                  });
                                                             },
                                                           ))),
                                                     ]),

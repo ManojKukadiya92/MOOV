@@ -1,14 +1,12 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
-import 'package:MOOV/accountCreation/createAccountLanding.dart';
-import 'package:MOOV/businessInterfaces/CrowdManagement.dart';
-import 'package:MOOV/businessInterfaces/featureDeal.dart';
+import 'package:MOOV/businessInterfaces/crowd_management.dart';
+import 'package:MOOV/businessInterfaces/feature_deal.dart';
 import 'package:MOOV/friendGroups/OtherGroup.dart';
 import 'package:MOOV/friendGroups/group_detail.dart';
 import 'package:MOOV/main.dart';
-import 'package:MOOV/businessInterfaces/BusinessTab.dart';
-import 'package:MOOV/pages/CalendarPage.dart';
+import 'package:MOOV/businessInterfaces/business_tab.dart';
 import 'package:MOOV/widgets/google_map.dart';
 import 'package:MOOV/widgets/sundayWrapup.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -18,7 +16,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:MOOV/pages/other_profile.dart';
 import 'package:MOOV/services/database.dart';
@@ -476,15 +473,30 @@ class _MoovMakerFormState extends State<MoovMakerForm>
     id++;
   }
 
+  String addressFromMap = "m";
+
   FutureOr onGoBack(dynamic value) {
     refreshData();
     setState(() {});
   }
 
+  FutureOr setAddress(dynamic value) {
+    refreshData();
+    setState(() {
+      addressController.text = mapAddy.first.toString();
+    });
+  }
+
+//these fields populate once the map is clicked on, dropping the pin on a certain location
+  List mapAddy = [];
   List coords = [];
+
   bool postANewMOOVPressed = false;
   bool _isDeal = false;
   List<String> tags = [];
+
+  double _emphasizeTypeAndPrivacyHeight = 0;
+  //this is to make sure people know about these fields, turns on once details are filled out.
 
   @override
   Widget build(BuildContext context) {
@@ -844,25 +856,34 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                                             Expanded(
                                               child: Row(
                                                 children: <Widget>[
-                                                  Text('Deal cost?'),
-                                                  SizedBox(
-                                                    width: 50,
-                                                    child: TextField(
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      inputFormatters: [
-                                                        CurrencyTextInputFormatter(
-                                                          decimalDigits: 0,
-                                                          symbol: '\$',
-                                                        )
-                                                      ],
-                                                      controller:
-                                                          dealCostController,
-                                                      keyboardType:
-                                                          TextInputType.number,
-                                                      onChanged: (value) =>
-                                                          setState(() =>
-                                                              dealCost = value),
+                                                 Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 12.0,
+                                                          right: 5, top: 25),
+                                                  child: Text('Deal cost'),
+                                                ),
+                                                  Padding(
+                                                    padding: const EdgeInsets.only(top: 17.0),
+                                                    child: SizedBox(
+                                                      width: 50,
+                                                      child: TextField(
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        inputFormatters: [
+                                                          CurrencyTextInputFormatter(
+                                                            decimalDigits: 0,
+                                                            symbol: '\$',
+                                                          )
+                                                        ],
+                                                        controller:
+                                                            dealCostController,
+                                                        keyboardType:
+                                                            TextInputType.number,
+                                                        onChanged: (value) =>
+                                                            setState(() =>
+                                                                dealCost = value),
+                                                      ),
                                                     ),
                                                   ),
                                                 ],
@@ -875,8 +896,8 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                                                   padding:
                                                       const EdgeInsets.only(
                                                           left: 12.0,
-                                                          right: 12),
-                                                  child: Text('Person\nlimit?'),
+                                                          right: 5, top: 25),
+                                                  child: Text('Limit deal to'),
                                                 ),
                                                 SizedBox(
                                                     width: 50,
@@ -1001,6 +1022,59 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                               ],
                             ),
                           ),
+
+                          //this is a widget letting them confirm theyre posting this type
+                    currentUser.isBusiness
+                        ? Container()
+                        : AnimatedContainer(
+                            child: DelayedDisplay(
+                              delay: Duration(milliseconds: 750),
+                              child: RichText(
+                                overflow: TextOverflow.ellipsis,
+                                text: TextSpan(
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                    ),
+                                    children: [
+                                      TextSpan(
+                                        text: "Posting a ",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w300,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text: typeDropdownValue,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 16,
+                                            color: TextThemes.ndGold),
+                                      ),
+                                      TextSpan(
+                                          text: ", ",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w300,
+                                            fontSize: 16,
+                                          )),
+                                      TextSpan(
+                                        text: "$privacyDropdownValue",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 16,
+                                            color: TextThemes.ndGold),
+                                      ),
+                                      TextSpan(
+                                        text: " MOOV..",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w300,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ]),
+                              ),
+                            ),
+                            duration: Duration(milliseconds: 500),
+                            height: _emphasizeTypeAndPrivacyHeight),
                     !currentUser.isBusiness
                         ? Row(
                             children: [
@@ -1034,10 +1108,10 @@ class _MoovMakerFormState extends State<MoovMakerForm>
                                     ? () => Navigator.of(context)
                                         .push(MaterialPageRoute(
                                             builder: (context) => GoogleMap(
-                                                  fromMOOVMaker: true,
-                                                  coords: coords,
-                                                )))
-                                        .then(onGoBack)
+                                                fromMOOVMaker: true,
+                                                coords: coords,
+                                                mapAddy: mapAddy)))
+                                        .then(setAddress)
                                     : null,
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(
@@ -2648,6 +2722,11 @@ class _MoovMakerFormState extends State<MoovMakerForm>
     setState(() {
       detailLength = value.length;
     });
+    if (detailLength > 3) {
+      setState(() {
+        _emphasizeTypeAndPrivacyHeight = 30;
+      });
+    }
     print(detailLength);
   }
 
