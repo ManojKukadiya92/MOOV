@@ -1250,7 +1250,11 @@ class _EditArchiveState extends State<EditArchive> {
                                                           postId,
                                                           image,
                                                           title,
-                                                          invitees));
+                                                          invitees,
+                                                          snapshot.data[
+                                                              'groupPost'],
+                                                          snapshot
+                                                              .data['userId']));
                                           }
 
                                           if (currentValues != null) {

@@ -211,6 +211,8 @@ class _PostDetailState extends State<PostDetail>
                     StreamBuilder(
                         stream: postsRef.doc(postId).snapshots(),
                         builder: (context, snapshot) {
+                          List<dynamic> admins;
+                          bool groupPost;
                           String title,
                               description,
                               bannerImage,
@@ -233,6 +235,8 @@ class _PostDetailState extends State<PostDetail>
                           int paymentAmount = course['paymentAmount'];
                           int goingCount = course['going'].length;
                           Map stats = course['stats'];
+                          admins = course['admins'];
+                          groupPost = course['groupPost'];
 
                           return Container(
                             color: Colors.white,
@@ -240,8 +244,15 @@ class _PostDetailState extends State<PostDetail>
                               physics: ClampingScrollPhysics(),
                               controller: _scrollController,
                               children: <Widget>[
-                                _BannerImage(bannerImage, userId, postId,
-                                    maxOccupancy, goingCount, stats),
+                                _BannerImage(
+                                    bannerImage,
+                                    userId,
+                                    postId,
+                                    maxOccupancy,
+                                    goingCount,
+                                    stats,
+                                    admins,
+                                    groupPost),
                                 _NonImageContents(
                                     title,
                                     description,
@@ -265,10 +276,12 @@ class _PostDetailState extends State<PostDetail>
 
 class _BannerImage extends StatelessWidget {
   final String bannerImage, userId, postId;
+  final bool groupPost;
   final int maxOccupancy, goingCount;
+  final List<dynamic> admins;
   final Map stats;
   _BannerImage(this.bannerImage, this.userId, this.postId, this.maxOccupancy,
-      this.goingCount, this.stats);
+      this.goingCount, this.stats, this.admins, this.groupPost);
 
   @override
   Widget build(BuildContext context) {
@@ -296,10 +309,10 @@ class _BannerImage extends StatelessWidget {
           ),
         ),
       ),
-      userId == currentUser.id ||
-              currentUser.id == "108155010592087635288" ||
-              currentUser.id == "118426518878481598299" ||
-              currentUser.id == "107290090512658207959"
+      userId == currentUser.id || currentUser.friendGroups.contains(userId)
+          // currentUser.id == "108155010592087635288" ||
+          // currentUser.id == "118426518878481598299" ||
+          // currentUser.id == "107290090512658207959"
           ? Positioned(
               top: 5,
               right: 5,
@@ -393,7 +406,11 @@ class _BannerImage extends StatelessWidget {
       Positioned(
         bottom: 10,
         right: 5,
-        child: userId != null ? PostOwnerInfo(userId) : Container(),
+        child: userId != null
+            ? (groupPost == false
+                ? PostOwnerInfo(userId)
+                : PostOwnerGroup(userId))
+            : Container(),
       ),
     ]);
   }

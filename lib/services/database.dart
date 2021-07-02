@@ -20,24 +20,49 @@ class Database {
   final strUserName = googleSignIn.currentUser.displayName;
   final strPic = googleSignIn.currentUser.photoUrl;
 
-  FutureOr inviteesNotification(postId, previewImg, title, statuses) {
-    if (statuses.length > 0) {
-      for (int i = 0; i < statuses.length; i++) {
-        notificationFeedRef
-            .doc(statuses[i])
-            .collection('feedItems')
-            .doc('invite ' + postId)
-            .set({
-          "seen": false,
-          "type": "invite",
-          "postId": postId,
-          "previewImg": previewImg,
-          "title": title,
-          "username": currentUser.displayName,
-          "userId": currentUser.id,
-          "userProfilePic": currentUser.photoUrl,
-          "timestamp": DateTime.now()
-        });
+  FutureOr inviteesNotification(
+      postId, previewImg, title, statuses, groupPost, gid) {
+    if (groupPost == true) {
+      groupsRef.doc(currentUser.friendGroups[gid]).get().then((val) {
+        if (statuses.length > 0) {
+          for (int i = 0; i < statuses.length; i++) {
+            notificationFeedRef
+                .doc(statuses[i])
+                .collection('feedItems')
+                .doc('invite ' + postId)
+                .set({
+              "seen": false,
+              "type": "invite",
+              "postId": postId,
+              "previewImg": previewImg,
+              "title": title,
+              "username": val['groupName'],
+              "userId": val['groupId'],
+              "userProfilePic": val['groupPic'],
+              "timestamp": DateTime.now()
+            });
+          }
+        }
+      });
+    } else {
+      if (statuses.length > 0) {
+        for (int i = 0; i < statuses.length; i++) {
+          notificationFeedRef
+              .doc(statuses[i])
+              .collection('feedItems')
+              .doc('invite ' + postId)
+              .set({
+            "seen": false,
+            "type": "invite",
+            "postId": postId,
+            "previewImg": previewImg,
+            "title": title,
+            "username": currentUser.displayName,
+            "userId": currentUser.id,
+            "userProfilePic": currentUser.photoUrl,
+            "timestamp": DateTime.now()
+          });
+        }
       }
     }
   }
@@ -125,11 +150,26 @@ class Database {
       bool push,
       GeoPoint location,
       int goingCount,
-      bool moovOver}) {
+      bool moovOver,
+      bool groupPost}) {
     bool isPartyOrBar = false;
     if (type == "Parties" || type == "Bars & Restaurants") {
       isPartyOrBar = true;
     }
+
+    List<String> admins = [];
+    // if (groupPost == true) {
+    //   groupsRef.doc(userId).get().then((val) {
+    //     for (int i = 0; i < val['members'].length; i++) {
+    //       admins.add(val['members'][i]);
+    //     }
+    //   });
+    //   communityGroupsRef.doc(userId).get().then((val) {
+    //     for (int i = 0; i < val['members'].length; i++) {
+    //       admins.add(val['members'][i]);
+    //     }
+    //   });
+    // }
 
     archiveRef.doc(postId).set({
       'title': title,
@@ -156,7 +196,9 @@ class Database {
       "isPartyOrBar": isPartyOrBar,
       "stats": {},
       "moovOver": moovOver,
-      "tags": []
+      "tags": [],
+      "admins": admins,
+      "groupPost": groupPost
     });
 
     postsRef.doc(postId).set({
@@ -185,8 +227,11 @@ class Database {
       "isPartyOrBar": isPartyOrBar,
       "stats": {},
       "moovOver": moovOver,
-      "tags": []
-    }).then(inviteesNotification(postId, imageUrl, title, statuses));
+      "tags": [],
+      "admins": admins,
+      "groupPost": groupPost
+    }).then(inviteesNotification(
+        postId, imageUrl, title, statuses, groupPost, userId));
 
     if (privacy == 'Public' || privacy == 'Friends Only' && userId != null) {
       var peepsToAlert;
@@ -237,6 +282,7 @@ class Database {
     if (type == "Parties" || type == "Bars & Restaurants") {
       isPartyOrBar = true;
     }
+    bool groupPost = false;
 
     if (!noArchive) {
       archiveRef.doc(postId).set({
@@ -304,7 +350,8 @@ class Database {
       "recurringType": recurringType,
       "mobileOrderMenu": mobileOrderMenu,
       "tags": tags
-    }).then(inviteesNotification(postId, imageUrl, title, statuses));
+    }).then(
+        inviteesNotification(postId, imageUrl, title, statuses, false, userId));
 
     if (privacy == 'Public' || privacy == 'Friends Only') {
       List peepsToAlert = currentUser.followers;

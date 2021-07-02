@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:MOOV/friendGroups/friend_groups.dart';
+import 'package:MOOV/friendGroups/group_detail.dart';
 import 'package:MOOV/main.dart';
 import 'package:MOOV/pages/ProfilePageWithHeader.dart';
 import 'package:MOOV/pages/other_profile.dart';
@@ -168,7 +170,9 @@ class _PostOnFeedNewState extends State<PostOnFeedNew> {
                       bottom: 10,
                       right: 22.5,
                       child: widget.course['userId'] != null
-                          ? PostOwnerInfo(widget.course['userId'])
+                          ? (widget.course['groupPost'] == false)
+                              ? PostOwnerInfo(widget.course['userId'])
+                              : PostOwnerGroup(widget.course['userId'])
                           : Container()),
                   Positioned(
                       bottom: 10,
@@ -773,6 +777,107 @@ class PostOwnerInfo extends StatelessWidget {
                                               fontSize: 11,
                                               color: TextThemes.ndBlue,
                                               decoration: TextDecoration.none)),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  ]));
+            }),
+        style: ButtonStyle(
+            foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+            backgroundColor:
+                MaterialStateProperty.all<Color>(Colors.blueGrey[50]),
+            elevation: MaterialStateProperty.all(10),
+            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(30.0),
+            ))));
+  }
+}
+
+class PostOwnerGroup extends StatelessWidget {
+  final String userId;
+  PostOwnerGroup(this.userId);
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+        onPressed: () => Navigator.push(context,
+            MaterialPageRoute(builder: (context) => GroupDetail(userId))),
+        child: StreamBuilder(
+            stream: groupsRef.doc(userId).snapshots(),
+            builder: (context, snapshot2) {
+              if (snapshot2.hasError) return Container();
+              if (!snapshot2.hasData) return Container();
+
+              String groupPic = snapshot2.data['groupPic'];
+              String groupName = snapshot2.data['groupName'];
+
+              return Container(
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                    Row(
+                      children: [
+                        Padding(
+                            padding: const EdgeInsets.fromLTRB(0, 10, 4, 10),
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => GroupDetail(userId)));
+                              },
+                              // child: ClipRRect(
+                              //   borderRadius: BorderRadius.circular(10),
+                              //   child: CachedNetworkImage(imageUrl: groupPic),
+                              // ),
+                              child: CircleAvatar(
+                                radius: 22.0,
+                                backgroundImage:
+                                    CachedNetworkImageProvider(groupPic),
+                                backgroundColor: Colors.transparent,
+                              ),
+                            )),
+                        ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: 130,
+                          ),
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => GroupDetail(userId)));
+                            },
+                            child: Column(
+                              //  mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 2.0),
+                                  child: ConstrainedBox(
+                                    constraints: BoxConstraints(
+                                      maxWidth: 130,
+                                    ),
+                                    child: SizedBox(
+                                      child: Row(
+                                        children: [
+                                          ConstrainedBox(
+                                            constraints:
+                                                BoxConstraints(maxWidth: 100),
+                                            child: Text(groupName,
+                                                overflow: TextOverflow.visible,
+                                                style: TextStyle(
+                                                    // fontWeight: FontWeight.bold,
+                                                    fontSize: 14,
+                                                    color: TextThemes.ndBlue,
+                                                    decoration:
+                                                        TextDecoration.none)),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),

@@ -446,7 +446,7 @@ class _EditPostState extends State<EditPost> {
                                 ),
                                 Padding(
                                   padding: EdgeInsets.only(
-                                      left: 8, right: 10, top: 10),
+                                      left: 8, right: 10, top: 10, bottom: 5),
                                   child: TextFormField(
                                     onChanged: (text) {
                                       setState(() {
@@ -792,7 +792,7 @@ class _EditPostState extends State<EditPost> {
                                       ])
                                     : Text(""),
                                 Padding(
-                                  padding: const EdgeInsets.all(8.0),
+                                  padding: const EdgeInsets.all(0.0),
                                   child: Column(
                                     children: [
                                       IconButton(
@@ -854,7 +854,7 @@ class _EditPostState extends State<EditPost> {
                                                   // userMoovs = snapshot.data['likedMoovs'];
 
                                                   return Container(
-                                                    height: 50,
+                                                    height: 25,
                                                     child: Column(
                                                       children: <Widget>[
                                                         GestureDetector(
@@ -1271,7 +1271,11 @@ class _EditPostState extends State<EditPost> {
                                                           postId,
                                                           image,
                                                           title,
-                                                          invitees));
+                                                          invitees,
+                                                          snapshot.data[
+                                                              'groupPost'],
+                                                          snapshot
+                                                              .data['userId']));
                                           }
 
                                           if (currentValues != null) {
