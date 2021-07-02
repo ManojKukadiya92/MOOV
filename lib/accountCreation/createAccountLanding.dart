@@ -1325,7 +1325,9 @@ By phone number: 6315609452
 
 class _StudentAccountCreation extends StatefulWidget {
   final bool secondTime;
-  _StudentAccountCreation({this.secondTime = false});
+  final String dorm;
+  final String year;
+  _StudentAccountCreation({this.secondTime = false, this.dorm, this.year});
   @override
   __StudentAccountCreationState createState() =>
       __StudentAccountCreationState();
@@ -1340,6 +1342,7 @@ class __StudentAccountCreationState extends State<_StudentAccountCreation> {
   String _raceValue;
   bool _dormChosen = false;
   bool _yearChosen = false;
+  bool _clubExec = false;
 
   @override
   Widget build(BuildContext context) {
@@ -1369,7 +1372,7 @@ class __StudentAccountCreationState extends State<_StudentAccountCreation> {
                               child:
                                   Icon(Icons.arrow_back, color: Colors.white)),
                         )),
-                    SizedBox(height: 15),
+                    isLargePhone ? SizedBox(height: 15) : Container(),
                     DelayedDisplay(
                       delay: Duration(milliseconds: 200),
                       child: Text(
@@ -1446,7 +1449,7 @@ class __StudentAccountCreationState extends State<_StudentAccountCreation> {
                                       'Black',
                                       'Asian',
                                       'Latino',
-                                      'American Indian',
+                                      'Native',
                                       'White',
                                     ].map<DropdownMenuItem<String>>(
                                         (String value) {
@@ -1474,52 +1477,51 @@ class __StudentAccountCreationState extends State<_StudentAccountCreation> {
                         ),
                       ],
                     ),
-                    SizedBox(height: 20),
-                    ParallaxCommunities(),
+                    // SizedBox(height: 20),
                     DelayedDisplay(
-                      delay: Duration(milliseconds: 700),
-                      child: Bounce(
-                        duration: Duration(milliseconds: 500),
-                        onPressed: () {
-                          // _createBusinessInFirestore(
-                          //     businessName: widget.bizName,
-                          //     latitude: widget.bizLat,
-                          //     longtitude: widget.bizLong,
-                          //     type: widget.bizType,
-                          //     address: widget.bizAddress,
-                          //     description:
-                          //         businessDescriptionController
-                          //             .text);
-                        },
-                        child: Container(
-                          height: 50.0,
-                          width: 150.0,
-                          decoration: BoxDecoration(
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.3),
-                                spreadRadius: 5,
-                                blurRadius: 7,
-                                offset:
-                                    Offset(0, 3), // changes position of shadow
-                              ),
-                            ],
-                            border: Border.all(color: Colors.white),
-                            color: TextThemes.ndGold,
-                            borderRadius: BorderRadius.circular(7.0),
-                          ),
-                          child: Center(
-                            child: Text(
-                              'Create',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 15.0,
-                                  fontWeight: FontWeight.bold),
+                        delay: Duration(milliseconds: 300),
+                        child: Theme(
+                            data: ThemeData(
+                              splashColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
                             ),
-                          ),
-                        ),
-                      ),
-                    ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        _clubExec = !_clubExec;
+                                      });
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Colors.white),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(10.0),
+                                        child: _clubExec
+                                            ? Icon(
+                                                Icons.check,
+                                                size: 15.0,
+                                                color: TextThemes.ndBlue,
+                                              )
+                                            : Icon(
+                                                Icons.check_box_outline_blank,
+                                                size: 15.0,
+                                                color: TextThemes.ndBlue,
+                                              ),
+                                      ),
+                                    )),
+                                Text("  Club Exec?",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w300))
+                              ],
+                            ))),
+                    SizedBox(height: 20),
+                    ParallaxCommunities(
+                        dorm: widget.dorm, year: widget.year),
                   ]
                 : [
                     DelayedDisplay(
@@ -1662,7 +1664,9 @@ class __StudentAccountCreationState extends State<_StudentAccountCreation> {
                                   accountButtonPressed(
                                       context: context,
                                       page: _StudentAccountCreation(
-                                          secondTime: true)
+                                          secondTime: true,
+                                          dorm: studentDormController.text,
+                                          year: _yearValue)
                                       //  StudentAccountDemographics(
                                       //     this.studentDormController.text,
                                       //     this._chosenValue)
@@ -1702,6 +1706,8 @@ class __StudentAccountCreationState extends State<_StudentAccountCreation> {
 }
 
 class ParallaxCommunities extends StatefulWidget {
+  final String dorm, year;
+  ParallaxCommunities({this.dorm, this.year});
   @override
   _ParallaxCommunitiesState createState() => _ParallaxCommunitiesState();
 }
@@ -1757,100 +1763,222 @@ class _ParallaxCommunitiesState extends State<ParallaxCommunities> {
 
   final List communityJoinList = [];
   final List communityNotificationList = [];
+  bool _isUploading = false;
+  bool _success = false;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      height: 350,
-      // decoration: BoxDecoration(
-      //   image: DecorationImage(
-      //     image: AssetImage("assets/clouds.jpeg"),
-      //     fit: BoxFit.cover,
-      //   ),
-      // ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [],
+    return DelayedDisplay(
+      delay: Duration(seconds: 1),
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        height: 394,
+        // decoration: BoxDecoration(
+        //   image: DecorationImage(
+        //     image: AssetImage("assets/clouds.jpeg"),
+        //     fit: BoxFit.cover,
+        //   ),
+        // ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [],
+              ),
             ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 20, bottom: 20),
-                child: Text(
-                  'wacha into?',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 20, bottom: 20),
+                  child: Text(
+                    'wacha into?',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                    ),
                   ),
                 ),
-              ),
-              Container(
-                height: 300,
-                padding: EdgeInsets.only(bottom: 30),
-                child: PageView.builder(
-                    itemCount: communitiesMap.length,
-                    controller: pageController,
-                    itemBuilder: (context, i) {
-                      return Transform.scale(
-                        scale: 1,
-                        child: Container(
-                          padding: EdgeInsets.only(right: 20),
-                          child: Stack(
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(15),
-                                child: OpenContainer(
-                                  transitionType: ContainerTransitionType.fade,
-                                  transitionDuration:
-                                      Duration(milliseconds: 500),
-                                  openBuilder: (context, _) => CommunityPreview(
+                Container(
+                  height: 300,
+                  padding: EdgeInsets.only(bottom: 30),
+                  child: PageView.builder(
+                      itemCount: communitiesMap.length,
+                      controller: pageController,
+                      itemBuilder: (context, i) {
+                        return Transform.scale(
+                          scale: 1,
+                          child: Container(
+                            padding: EdgeInsets.only(right: 20),
+                            child: Stack(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(15),
+                                  child: OpenContainer(
+                                    transitionType:
+                                        ContainerTransitionType.fade,
+                                    transitionDuration:
+                                        Duration(milliseconds: 500),
+                                    openBuilder: (context, _) =>
+                                        CommunityPreview(
+                                            communitiesMap[i]['image'],
+                                            communitiesMap[i]['name'],
+                                            communitiesMap[i]['id'],
+                                            communityJoinList,
+                                            communityNotificationList),
+                                    closedElevation: 0,
+                                    closedBuilder: (context, _) => Image.asset(
                                       communitiesMap[i]['image'],
-                                      communitiesMap[i]['name'],
-                                      communitiesMap[i]['id'],
-                                      communityJoinList,
-                                      communityNotificationList),
-                                  closedElevation: 0,
-                                  closedBuilder: (context, _) => Image.asset(
-                                    communitiesMap[i]['image'],
-                                    height: 250,
-                                    fit: BoxFit.cover,
-                                    alignment:
-                                        Alignment(-pageOffset.abs() + i, 0),
+                                      height: 250,
+                                      fit: BoxFit.cover,
+                                      alignment:
+                                          Alignment(-pageOffset.abs() + i, 0),
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Positioned(
-                                left: 10,
-                                bottom: 25,
-                                right: 10,
-                                child: Text(
-                                  communitiesMap[i]['name'],
-                                  style: GoogleFonts.montserrat(
-                                    color: Colors.white,
-                                    fontSize: 27,
-                                    // fontStyle: FontStyle.italic,
+                                Positioned(
+                                  left: 10,
+                                  bottom: 25,
+                                  right: 10,
+                                  child: Text(
+                                    communitiesMap[i]['name'],
+                                    style: GoogleFonts.montserrat(
+                                      color: Colors.white,
+                                      fontSize: 27,
+                                      // fontStyle: FontStyle.italic,
+                                    ),
                                   ),
-                                ),
-                              )
-                            ],
+                                )
+                              ],
+                            ),
+                          ),
+                        );
+                      }),
+                ),
+                DelayedDisplay(
+                  delay: Duration(milliseconds: 700),
+                  child: Bounce(
+                    duration: Duration(milliseconds: 500),
+                    onPressed: () {
+                      print(widget.dorm);
+                      // _createStudentInFirestore(
+                      //     dorm: widget.dorm,
+                      //     year: widget.year,
+                      //     );
+                    },
+                    child: Center(
+                      child: Container(
+                        height: 50.0,
+                        width: 150.0,
+                        decoration: BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.3),
+                              spreadRadius: 5,
+                              blurRadius: 7,
+                              offset:
+                                  Offset(0, 3), // changes position of shadow
+                            ),
+                          ],
+                          border: Border.all(color: Colors.white),
+                          color: TextThemes.ndGold,
+                          borderRadius: BorderRadius.circular(7.0),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Create',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 15.0,
+                                fontWeight: FontWeight.bold),
                           ),
                         ),
-                      );
-                    }),
-              )
-            ],
-          ),
-        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
+  }
+
+  _createStudentInFirestore({
+    String dorm,
+    String year,
+    String gender,
+    String race,
+    String type,
+    String address,
+    String description,
+  }) async {
+    setState(() {
+      _isUploading = true;
+    });
+    final GoogleSignInAccount user = googleSignIn.currentUser;
+
+    usersRef.doc(user.id).set({
+      "id": user.id,
+      "photoUrl": user.photoUrl,
+      "badges": {},
+      "isBusiness": false,
+      "email": user.email,
+      "displayName": user.displayName,
+      "bio": "Create a bio here",
+      "header": "",
+      "timestamp": timestamp,
+      "score": 0,
+      "moovMoney": 0,
+      "gender": gender,
+      "race": race,
+      "year": year,
+      "dorm": dorm,
+      // "referral": referral,
+      "postLimit": 3,
+      "sendLimit": 5,
+      "verifiedStatus": 0,
+      "followers": [],
+      "friendArray": [],
+      "friendRequests": [],
+      "friendGroups": [],
+      // "userType": userTypeMap,
+      "isSingle": false,
+      // "venmoUsername": venmoUsername,
+      "pushSettings": {
+        "going": true,
+        "hourBefore": true,
+        "suggestions": true,
+        "friendPosts": true
+      },
+      "privacySettings": {
+        "friendFinderVisibility": true,
+        "friendsOnly": false,
+        "incognito": false,
+        "showDorm": true
+      }
+    }).then((value) {
+      Future.delayed(Duration(seconds: 1), () {
+        setState(() {
+          _isUploading = false;
+          _success = true;
+        });
+      });
+    }).then((value) => Future.delayed(Duration(seconds: 2), () {
+          Navigator.push(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (c, a1, a2) => Home(),
+              transitionsBuilder: (c, anim, a2, child) =>
+                  FadeTransition(opacity: anim, child: child),
+              transitionDuration: Duration(milliseconds: 1000),
+            ),
+          );
+        }));
   }
 }
 
@@ -2017,28 +2145,30 @@ class __JoinNotifRowState extends State<_JoinNotifRow> {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Bounce(
-          duration: Duration(milliseconds: 500),
-          onPressed: () {
-            widget.communityJoinList.add(widget.course['groupId']);
-            setState(() {});
-          },
-          child: Container(
-              width: 70,
-              height: 50,
-              decoration: BoxDecoration(
-                  color: Colors.green,
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(10),
-                  )),
+        Container(
+            width: 70,
+            height: 50,
+            decoration: BoxDecoration(
+                color: Colors.green,
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(10),
+                )),
+            child: Bounce(
+              duration: Duration(milliseconds: 500),
+              onPressed: () {
+                widget.communityJoinList.contains(widget.course['groupId'])
+                    ? widget.communityJoinList.remove(widget.course['groupId'])
+                    : widget.communityJoinList.add(widget.course['groupId']);
+                setState(() {});
+              },
               child: Center(
                 child:
                     widget.communityJoinList.contains(widget.course['groupId'])
                         ? Icon(Icons.check, color: Colors.white)
                         : Text("JOIN",
                             style: GoogleFonts.montserrat(color: Colors.white)),
-              )),
-        ),
+              ),
+            )),
         Container(
             width: 40,
             child: Center(
@@ -2046,7 +2176,11 @@ class __JoinNotifRowState extends State<_JoinNotifRow> {
                     duration: Duration(milliseconds: 500),
                     onPressed: () {
                       widget.communityNotificationList
-                          .add(widget.course['groupId']);
+                              .contains(widget.course['groupId'])
+                          ? widget.communityNotificationList
+                              .remove(widget.course['groupId'])
+                          : widget.communityNotificationList
+                              .add(widget.course['groupId']);
                       setState(() {});
                     },
                     child: widget.communityNotificationList
